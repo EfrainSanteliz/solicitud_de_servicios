@@ -1,100 +1,104 @@
-import React, { useState } from "react";
-import {
-  ButtonGroup,
-  ToggleButton,
-  Container,
-  Row,
-  Col,
-} from "react-bootstrap";
-import "./styles.css";
+import Form from "react-bootstrap/Form";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Select from "react-select";
 
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+function TextControlsExample() {
+  const [options, setOptions] = useState([]);
 
+  useEffect(() => {
+    axios
+      .get(`https://localhost:7142/api/ConActivosFijos/`)
+      .then((response) => {
+        console.log("get succesful", response.data);
 
-const NuevaSolicitud = () => {
-  // State to keep track of the selected radio button
-  const [selectedOption, setSelectedOption] = useState("1");
-
-  // Define the radio options
-  const options = [
-    { name: "Infraestructura    ", value: "1" },
-    { name: "Sistema Tecnologico", value: "2" },
-    { name: "Proyecto Nuevo", value: "3" },
-  ];
-
-  const [selectedDate,setSelectedData]= useState(null);
-
+        const formattendOptions = response.data.map((item) => ({
+          value: item.activoFijoID,
+          label: `${item.afClave} - ${item.afNombre} - ${item.afDescripcion}`,
+        }));
+        setOptions(formattendOptions);
+      })
+      .catch((error) => {
+        console.error("Error al cargar los datos", error);
+      });
+  }, []);
 
   return (
-    <Container className="my-3">
-      <div className="Titulo">
-        SOLICITUD DE SERVICIO SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS DE
-        LA INFORMACION
-        
-      </div>
-      <Row
-        className="justify-content-center align-items-flex-start"
-        style={{ marginTop: "-10px" }}
-      >
-        
-        Servicio Solicitado
-        {options.map((option, idx) => (
-          <Col
-            key={idx}
-            xs="auto"
-            className="d-flex flex-column align-items-center"
-          >
-            <ToggleButton
-              id={`radio-${idx}`}
-              type="radio"
-              variant={
-                selectedOption === option.value
-                  ? "primary"
-                  : "outline-secondary"
-              }
-              name="radio"
-              value={option.value}
-              checked={selectedOption === option.value}
-              onChange={(e) => setSelectedOption(e.currentTarget.value)}
-              className="rounded-circle"
-              style={{
-                width: "20px", // Reduced width for the button
-                height: "20px",
-                padding: "5px",
-                borderRadius: "50%",
-                marginBottom: "5px", // Margin between button and text
-              }}
-            />
-            <span
-              style={{
-                textAlign: "center",
-                fontSize: "14px", // Font size of the text
-                color:
-                  selectedOption === option.value ? "primary" : "secondary",
-              }}
-            >
-              {option.name}
-            </span>
-          </Col>
-        ))}
-      </Row>
-    <Row className="justify-content-start">
-      <Col xs ="auto">
-      <label htmlFor="fecha-solicitud">Fecha de solocitud</label>
-      </Col>
-      <Col xs = "auto">
-      <DatePicker 
-      id= "fecha-solicitud"
-      selected={selectedDate}
-      onchange={(data) => setSelectedData(data)}
-      />
-      </Col>
-    </Row>
+    <Form>
+      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+        <Form.Label>
+          SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS
+          DE LA INFORMACION
+        </Form.Label>
+        <br />
+        <br />
 
-      
-    </Container>
+        <Form.Label>Servicio Solicitado </Form.Label>
+        <div className="mb-3">
+          <Form.Check
+            inline
+            label="Mantenimiento a equipo de computo etc."
+            name="group1"
+            type="radio"
+            id={`inline-radio-1`}
+          />
+          <Form.Check
+            inline
+            label="Sistema Tecnologico"
+            name="group1"
+            type="radio"
+            id={`inline-radio-2`}
+          />
+          <Form.Check
+            inline
+            label="Proyecto Nuevo"
+            type="radio"
+            name="group1"
+            id={`inline-radio-3`}
+          />
+        </div>
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="formDate">
+        <Form.Label>Fecha de Solicitud</Form.Label>
+        <Form.Control type="date" />
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="SolicitudDeServicioArealizar">
+        <Form.Label>Solicitud de servicio a realizar</Form.Label>
+        <Form.Select aria-label="Default select example">
+          <option>Selecciona el servicio</option>
+          <option value="1">Subir informacion al portal WEB</option>
+          <option value="2">Cambio en plasa IBCESS</option>
+          <option value="3">Cambio en Plataforma WEB</option>
+          <option value="4">Publicacion web institucional</option>
+          <option value="5">Permisos Usuarios</option>
+        </Form.Select>
+
+        <Form.Select aria-label="Default select example">
+          <option>Selecciona el recurso que presenta problemas </option>
+          <Select
+            options={options}
+            placeholder="Selecciona el recurso que presenta problemas"
+            isSearchable={true} // Enables the search bar
+            className="basic-single"
+            classNamePrefix="select"
+          />
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+        <Form.Label>DESCRIPCION DETALLADA SEL SERVICIO SOLICITADO</Form.Label>
+        <Form.Control as="textarea" rows={3} />
+      </Form.Group>
+      <Form.Group controlId="formFileLg" className="mb-3">
+        <Form.Label>
+          Puedes subir una imagen para la descripcion del servicio (opcional).
+        </Form.Label>
+        <Form.Control type="file" size="lg" />
+      </Form.Group>
+    </Form>
   );
-};
+}
 
-export default NuevaSolicitud;
+export default TextControlsExample;

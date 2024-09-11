@@ -7,6 +7,7 @@ import Login from './components/login';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MisSolicitudes from './components/MisSolicitudes';
 import NuevaSolicitud  from './components/NuevaSolicitud';
+import NewUser from './components/NewUser';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Route path="/Welcome" element = {<Welcome/>}/>
       <Route path="/MisSolicitudes" element = {<MisSolicitudes/>} />
       <Route path='/NuevaSolicitud' element = {<NuevaSolicitud/>} />
+      <Route path='/NewUser' element = {<NewUser/>} />
 
       <Route path="/" element = {<Login/>}/>
 
