@@ -16,13 +16,13 @@ function Login() {
     };
 
     axios
-      .post("https://localhost:7142/api/User/login/", loginData)
+      .post("https://localhost:7145/api/User/login/", loginData)
       .then((response) => {
         console.log("Login successful:", response.data);
         alert("Login successful!");
         // Perform further actions like redirecting the user or storing tokens
-        localStorage.setItem("userid", response.data.id);
-        navigate("/Welcome", { state: { userId: response.data.id } });
+        localStorage.setItem("userid", response.data.empleadoID);
+        navigate("/Welcome", { state: { userId: response.data.empleadoID } });
       })
       .catch((error) => {
         console.error("Error logging in:", error);
