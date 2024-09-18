@@ -22,7 +22,19 @@ function Login() {
         alert("Login successful!");
         // Perform further actions like redirecting the user or storing tokens
         localStorage.setItem("userid", response.data.empleadoID);
-        navigate("/Welcome", { state: { userId: response.data.empleadoID } });
+
+        console.log("tipo de usuario " ,response.data.userRole)
+
+        if (response.data.userRole === "UsuarioNormal") {
+          navigate("/Welcome", { state: { userId: response.data.empleadoID } });
+        }
+        if (response.data.userRole === "Administrador") {
+          navigate("/WelcomeAdministrador", { state: { userId: response.data.empleadoID } });
+        }
+        if (response.data.userRole === "SuperAdministrador") {
+          navigate("/WelcomeSuperAdministrador", { state: { userId: response.data.empleadoID } });
+        }
+        
       })
       .catch((error) => {
         console.error("Error logging in:", error);
