@@ -1,100 +1,158 @@
-import React, { useState } from "react";
-import {
-  ButtonGroup,
-  ToggleButton,
-  Container,
-  Row,
-  Col,
-} from "react-bootstrap";
-import "./styles.css";
+import React, { useState, useEffect } from 'react';
+import { Form, Button, Container } from 'react-bootstrap';
+import axios from 'axios';
+import Select from 'react-select';
+import { DateTime } from 'luxon';
 
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+function TextControlsExample() {
+  const [options, setOptions] = useState([]);
+  const [selectedService, setSelectedService] = useState("");
+  const [message, setMessage] = useState("");
 
+  const [formData, setFormData] = useState({
+    servicioSolicitado: '',
+    fechaSolicitada: '',
+    SolicitudDeServicioARealizar: '',
+    Descripcion: '',
+    Status: '',
+    Comentarios: "",
+    FirmaEmpleado: "",
+    FirmaJefeDepartamento: "",
+    FirmaJefe: "",
+    File: "",
+    NomEmpleadosId: localStorage.getItem("userid"),
+    ConActivosFijosId: "", // Asegúrate de que el valor esté vacío al principio
+  });
 
-const NuevaSolicitud = () => {
-  // State to keep track of the selected radio button
-  const [selectedOption, setSelectedOption] = useState("1");
+  // Obtener los datos del servidor para el select
+  useEffect(() => {
+    axios
+      .get(`https://localhost:7145/api/ConActivosFijos/`)
+      .then((response) => {
+        console.log("get successful", response.data);
 
-  // Define the radio options
-  const options = [
-    { name: "Infraestructura    ", value: "1" },
-    { name: "Sistema Tecnologico", value: "2" },
-    { name: "Proyecto Nuevo", value: "3" },
-  ];
+        const formattedOptions = response.data.map((item) => ({
+          value: item.activoFijoID, // ID de la fila
+          label: `${item.afClave} - ${item.afNombre} - ${item.afDescripcion}`, // Texto que se mostrará en el select
+        }));
+        setOptions(formattedOptions);
+      })
+      .catch((error) => {
+        console.error("Error al cargar los datos", error);
+      });
+  }, []);
 
-  const [selectedDate,setSelectedDate]= useState(null);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({
+          ...formData,
+          file: reader.result,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSelectChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      ConActivosFijosId: selectedOption.value, // Almacenar el ID seleccionado
+    });
+    console.log("id de inventario seleccionado " , selectedOption.value);
+
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "https://localhost:7145/api/Request/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setMessage("Formulario enviado con éxito");
+    } catch (error) {
+      console.error("error al enviar el formulario:", error);
+      setMessage("hubo un error al enviar el formulario.");
+    }
+  };
 
   return (
-    <Container className="my-3">
-      <div className="Titulo">
-        SOLICITUD DE SERVICIO SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS DE
-        LA INFORMACION
-      </div>
-      <Row
-        className="justify-content-center align-items-flex-start"
-        style={{ marginTop: "-10px" }}
-      >
-        Servicio Solicitado
-        {options.map((option, idx) => (
-          <Col
-            key={idx}
-            xs="auto"
-            className="d-flex flex-column align-items-center"
-          >
-            <ToggleButton
-              id={`radio-${idx}`}
-              type="radio"
-              variant={
-                selectedOption === option.value
-                  ? "primary"
-                  : "outline-secondary"
-              }
-              name="radio"
-              value={option.value}
-              checked={selectedOption === option.value}
-              onChange={(e) => setSelectedOption(e.currentTarget.value)}
-              className="rounded-circle"
-              style={{
-                width: "20px", // Reduced width for the button
-                height: "20px",
-                padding: "5px",
-                borderRadius: "50%",
-                marginBottom: "5px", // Margin between button and text
-              }}
-            />
-            <span
-              style={{
-                textAlign: "center",
-                fontSize: "14px", // Font size of the text
-                color:
-                  selectedOption === option.value ? "primary" : "secondary",
-              }}
-            >
-              {option.name}
-            </span>
-          </Col>
-        ))}
-      </Row>
-      <Row className="justify-content-start">
-        {/* Label for date picker */}
-        <Col xs="auto">
-          <label htmlFor="fecha-solicitud">Fecha de Solicitud:</label>
-        </Col>
-        {/* Date picker component */}
-        <Col xs="auto">
-          <DatePicker
-            id="fecha-solicitud"
-            selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-          />
-        </Col>
-      </Row>
+    <Container className="mt-5">
+      <h2>Captura de Información del Usuario</h2>
+      <Form onSubmit={handleSubmit}>
+        {message && <div>{message}</div>}
 
-      
+        <Form.Group className="mb-3">
+          <Form.Label>Servicio Solicitado</Form.Label>
+          <Form.Control
+            type="text"
+            name="servicioSolicitado"
+            value={formData.servicioSolicitado}
+            onChange={handleChange}
+            placeholder="Ingresa el servicio solicitado"
+          />
+        </Form.Group>
+
+        {/* react-select para seleccionar de la lista */}
+        <Form.Group className="mb-3">
+          <Form.Label>Selecciona el recurso que presenta problemas</Form.Label>
+          <Select
+            options={options} // Las opciones cargadas del servidor
+            placeholder="Selecciona un recurso"
+            isSearchable={true} // Habilita la búsqueda
+            className="basic-single"
+            classNamePrefix="select"
+            onChange={handleSelectChange} // Actualiza el estado cuando se selecciona una opción
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Descripción Detallada del Servicio</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            name="Descripcion"
+            value={formData.Descripcion}
+            onChange={handleChange}
+            placeholder="Describe el problema"
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Subir una imagen (opcional)</Form.Label>
+          <Form.Control
+            type="file"
+            name="file"
+            onChange={handlePhotoChange}
+            accept="image/*"
+          />
+        </Form.Group>
+
+        <Button variant="primary" type="submit">
+          Enviar
+        </Button>
+      </Form>
     </Container>
   );
-};
+}
 
-export default NuevaSolicitud;
+export default TextControlsExample;
