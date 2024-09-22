@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import RequestTable from "./RequestTable";
+import axios from "axios";
 
-import axios from "axios";function WelcomeSuperAdministrador() {
+function WelcomeSuperAdministrador() {
     const [requests, setRequests] = useState([]);
 
     return (
