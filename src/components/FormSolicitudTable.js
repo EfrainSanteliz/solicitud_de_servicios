@@ -1,141 +1,27 @@
+import {useState,} from React;
+import {Alert,Button} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import Select from "react-select";
-import "./styles.css";
-import { Button, Alert } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
-import { DataTime, DateTime } from "luxon";
 
-function TextControlsExample() {
-  const [options, setOptions] = useState([]);
-  const [selectedService, setSelectedService] = useState("");
-  const [message, setMessage] = useState("");
+function FormSolicitudTable(id) {
+       
 
-  const location = useLocation();
-  const userIDSTORAGE = location.state?.userId || localStorage.getItem("userid");
+    const[showRequest,setShowRequest] = useState([]);
 
-  const [formData, setFormData] = useState({
-    servicioSolicitado: '',
-    SolicitudDeServicioARealizar: '',
-    Descripcion: '',
-    Status: '',
-    Comentarios: '',
-    FirmaEmpleado: '',
-    FirmaJefeDepartamento: '',
-    FirmaJefe: '',
-    File: '',
-    NomEmpleadosId: userIDSTORAGE,
-    ConActivosFijosId: null,
-  });
+     const showForm = (id) =>
+     {
+        axios(`https//localhost:7145/api/Request/${id}`)
+        .then((response) => {
+            setShowRequest(response.id)
+        })
+        .catch((error)=> {
+         console.log("Error to show form" , error)
 
-  const [fechaSolicitada, setFechaSolicitada] = useState('');
+        })
+     }
 
-  // Obtener la fecha en formato año-mes-día y hora-minuto en GMT-7
-  useEffect(() => {
-    const getCurrentDateInGMT7 = () => {
-      // Obtener la fecha en GMT-7 con el formato correcto
-      const dateInGMT7 = DateTime.now().setZone("America/Hermosillo");
-  
-      // Verifica si la fecha es válida
-      if (dateInGMT7.isValid) {
-        // Devuelve la fecha en el formato requerido
-        return dateInGMT7.toFormat("yyyy-MM-dd'T'HH:mm");
-      } else {
-        // Manejar error si la fecha no es válida
-        console.error("Fecha inválida obtenida:", dateInGMT7.invalidExplanation);
-        return null;
-      }
-    };
-  
-    setFechaSolicitada(getCurrentDateInGMT7());
-  }, []);
-
-  useEffect(() => {
-    axios
-      .get(`https://localhost:7145/api/ConActivosFijos/`)
-      .then((response) => {
-        console.log("get successful", response.data);
-
-        const formattedOptions = response.data.map((item) => ({
-          value: item.activoFijoID,
-          label: `${item.afClave} - ${item.afNombre} - ${item.afDescripcion}`,
-        }));
-        setOptions(formattedOptions);
-      })
-      .catch((error) => {
-        console.error("Error al cargar los datos", error);
-      });
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleRadioChange = (event) => {
-    setSelectedService(event.target.id);
-  };
-
-  const handleSelectChange = (selectedOption) => {
-    setFormData({
-      ...formData,
-      ConActivosFijosId: selectedOption.value, // Almacenar el ID seleccionado
-    });
-    console.log("id de inventario seleccionado", selectedOption.value);
-  };
-
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({
-          ...formData,
-          File: reader.result,
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const finalFormData = {
-      ...formData,
-      fechaSolicitada: fechaSolicitada, // Enviar la fecha formateada
-    };
-
-    console.log('datos a enviar' ,finalFormData);
-
-    try {
-      const response = await axios.post(
-        "https://localhost:7145/api/Request/",
-        finalFormData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      setMessage("Formulario enviado con éxito");
-    } catch (error) {
-      console.error("error al enviar el formulario:", error);
-      setMessage("hubo un error al enviar el formulario.");
-    }
-  };
-
-  return (
-    <Form onSubmit={handleSubmit}>
-      {message && <Alert variant="info">{message}</Alert>}
-      <div id="NuevaSolicitud">
+    return (
+        <div>
+          <div id="NuevaSolicitud">
         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
           <Form.Label>
             SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS
@@ -252,8 +138,11 @@ function TextControlsExample() {
           </Button>
         </Form.Group>
       </div>
-    </Form>
-  );
+           
+           
+        </div>
+    );
 }
 
-export default TextControlsExample;
+export default FormSolicitudTable;
+

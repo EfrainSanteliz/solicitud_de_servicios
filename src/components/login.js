@@ -16,30 +16,31 @@ function Login() {
     };
 
     axios
-      .post("https://localhost:7145/api/User/login/", loginData)
-      .then((response) => {
-        console.log("Login successful:", response.data);
-        alert("Login successful!");
-        // Perform further actions like redirecting the user or storing tokens
-        localStorage.setItem("userid", response.data.empleadoID);
-
-        console.log("tipo de usuario " ,response.data.userRole)
-
-        if (response.data.userRole === "UsuarioNormal") {
-          navigate("/Welcome", { state: { userId: response.data.empleadoID } });
-        }
-        if (response.data.userRole === "Administrador") {
-          navigate("/WelcomeAdministrador", { state: { userId: response.data.empleadoID } });
-        }
-        if (response.data.userRole === "SuperAdministrador") {
-          navigate("/WelcomeSuperAdministrador", { state: { userId: response.data.empleadoID } });
-        }
-        
-      })
-      .catch((error) => {
-        console.error("Error logging in:", error);
-        alert("Login failed. Please check your credentials and try again.");
-      });
+    .post("https://localhost:7145/api/User/login/", loginData)
+    .then((response) => {
+      console.log("Login successful:", response.data);
+      alert("Login successful!");
+  
+      localStorage.setItem("userid", response.data.empleadoID);
+  
+      console.log("UserRole:", response.data.userRole);
+      console.log("Navigating to the correct page...");
+  
+      if (response.data.userRole === "UsuarioNormal") {
+        console.log("Navigating to /Welcome");
+        navigate("/Welcome");
+      } else if (response.data.userRole === "Administrador") {
+        console.log("Navigating to /WelcomeAdministrador");
+        navigate("/WelcomeAdministrador");
+      } else if (response.data.userRole === "SuperAdministrador") {
+        console.log("Navigating to /WelcomeSuperAdministrador");
+        navigate("/WelcomeSuperAdministrador");
+      }
+    })
+    .catch((error) => {
+      console.error("Error logging in:", error);
+      alert("Login failed. Please check your credentials and try again.");
+    });
   };
 
   return (
