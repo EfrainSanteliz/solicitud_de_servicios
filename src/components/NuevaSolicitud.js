@@ -26,7 +26,7 @@ function TextControlsExample() {
     FirmaJefe: '',
     File: '',
     NomEmpleadosId: userIDSTORAGE,
-    ConActivosFijosId: '',
+    ConActivosFijosId: null,
   });
 
   const [fechaSolicitada, setFechaSolicitada] = useState('');
