@@ -1,158 +1,83 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Button, Container } from 'react-bootstrap';
+import React from "react";
 import axios from 'axios';
-import Select from 'react-select';
-import { DateTime } from 'luxon';
+import { Table, Button } from 'react-bootstrap';
+import { useState, useEffect } from "react";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function TextControlsExample() {
-  const [options, setOptions] = useState([]);
-  const [selectedService, setSelectedService] = useState("");
-  const [message, setMessage] = useState("");
+function MisSolicitudes() {
 
-  const [formData, setFormData] = useState({
-    servicioSolicitado: '',
-    fechaSolicitada: '',
-    SolicitudDeServicioARealizar: '',
-    Descripcion: '',
-    Status: '',
-    Comentarios: "",
-    FirmaEmpleado: "",
-    FirmaJefeDepartamento: "",
-    FirmaJefe: "",
-    File: "",
-    NomEmpleadosId: localStorage.getItem("userid"),
-    ConActivosFijosId: "", // Asegúrate de que el valor esté vacío al principio
-  });
+  const [Request, setRequests]= useState([]);
+  const [loading, setLoading] = useState([]);
+  const [showRequest, setShowRequests] = useState([]);
 
-  // Obtener los datos del servidor para el select
+  const userId = localStorage.getItem('userid');
+
   useEffect(() => {
-    axios
-      .get(`https://localhost:7145/api/ConActivosFijos/`)
-      .then((response) => {
-        console.log("get successful", response.data);
-
-        const formattedOptions = response.data.map((item) => ({
-          value: item.activoFijoID, // ID de la fila
-          label: `${item.afClave} - ${item.afNombre} - ${item.afDescripcion}`, // Texto que se mostrará en el select
-        }));
-        setOptions(formattedOptions);
+    axios.get(`https://localhost:7145/api/Request/byNomEmpleadoId/${userId}`) // Replace with your API endpoint
+      .then(response => {
+        setRequests(response.data);
       })
-      .catch((error) => {
-        console.error("Error al cargar los datos", error);
+      .catch(error => {
+        console.error('Error fetching users:', error);
       });
-  }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
+  }, [userId]);
+
+  const view = (id) => {
+
+    axios.get(`https://localhost:7145/api/Request/${id}`)
+    .then((response) => {
+      setShowRequests(response.data)
+
+    })
+    .catch((error) => {
+        console.log("dont show request",error)
     });
-  };
-
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({
-          ...formData,
-          file: reader.result,
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSelectChange = (selectedOption) => {
-    setFormData({
-      ...formData,
-      ConActivosFijosId: selectedOption.value, // Almacenar el ID seleccionado
-    });
-    console.log("id de inventario seleccionado " , selectedOption.value);
 
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await axios.post(
-        "https://localhost:7145/api/Request/",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      setMessage("Formulario enviado con éxito");
-    } catch (error) {
-      console.error("error al enviar el formulario:", error);
-      setMessage("hubo un error al enviar el formulario.");
-    }
-  };
 
   return (
-    <Container className="mt-5">
-      <h2>Captura de Información del Usuario</h2>
-      <Form onSubmit={handleSubmit}>
-        {message && <div>{message}</div>}
 
-        <Form.Group className="mb-3">
-          <Form.Label>Servicio Solicitado</Form.Label>
-          <Form.Control
-            type="text"
-            name="servicioSolicitado"
-            value={formData.servicioSolicitado}
-            onChange={handleChange}
-            placeholder="Ingresa el servicio solicitado"
-          />
-        </Form.Group>
+    <div className="container mt-4">
+      <h2>Tus Solicitudes</h2>
+      <Table striped bordered hover>
 
-        {/* react-select para seleccionar de la lista */}
-        <Form.Group className="mb-3">
-          <Form.Label>Selecciona el recurso que presenta problemas</Form.Label>
-          <Select
-            options={options} // Las opciones cargadas del servidor
-            placeholder="Selecciona un recurso"
-            isSearchable={true} // Habilita la búsqueda
-            className="basic-single"
-            classNamePrefix="select"
-            onChange={handleSelectChange} // Actualiza el estado cuando se selecciona una opción
-          />
-        </Form.Group>
+        <thead>
+          <tr>
+            <th>Servicio Solicitado</th>
+            <th>Descripcion</th>
+            <th>Fecha</th>
+            <th>Estatus</th>
+            <th>Acciones</th>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Descripción Detallada del Servicio</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            name="Descripcion"
-            value={formData.Descripcion}
-            onChange={handleChange}
-            placeholder="Describe el problema"
-          />
-        </Form.Group>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Subir una imagen (opcional)</Form.Label>
-          <Form.Control
-            type="file"
-            name="file"
-            onChange={handlePhotoChange}
-            accept="image/*"
-          />
-        </Form.Group>
+          </tr>
+        </thead>
+        <tbody>
+          {Request.map((Reques, index) => (
+            <tr key={Reques.id}>
 
-        <Button variant="primary" type="submit">
-          Enviar
-        </Button>
-      </Form>
-    </Container>
+              <td>{Reques.servicioSolicitado}</td>
+              <td>{Reques.descripcion}</td>
+              <td>{Reques.fechaSolicitada}</td>
+              <td>{Reques.status}</td>
+              <td><Button onClick={view(Reques.id)} variant="primary">
+
+                <FontAwesomeIcon icon={faEye} />
+
+              </Button></td>
+
+            </tr>
+          ))}
+
+        </tbody>
+      </Table>
+
+    </div>
+
   );
-}
 
-export default TextControlsExample;
+}
+export default MisSolicitudes;

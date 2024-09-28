@@ -6,6 +6,7 @@ function RequestTable() {
   const [requests, setRequests] = useState([]);
   const [showRequest, setShowRequest] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loading2, setLoading2] = useState(false);
   const [error, setError] = useState(null);
   const [nomEmpNombre, setNomEmpNombre] = useState('');
   const [nomEmpPaterno, setNomEmpPaterno] = useState('');
@@ -30,20 +31,20 @@ function RequestTable() {
     .then((response) => {
         console.log("the show request get successfully");
         setShowRequest(response.data);
+        setLoading2(true);
        
     })
     .catch((error) =>{
         console.log('no se pudieron cargar al usuario')
         alert('no se pudo cargar al usuario error en el servidor',error)
     });
-    
 };
 
   useEffect(() => {
     axios
       .get(`https://localhost:7145/api/Request/`)
       .then((response) => {
-        console.log("the request get sucessfully");
+        console.log("the request get sucessfully", response);
         setRequests(response.data);
         setLoading(false);
       })
@@ -116,7 +117,7 @@ function RequestTable() {
         </Modal.Header>
         <Modal.Body>
 
-        {!loading && !error && (
+        {loading2 && !error && (
         <Table striped bordered hover>
             <thead>
                 <tr>

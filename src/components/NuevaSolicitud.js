@@ -16,15 +16,15 @@ function TextControlsExample() {
   const userIDSTORAGE = location.state?.userId || localStorage.getItem("userid");
 
   const [formData, setFormData] = useState({
-    servicioSolicitado: '',
-    SolicitudDeServicioARealizar: '',
+    servicioSolicitado: '0',
+    SolicitudDeServicioARealizar: '0',
     Descripcion: '',
-    Status: '',
-    Comentarios: '',
-    FirmaEmpleado: '',
-    FirmaJefeDepartamento: '',
-    FirmaJefe: '',
-    File: '',
+    Status: 1,
+    Comentarios: '0',
+    FirmaEmpleado: '0',
+    FirmaJefeDepartamento: '0',
+    FirmaJefe: '0',
+    File: '0',
     NomEmpleadosId: userIDSTORAGE,
     ConActivosFijosId: null,
   });
