@@ -22,6 +22,9 @@ function Login() {
       alert("Login successful!");
   
       localStorage.setItem("userid", response.data.empleadoID);
+      localStorage.setItem("nomEmpNombre",response.data.nomEmpNombre);
+      localStorage.setItem("nomEmpPaterno",response.data.nomEmpPaterno);
+      localStorage.setItem("nomEmpMaterno",response.data.nomEmpMaterno);
   
       console.log("UserRole:", response.data.userRole);
       console.log("Navigating to the correct page...");

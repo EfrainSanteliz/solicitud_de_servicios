@@ -93,7 +93,7 @@ function MisSolicitudes() {
                   year: 'numeric',
                 })}
               </td>
-              {Reques.status === 1 && <td>{"En revision"}</td>}
+              {Reques.status === 1 && <td>{"Activo"}</td>}
 
               <td style={{ textAlign: "center" }}>
                 <Button

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { table, Spinner, Alert, Table, Button, Modal } from "react-bootstrap";
+import FormSolicitudTable from "./FormSolicitudTable";
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
@@ -12,6 +13,9 @@ function RequestTable() {
   const [nomEmpPaterno, setNomEmpPaterno] = useState('');
   const [nomEmpMaterno, setNomEmpMaterno] = useState('');
   const [fullName, setFullName] = useState("");
+  const [REQUESTID, SETREQUESTID] = useState("");
+
+  const FirmaJefeDepartamento = localStorage.getItem("nomEmpNombre") +  ' ' +   localStorage.getItem('nomEmpPaterno') +  ' ' +    localStorage.getItem('nomEmpMaterno');
 
   const [show, setShow] = useState(false);
 
@@ -25,6 +29,7 @@ function RequestTable() {
     setNomEmpNombre(nomEmpNombre);
     setNomEmpPaterno(nomEmpPaterno);
     setNomEmpMaterno(nomEmpMaterno);
+    SETREQUESTID(requestID)
 
     axios
       .get(`https://localhost:7145/api/Request/${requestID}`)
@@ -38,6 +43,30 @@ function RequestTable() {
         console.log('no se pudieron cargar al usuario')
         alert('no se pudo cargar al usuario error en el servidor', error)
       });
+  };
+
+  const handleAutorizar = async (e) => {
+    e.preventDefault();
+
+    const AutorizarRequest = {
+       FirmaJefeDepartamento:FirmaJefeDepartamento,
+    };
+
+    try {
+
+      const response = await axios.put(`https://localhost:7145/api/Request/${REQUESTID}`,
+        AutorizarRequest,
+        {
+          headers:{
+            'content-type':'application/json'
+          }
+        }
+      );
+      console.log('User Updated',response.data)
+    }catch (error) {
+      console.error('Error updating the user:',error)
+    }
+
   };
 
   useEffect(() => {
@@ -68,90 +97,75 @@ function RequestTable() {
       {error && <Alert variant="danger">{error}</Alert>}
 
       {!loading && !error && (
-        <Table striped bordered hover>
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre del empleado</th>
-                <th>Descripción</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {requests.map((request) => (
-                <tr key={request.id}>
-                  <td>{request.id}</td>
-                  <td>
-                    {request.nomEmpleados.nomEmpNombre +
-                      " " +
-                      request.nomEmpleados.nomEmpPaterno +
-                      " " +
-                      request.nomEmpleados.nomEmpMaterno}
-                  </td>{" "}
-                  {/* Nombre del empleado corregido */}
-                  <td>{request.descripcion}</td>
-                  <td>
-                    {new Date(request.fechaSolicitada).toLocaleDateString('es-ES', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                    })}
-                  </td>
-                  <td>{request.status}</td>
-                  <td>
-                    <Button variant="success">Autorizar</Button>{" "}
-                    <Button variant="secondary">Descargar Documento</Button>{" "}
-                    <Button variant="primary" onClick={() => handleShow(request.id, request.nomEmpleados.nomEmpNombre, request.nomEmpleados.nomEmpPaterno, request.nomEmpleados.nomEmpMaterno)}>
-                      Ver Detalles
-                    </Button>{" "}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Table>
+       <Table striped bordered hover>
+       <thead>
+         <tr>
+           <th>ID</th>
+           <th>Nombre del empleado</th>
+           <th>Descripción</th>
+           <th>Fecha</th>
+           <th>Estado</th>
+           <th>Acciones</th>
+         </tr>
+       </thead>
+       <tbody>
+         {requests.map((request) => (
+           <tr key={request.id}>
+             <td>{request.id}</td>
+             <td>
+               {request.nomEmpleados.nomEmpNombre +
+                 " " +
+                 request.nomEmpleados.nomEmpPaterno +
+                 " " +
+                 request.nomEmpleados.nomEmpMaterno}
+             </td>
+             <td>{request.descripcion}</td>
+             <td>
+               {new Date(request.fechaSolicitada).toLocaleDateString('es-ES', {
+                 day: '2-digit',
+                 month: '2-digit',
+                 year: 'numeric',
+               })}
+             </td>
+             <td>{request.status}</td>
+             <td>
+               <Button variant="success">Autorizar</Button>{" "}
+               <Button variant="secondary">Descargar Documento</Button>{" "}
+               <Button
+                 variant="primary"
+                 onClick={() =>
+                   handleShow(
+                     request.id,
+                     request.nomEmpleados.nomEmpNombre,
+                     request.nomEmpleados.nomEmpPaterno,
+                     request.nomEmpleados.nomEmpMaterno
+                   )
+                 }
+               >
+                 Ver Detalles
+               </Button>
+             </td>
+           </tr>
+         ))}
+       </tbody>
+     </Table>
       )}
 
-      <Modal show={show} onHide={handleClose} animation={false}>
+      <Modal show={show} onHide={handleClose} animation={false}
+      dialogClassName="modal-80"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Solicitud del usuario: {nomEmpNombre + ' ' + nomEmpPaterno + ' ' + nomEmpMaterno}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+        {loading2 && (<FormSolicitudTable showRequest={showRequest}/>)}
 
-          {loading2 && !error && (
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Descripcion</th>
-                  <th>Fecha</th>
-                  <th>Estado</th>
-                  <th>Comentarios</th>
-                  <th>Imagen</th>
-                  <th>Acciones</th>
-
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{showRequest.nomEmpleados.nomEmpNombre + ' ' + showRequest.nomEmpleados.nomEmpPaterno + ' ' + showRequest.nomEmpleados.nomEmpMaterno}</td>
-
-
-                </tr>
-
-                {/* Add more fields based on the request data */}
-              </tbody>
-            </Table>
-          )}
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
               {" "}
               Close{" "}
             </Button>
-            <Button variant="primary" onClick={handleClose}>
+            <Button variant="primary" onClick={(e)=> {handleAutorizar(e);}}>
               {" "}
               Autorizar{" "}
             </Button>

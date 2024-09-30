@@ -219,7 +219,7 @@ function TextControlsExample() {
             as="textarea"
             rows={3}
             name="Descripcion"
-            placeholder="Describe tu silicitud"
+            placeholder="Describe tu solicitud"
             value={formData.Descripcion}
             onChange={handleChange}
           />

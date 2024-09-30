@@ -1,20 +1,18 @@
 import { useState, useEffect } from "react";
-import { Alert, Button } from "react-bootstrap";
+import { Alert, Button, Table } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import "./styles.css"
+import "./styles.css";
 
 function FormSolicitudTable({ showRequest }) {
+  const fullyName =
+    showRequest.nomEmpleados.nomEmpNombre +
+    " " +
+    showRequest.nomEmpleados.nomEmpPaterno +
+    " " +
+    showRequest.nomEmpMaterno;
 
-
-
-  const fullyName = showRequest.nomEmpleados.nomEmpNombre
-    + ' ' + showRequest.nomEmpleados.nomEmpPaterno + ' ' + showRequest.nomEmpMaterno;
-
-  const downloadPDF = () => {
-
-  };
-  console.log("sdfds", showRequest.nomEmpleados.direccionesICEES.descripcion)
-
+  const downloadPDF = () => {};
+  console.log("sdfds", showRequest.nomEmpleados.direccionesICEES.descripcion);
 
   return (
     <div>
@@ -37,9 +35,10 @@ function FormSolicitudTable({ showRequest }) {
               value="Infraestructura voz/datos"
               id="inline-radio-1"
               disabled
-              checked={showRequest.servicioSolicitado === "Infraestructura voz/datos"}
+              checked={
+                showRequest.servicioSolicitado === "Infraestructura voz/datos"
+              }
             />
-
 
             <Form.Check
               inline
@@ -63,66 +62,70 @@ function FormSolicitudTable({ showRequest }) {
               checked={showRequest.servicioSolicitado === "Proyecto Nuevo"}
             />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Form.Label>Fecha:{''}</Form.Label>
-          <Form.Control
-            type="text" // Change it to text if you want to format it differently
-            name="fecha"
-            value={new Date(showRequest.fechaSolicitada).toLocaleDateString('es-ES', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-            })} // Format as dd/mm/yyyy
-            disabled
-          />
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Form.Label>Fecha:{""}</Form.Label>
+            <Form.Control
+              type="text" // Change it to text if you want to format it differently
+              name="fecha"
+              value={new Date(showRequest.fechaSolicitada).toLocaleDateString(
+                "es-ES",
+                {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                }
+              )} // Format as dd/mm/yyyy
+              disabled
+            />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Form.Label>Solicitud de servicio a realizar</Form.Label>
-          {showRequest.servicioSolicitado === "Sistema Tecnologico" && (
-            <>
-              <Form.Control
-                as="select"
-                name="SolicitudDeServicioARealizar"
-                value={showRequest.solicitudDeServicioARealizar}
-                disabled
-              >
-                <option value="">Seleccione el tipo de servicio</option>
-                <option value="subir informacion al portal web">
-                  subir informacion al portal web
-                </option>
-                <option value="cambio en palsa IBCESS">
-                  cambio en palsa IBCESS
-                </option>
-                <option value="cambio en plataforma WEB">
-                  cambio en plataforma WEB
-                </option>
-                <option value="Publicacion web institucional">
-                  Publicacion web institucional
-                </option>
-                <option value="permisos Usuarios">permisos Usuarios</option>
-              </Form.Control>
-            </>
-          )}
-         </div>
-
-         <div style={{ display: 'flex', alignItems: 'center' }}>
-
-          <Form.Label>Area Administrativa Requirente</Form.Label>
-          <Form.Control
-            type="text"
-            name="AreaAdministrativaRequirente"
-            value={showRequest.nomEmpleados.direccionesICEES.descripcion}
-            disabled
-          />
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Form.Label>Solicitud de servicio a realizar</Form.Label>
+            {showRequest.servicioSolicitado === "Sistema Tecnologico" && (
+              <>
+                <Form.Control
+                  as="select"
+                  name="SolicitudDeServicioARealizar"
+                  value={showRequest.solicitudDeServicioARealizar}
+                  disabled
+                >
+                  <option value="">Seleccione el tipo de servicio</option>
+                  <option value="subir informacion al portal web">
+                    subir informacion al portal web
+                  </option>
+                  <option value="cambio en palsa IBCESS">
+                    cambio en palsa IBCESS
+                  </option>
+                  <option value="cambio en plataforma WEB">
+                    cambio en plataforma WEB
+                  </option>
+                  <option value="Publicacion web institucional">
+                    Publicacion web institucional
+                  </option>
+                  <option value="permisos Usuarios">permisos Usuarios</option>
+                </Form.Control>
+              </>
+            )}
           </div>
 
-          <Form.Label>solicitante </Form.Label>
-          <Form.Control
-            type="text"
-            name="solicitante"
-            value={fullyName}
-            disabled
-          />
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Form.Label>Area Administrativa Requirente</Form.Label>
+            <Form.Control
+              type="text"
+              name="AreaAdministrativaRequirente"
+              value={showRequest.nomEmpleados.direccionesICEES.descripcion}
+              disabled
+            />
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Form.Label>solicitante </Form.Label>
+            <Form.Control
+              type="text"
+              name="solicitante"
+              value={fullyName}
+              disabled
+            />
+          </div>
           <br />
           <Form.Label>DESCRIPCION DETALLADA SEL SERVICIO SOLICITADO</Form.Label>
           <Form.Control
@@ -140,8 +143,38 @@ function FormSolicitudTable({ showRequest }) {
               style={{ maxWidth: "100%", height: "auto" }}
             />
           </div>
+          <Table id="firmas" striped bordered hover>
+            <thead>
+              <tr>
+                <th style={{ width: "33%" }}>Solicitante</th>
+                <th style={{ width: "33%" }}>
+                  Autorizo
+                  <br />
+                  UNIDAD ADMVA SOLICITANTE
+                </th>
+                <th style={{ width: "33%" }}>
+                  ACEPTA <br />
+                  INFRAESTRUCTURA Y <br /> TECNOLOGIAS DE LA INFORMACION
+                </th>
+              </tr>
+            </thead>
 
+            <tbody>
+              <tr>
+                <td>{fullyName}</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
 
+            <thead>
+              <th>Nombre</th>
+              <th>Nombre</th>
+              <th>JOEL ADRIAN ACUÑA ALCARAZ <br></br>
+              </th>
+            </thead>
+
+          </Table>
         </Form.Group>
       </div>
     </div>
