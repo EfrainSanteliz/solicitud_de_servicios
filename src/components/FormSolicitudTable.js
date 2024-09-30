@@ -1,20 +1,25 @@
 import { useState, useEffect } from "react";
 import { Alert, Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
+import "./styles.css"
 
 function FormSolicitudTable({ showRequest }) {
 
 
 
+  const fullyName = showRequest.nomEmpleados.nomEmpNombre
+    + ' ' + showRequest.nomEmpleados.nomEmpPaterno + ' ' + showRequest.nomEmpMaterno;
+
   const downloadPDF = () => {
 
   };
+  console.log("sdfds", showRequest.nomEmpleados.direccionesICEES.descripcion)
 
 
   return (
     <div>
       <div id="NuevaSolicitud">
-        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+        <Form.Group className="" controlId="">
           <Form.Label>
             SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS
             DE LA INFORMACION
@@ -35,7 +40,8 @@ function FormSolicitudTable({ showRequest }) {
               checked={showRequest.servicioSolicitado === "Infraestructura voz/datos"}
             />
 
-            <Form.Checkn
+
+            <Form.Check
               inline
               label="Sistema Tecnologico"
               name="servicioSolicitado" // Ensure this matches the state key
@@ -57,7 +63,20 @@ function FormSolicitudTable({ showRequest }) {
               checked={showRequest.servicioSolicitado === "Proyecto Nuevo"}
             />
           </div>
-
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Form.Label>Fecha:{''}</Form.Label>
+          <Form.Control
+            type="text" // Change it to text if you want to format it differently
+            name="fecha"
+            value={new Date(showRequest.fechaSolicitada).toLocaleDateString('es-ES', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+            })} // Format as dd/mm/yyyy
+            disabled
+          />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
           <Form.Label>Solicitud de servicio a realizar</Form.Label>
           {showRequest.servicioSolicitado === "Sistema Tecnologico" && (
             <>
@@ -84,9 +103,27 @@ function FormSolicitudTable({ showRequest }) {
               </Form.Control>
             </>
           )}
+         </div>
 
+         <div style={{ display: 'flex', alignItems: 'center' }}>
+
+          <Form.Label>Area Administrativa Requirente</Form.Label>
+          <Form.Control
+            type="text"
+            name="AreaAdministrativaRequirente"
+            value={showRequest.nomEmpleados.direccionesICEES.descripcion}
+            disabled
+          />
+          </div>
+
+          <Form.Label>solicitante </Form.Label>
+          <Form.Control
+            type="text"
+            name="solicitante"
+            value={fullyName}
+            disabled
+          />
           <br />
-
           <Form.Label>DESCRIPCION DETALLADA SEL SERVICIO SOLICITADO</Form.Label>
           <Form.Control
             as="textarea"
@@ -95,16 +132,16 @@ function FormSolicitudTable({ showRequest }) {
             value={showRequest.descripcion}
             disabled
           />
-        
-            <div className="mt-3">
-              <img
-                src={showRequest.file}
-                alt="Previzualizacion"
-                style={{ maxWidth: "100%", height: "auto" }}
-              />
-            </div>
 
-        
+          <div className="mt-3">
+            <img
+              src={showRequest.file}
+              alt="Previzualizacion"
+              style={{ maxWidth: "100%", height: "auto" }}
+            />
+          </div>
+
+
         </Form.Group>
       </div>
     </div>

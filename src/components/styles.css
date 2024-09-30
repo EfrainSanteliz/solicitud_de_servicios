@@ -3,10 +3,14 @@
  margin-left: 15%;
  padding: 40px;
 }
+#NuevaSolicitud {
+    margin-left: -50px ;
+    display: flex;
+}
 
 #NuevaSolicitud {
-    margin-right: 30%; 
-    margin-left: 30%;
+    margin-right: 5%; 
+    margin-left: 5%;
 
 }
 .modal-80 {

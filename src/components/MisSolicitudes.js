@@ -16,14 +16,14 @@ function MisSolicitudes() {
   const [show, setShow] = useState(false);
   const [showModalHistoryComments, setShowModalHistoryComments] = useState(false);
   const [history, setHistory] = useState([]);
-  const [option, setOption] = useState(false);
+  const [option, setOption] = useState(true);
   const [Historials, setHistorials] = useState([]);
 
   const userId = localStorage.getItem("userid");
 
   useEffect(() => {
     axios
-      .get(`https://localhost:7145/api/Request/byNomEmpleadoId/${userId}`) 
+      .get(`https://localhost:7145/api/Request/byNomEmpleadoId/${userId}`)
       .then((response) => {
         setRequests(response.data);
       })
@@ -42,27 +42,27 @@ function MisSolicitudes() {
 
   const handleShow = (id) => {
 
-    if(option === true) {
+    if (option === true) {
       axios
-      .get(`https://localhost:7145/api/Request/${id}`)
-      .then((response) => {
-        setShowRequests(response.data);
-        console.log("Show Request get sucessfully1", response.data);
-        setLoading(true);
-      })
-      .catch((error) => {
-        console.log("dont show request", error);
-      });
-    } 
+        .get(`https://localhost:7145/api/Request/${id}`)
+        .then((response) => {
+          setShowRequests(response.data);
+          console.log("Show Request get sucessfully1", response.data);
+          setLoading(true);
+        })
+        .catch((error) => {
+          console.log("dont show request", error);
+        });
+    }
 
-    if(option === false) {
+    if (option === false) {
       axios.get(`https://localhost:7145/api/Request/${id}`) // Replace with your actual API endpoint
-      .then((response) => {
-        setHistorials(response.data.historials); // Update state with the historials array
-      })
-      .catch((error) => {
-        console.error('Error fetching historials:', error);
-      });
+        .then((response) => {
+          setHistorials(response.data.historials); // Update state with the historials array
+        })
+        .catch((error) => {
+          console.error('Error fetching historials:', error);
+        });
     }
   };
 
@@ -86,8 +86,13 @@ function MisSolicitudes() {
             <tr key={Reques.id}>
               <td>{Reques.servicioSolicitado}</td>
               <td>{Reques.descripcion}</td>
-              <td>{Reques.fechaSolicitada}</td>
-              <td>{Reques.status}</td>
+              <td>
+                {new Date(Reques.fechaSolicitada).toLocaleDateString('es-ES', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })}
+              </td>
               {Reques.status === 1 && <td>{"En revision"}</td>}
 
               <td style={{ textAlign: "center" }}>
@@ -111,7 +116,7 @@ function MisSolicitudes() {
                   onClick={() => {
                     setOption(false);
                     handleShow(Reques.id);
-                    setShowModalHistoryComments(true);            
+                    setShowModalHistoryComments(true);
                   }}
                 >
                   <FontAwesomeIcon icon={faEye} />
@@ -132,9 +137,9 @@ function MisSolicitudes() {
           <Modal.Title>Tu Solicitud</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {loading && <FormSolicitudTable showRequest={showRequest} />}
+          {loading && <FormSolicitudTable showRequest={showRequest} />}
         </Modal.Body>
-        
+
       </Modal>
 
       <Modal
@@ -147,10 +152,10 @@ function MisSolicitudes() {
           <Modal.Title>Historial de comentarios</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <HistoryComments Historials={Historials}/>
+          <HistoryComments Historials={Historials} />
 
         </Modal.Body>
-        
+
       </Modal>
     </div>
   );
