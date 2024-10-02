@@ -25,6 +25,7 @@ function Login() {
       localStorage.setItem("nomEmpNombre",response.data.nomEmpNombre);
       localStorage.setItem("nomEmpPaterno",response.data.nomEmpPaterno);
       localStorage.setItem("nomEmpMaterno",response.data.nomEmpMaterno);
+      localStorage.setItem("UserRole",response.data.userRole);
   
       console.log("UserRole:", response.data.userRole);
       console.log("Navigating to the correct page...");

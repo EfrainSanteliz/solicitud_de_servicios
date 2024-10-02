@@ -11,8 +11,7 @@ function FormSolicitudTable({ showRequest }) {
     " " +
     showRequest.nomEmpMaterno;
 
-  const downloadPDF = () => {};
-  console.log("sdfds", showRequest.nomEmpleados.direccionesICEES.descripcion);
+  const downloadPDF = () => { };
 
   return (
     <div>
@@ -162,18 +161,24 @@ function FormSolicitudTable({ showRequest }) {
             <tbody>
               <tr>
                 <td>{fullyName}</td>
-                <td></td>
-                <td></td>
+                <td>
+                  {showRequest.firmaJefeDepartamento !== 0 &&
+                    showRequest.firmaJefeDepartamento}
+                </td>
+                <td>{showRequest.firmaJefe !== 0 &&
+                  showRequest.firmaJefe}</td>
               </tr>
             </tbody>
 
             <thead>
-              <th>Nombre</th>
-              <th>Nombre</th>
-              <th>JOEL ADRIAN ACUÑA ALCARAZ <br></br>
-              </th>
+              <tr>
+                <th>Nombre</th>
+                <th>Nombre</th>
+                <th>
+                  JOEL ADRIAN ACUÑA ALCARAZ <br />
+                </th>
+              </tr>
             </thead>
-
           </Table>
         </Form.Group>
       </div>

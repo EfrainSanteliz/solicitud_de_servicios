@@ -4,8 +4,8 @@
  padding: 40px;
 }
 #NuevaSolicitud {
-    margin-left: -50px ;
-    display: flex;
+    margin-left: 0px ;
+   
 }
 
 #NuevaSolicitud {
@@ -14,7 +14,7 @@
 
 }
 .modal-80 {
-    max-width: 80%;
+    max-width: 95%;
     max-height: 90%;
 }
 

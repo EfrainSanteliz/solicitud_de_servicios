@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
 import "./styles.css";
-import { Button, Alert } from "react-bootstrap";
+import { Button, Alert, Row, Col } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { DataTime, DateTime } from "luxon";
 
@@ -11,6 +11,7 @@ function TextControlsExample() {
   const [options, setOptions] = useState([]);
   const [selectedService, setSelectedService] = useState("");
   const [message, setMessage] = useState("");
+  const [file, setFile] = useState(null);
 
   const location = useLocation();
   const userIDSTORAGE = location.state?.userId || localStorage.getItem("userid");
@@ -36,7 +37,7 @@ function TextControlsExample() {
     const getCurrentDateInGMT7 = () => {
       // Obtener la fecha en GMT-7 con el formato correcto
       const dateInGMT7 = DateTime.now().setZone("America/Hermosillo");
-  
+
       // Verifica si la fecha es válida
       if (dateInGMT7.isValid) {
         // Devuelve la fecha en el formato requerido
@@ -47,7 +48,7 @@ function TextControlsExample() {
         return null;
       }
     };
-  
+
     setFechaSolicitada(getCurrentDateInGMT7());
   }, []);
 
@@ -90,18 +91,18 @@ function TextControlsExample() {
   };
 
   const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
+    setFile(e.target.files[0]);
 
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({
-          ...formData,
-          File: reader.result,
-        });
-      };
-      reader.readAsDataURL(file);
-    }
+    // if (file) {
+    //const reader = new FileReader();
+    // reader.onloadend = () => {
+    //  setFormData({
+    //  ...formData,
+    //  File: reader.result,
+    // });
+    // };
+    // reader.readAsDataURL(file);
+    // }
   };
 
   const handleSubmit = async (e) => {
@@ -112,19 +113,34 @@ function TextControlsExample() {
       fechaSolicitada: fechaSolicitada, // Enviar la fecha formateada
     };
 
-    console.log('datos a enviar' ,finalFormData);
+    console.log('datos a enviar', finalFormData);
 
+    // Use FormData to create a multipart form request
+    const data = new FormData();
+    data.append("NomEmpleadosId", formData.NomEmpleadosId);
+    data.append("servicioSolicitado", formData.servicioSolicitado);
+    data.append("SolicitudDeServicioARealizar", formData.SolicitudDeServicioARealizar);
+    data.append("Descripcion", formData.Descripcion);
+    data.append("Status", formData.Status);
+    data.append("Comentarios", formData.Comentarios);
+    data.append("ConActivosFijosId", formData.ConActivosFijosId);
+
+    // Add file only if it exists
+    if (file) {
+      data.append("file", file); // Append the file to the form data
+    }
+
+    // Send the form data as multipart/form-data
     try {
       const response = await axios.post(
         "https://localhost:7145/api/Request/",
-        finalFormData,
+        data,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data", // Ensure the correct content type
           },
         }
       );
-
       setMessage("Formulario enviado con éxito");
     } catch (error) {
       console.error("error al enviar el formulario:", error);
@@ -146,55 +162,55 @@ function TextControlsExample() {
 
           <Form.Label>Servicio Solicitado </Form.Label>
           <div className="mb-3">
-          <Form.Check
-            inline
-            label="Mantenimiento a equipo de computo etc."
-            name="servicioSolicitado" // Ensure this matches the state key
-            type="radio"
-            value="Mantenimiento"
-            checked={formData.servicioSolicitado === "Mantenimiento"}
-            id="inline-radio-1"
-            onChange={(e)=> {handleChange(e);handleRadioChange(e);}}
-          />
-          <Form.Check
-            inline
-            label="Sistema Tecnologico"
-            name="servicioSolicitado" // Ensure this matches the state key
-            type="radio"
-            value="Sistema Tecnologico"
-            checked={formData.servicioSolicitado === "Sistema Tecnologico"}
-            id="inline-radio-2"
-            onChange={(e)=> {handleChange(e);handleRadioChange(e);}}
-          />
-          <Form.Check
-            inline
-            label="Proyecto Nuevo"
-            name="servicioSolicitado" // Ensure this matches the state key
-            type="radio"
-            value="Proyecto Nuevo"
-            checked={formData.servicioSolicitado === "Proyecto Nuevo"}
-            id="inline-radio-3"
-            onChange={(e)=> {handleChange(e);handleRadioChange(e);}}
-          />
+            <Form.Check
+              inline
+              label="Mantenimiento a equipo de computo etc."
+              name="servicioSolicitado" // Ensure this matches the state key
+              type="radio"
+              value="Mantenimiento"
+              checked={formData.servicioSolicitado === "Mantenimiento"}
+              id="inline-radio-1"
+              onChange={(e) => { handleChange(e); handleRadioChange(e); }}
+            />
+            <Form.Check
+              inline
+              label="Sistema Tecnologico"
+              name="servicioSolicitado" // Ensure this matches the state key
+              type="radio"
+              value="Sistema Tecnologico"
+              checked={formData.servicioSolicitado === "Sistema Tecnologico"}
+              id="inline-radio-2"
+              onChange={(e) => { handleChange(e); handleRadioChange(e); }}
+            />
+            <Form.Check
+              inline
+              label="Proyecto Nuevo"
+              name="servicioSolicitado" // Ensure this matches the state key
+              type="radio"
+              value="Proyecto Nuevo"
+              checked={formData.servicioSolicitado === "Proyecto Nuevo"}
+              id="inline-radio-3"
+              onChange={(e) => { handleChange(e); handleRadioChange(e); }}
+            />
           </div>
 
           <Form.Label>Solicitud de servicio a realizar</Form.Label>
           {selectedService === "inline-radio-2" && (
             <>
               <Form.Control
-            as="select"
-            name="SolicitudDeServicioARealizar"
-            value={formData.SolicitudDeServicioARealizar}
-            onChange={handleChange}
-          >
-            <option value="">Seleccione el tipo de servicio</option>
-            <option value="subir informacion al portal web">subir informacion al portal web</option>
-            <option value="cambio en palsa IBCESS">cambio en palsa IBCESS</option>
-            <option value="cambio en plataforma WEB">cambio en plataforma WEB</option>
-            <option value="Publicacion web institucional">Publicacion web institucional</option>
-            <option value="permisos Usuarios">permisos Usuarios</option>
+                as="select"
+                name="SolicitudDeServicioARealizar"
+                value={formData.SolicitudDeServicioARealizar}
+                onChange={handleChange}
+              >
+                <option value="">Seleccione el tipo de servicio</option>
+                <option value="subir informacion al portal web">subir informacion al portal web</option>
+                <option value="cambio en palsa IBCESS">cambio en palsa IBCESS</option>
+                <option value="cambio en plataforma WEB">cambio en plataforma WEB</option>
+                <option value="Publicacion web institucional">Publicacion web institucional</option>
+                <option value="permisos Usuarios">permisos Usuarios</option>
 
-          </Form.Control>
+              </Form.Control>
             </>
           )}
 
@@ -226,26 +242,28 @@ function TextControlsExample() {
           <Form.Label>
             Puedes subir una imagen para la descripcion del servicio (opcional).
           </Form.Label>
-          <Form.Control
-            type="file"
-            size="file"
-            name="file"
-            onChange={handlePhotoChange}
-            accept="image/*"
-          />
-
-          {formData.File && 
-          (
-            <div className="mt-3">
-              <img 
-              src={formData.File}
-              alt="Previzualizacion"
-              style={{maxWidth:"100%",height:"auto"}}
+          <Form.Group as={Row} className="mb-3">
+            <Form.Label column sm={2}>File</Form.Label>
+            <Col sm={10}>
+              <Form.Control
+                type="file"
+                onChange={handlePhotoChange}
               />
-      
-            </div>
+            </Col>
+          </Form.Group>
 
-          )}
+          {formData.File &&
+            (
+              <div className="mt-3">
+                <img
+                  src={formData.File}
+                  alt="Previzualizacion"
+                  style={{ maxWidth: "100%", height: "auto" }}
+                />
+
+              </div>
+
+            )}
 
           <Button type="submit" variant="primary ">
             Enviar

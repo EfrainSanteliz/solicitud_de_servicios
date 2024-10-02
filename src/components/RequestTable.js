@@ -15,7 +15,10 @@ function RequestTable() {
   const [fullName, setFullName] = useState("");
   const [REQUESTID, SETREQUESTID] = useState("");
 
-  const FirmaJefeDepartamento = localStorage.getItem("nomEmpNombre") +  ' ' +   localStorage.getItem('nomEmpPaterno') +  ' ' +    localStorage.getItem('nomEmpMaterno');
+  const FirmaJefeDepartamento = localStorage.getItem("nomEmpNombre") + ' ' + localStorage.getItem('nomEmpPaterno') + ' ' + localStorage.getItem('nomEmpMaterno');
+  const FirmaJefe = FirmaJefeDepartamento;
+  const UserRole = localStorage.getItem("UserRole");
+  console.log("userRole", UserRole);
 
   const [show, setShow] = useState(false);
 
@@ -48,23 +51,44 @@ function RequestTable() {
   const handleAutorizar = async (e) => {
     e.preventDefault();
 
-    const AutorizarRequest = {
-       FirmaJefeDepartamento:FirmaJefeDepartamento,
+    const AutorizarRequestJefeDepartamento = {
+      FirmaJefeDepartamento: FirmaJefeDepartamento,
+    };
+
+    const AutorizarRequestJefe = {
+      FirmaJefe: FirmaJefe,
     };
 
     try {
 
-      const response = await axios.put(`https://localhost:7145/api/Request/${REQUESTID}`,
-        AutorizarRequest,
-        {
-          headers:{
-            'content-type':'application/json'
+
+      if (UserRole === "Administrador") {
+
+        const response = await axios.put(`https://localhost:7145/api/Request/${REQUESTID}`,
+          AutorizarRequestJefeDepartamento,
+          {
+            headers: {
+              'content-type': 'application/json'
+            },
           }
-        }
-      );
-      console.log('User Updated',response.data)
-    }catch (error) {
-      console.error('Error updating the user:',error)
+        );
+        console.log('update Request Sucesfully', response);
+      }
+
+      if (UserRole === "SuperAdministrador") {
+
+        const response = await axios.put(`https://localhost:7145/api/Request/${REQUESTID}`,
+          AutorizarRequestJefe,
+          {
+            headers: {
+              'content-type': 'application/json'
+            },
+          }
+        );
+        console.log('Request Update Sucessfully', response);
+      }
+    } catch (error) {
+      console.error('Error updating the Request:', error)
     }
 
   };
@@ -86,7 +110,7 @@ function RequestTable() {
 
   return (
     <div className="container mt-4">
-      <h2>Lista de solicitudes </h2>
+      <h2>Lista de solicitudes { } </h2>
 
       {loading && (
         <Spinner animation="border" role="status">
@@ -97,75 +121,126 @@ function RequestTable() {
       {error && <Alert variant="danger">{error}</Alert>}
 
       {!loading && !error && (
-       <Table striped bordered hover>
-       <thead>
-         <tr>
-           <th>ID</th>
-           <th>Nombre del empleado</th>
-           <th>Descripción</th>
-           <th>Fecha</th>
-           <th>Estado</th>
-           <th>Acciones</th>
-         </tr>
-       </thead>
-       <tbody>
-         {requests.map((request) => (
-           <tr key={request.id}>
-             <td>{request.id}</td>
-             <td>
-               {request.nomEmpleados.nomEmpNombre +
-                 " " +
-                 request.nomEmpleados.nomEmpPaterno +
-                 " " +
-                 request.nomEmpleados.nomEmpMaterno}
-             </td>
-             <td>{request.descripcion}</td>
-             <td>
-               {new Date(request.fechaSolicitada).toLocaleDateString('es-ES', {
-                 day: '2-digit',
-                 month: '2-digit',
-                 year: 'numeric',
-               })}
-             </td>
-             <td>{request.status}</td>
-             <td>
-               <Button variant="success">Autorizar</Button>{" "}
-               <Button variant="secondary">Descargar Documento</Button>{" "}
-               <Button
-                 variant="primary"
-                 onClick={() =>
-                   handleShow(
-                     request.id,
-                     request.nomEmpleados.nomEmpNombre,
-                     request.nomEmpleados.nomEmpPaterno,
-                     request.nomEmpleados.nomEmpMaterno
-                   )
-                 }
-               >
-                 Ver Detalles
-               </Button>
-             </td>
-           </tr>
-         ))}
-       </tbody>
-     </Table>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre del empleado</th>
+              <th>Descripción</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          {UserRole === "SuperAdministrador" && (
+            <tbody>
+              {requests.map((request) =>
+                request.firmaJefeDepartamento !== "0" ? (
+                  <tr key={request.id}>
+                    <td>{request.id}</td>
+                    <td>
+                      {request.nomEmpleados.nomEmpNombre +
+                        " " +
+                        request.nomEmpleados.nomEmpPaterno +
+                        " " +
+                        request.nomEmpleados.nomEmpMaterno}
+                    </td>
+                    <td>{request.descripcion}</td>
+                    <td>
+                      {new Date(request.fechaSolicitada).toLocaleDateString('es-ES', {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td>{request.status}</td>
+                    <td>
+                      <Button variant="success">Autorizar</Button>{" "}
+                      <Button variant="secondary">Descargar Documento</Button>{" "}
+                      <Button
+                        variant="primary"
+                        onClick={() =>
+                          handleShow(
+                            request.id,
+                            request.nomEmpleados.nomEmpNombre,
+                            request.nomEmpleados.nomEmpPaterno,
+                            request.nomEmpleados.nomEmpMaterno
+                          )
+                        }
+                      >
+                        Ver Detalles
+                      </Button>
+                    </td>
+                  </tr>
+                ) : null
+              )}
+            </tbody>
+          )}
+
+          {UserRole === "Administrador" && (
+            <tbody>
+              {requests.map((request) => (
+                  <tr key={request.id}>
+                    <td>{request.id}</td>
+                    <td>
+                      {request.nomEmpleados.nomEmpNombre +
+                        " " +
+                        request.nomEmpleados.nomEmpPaterno +
+                        " " +
+                        request.nomEmpleados.nomEmpMaterno}
+                    </td>
+                    <td>{request.descripcion}</td>
+                    <td>
+                      {new Date(request.fechaSolicitada).toLocaleDateString('es-ES', {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td>{request.status}</td>
+                    <td>
+                      <Button variant="success">Autorizar</Button>{" "}
+                      <Button variant="secondary">Descargar Documento</Button>{" "}
+                      <Button
+                        variant="primary"
+                        onClick={() =>
+                          handleShow(
+                            request.id,
+                            request.nomEmpleados.nomEmpNombre,
+                            request.nomEmpleados.nomEmpPaterno,
+                            request.nomEmpleados.nomEmpMaterno
+                          )
+                        }
+                      >
+                        Ver Detalles
+                      </Button>
+                    </td>
+
+                  </tr>
+                )
+              )}
+            </tbody>
+          )}
+
+        </Table>
       )}
 
       <Modal show={show} onHide={handleClose} animation={false}
-      dialogClassName="modal-80"
+        dialogClassName="modal-80"
       >
         <Modal.Header closeButton>
           <Modal.Title>Solicitud del usuario: {nomEmpNombre + ' ' + nomEmpPaterno + ' ' + nomEmpMaterno}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {loading2 && (<FormSolicitudTable showRequest={showRequest}/>)}
+          {loading2 && (<FormSolicitudTable showRequest={showRequest} />)}
 
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
               {" "}
               Close{" "}
             </Button>
-            <Button variant="primary" onClick={(e)=> {handleAutorizar(e);}}>
+            <Button variant="primary" onClick={(e) => { handleAutorizar(e); }}>
               {" "}
               Autorizar{" "}
             </Button>
