@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { table, Spinner, Alert, Table, Button, Modal } from "react-bootstrap";
 import FormSolicitudTable from "./FormSolicitudTable";
+import HistoryComments from "./HistoryComments";
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
@@ -14,6 +15,8 @@ function RequestTable() {
   const [nomEmpMaterno, setNomEmpMaterno] = useState('');
   const [fullName, setFullName] = useState("");
   const [REQUESTID, SETREQUESTID] = useState("");
+  const [showHistoryModal,setShowHistoryModal] = useState(false);
+  const [Historials, setHistorials] = useState([]);
 
   const FirmaJefeDepartamento = localStorage.getItem("nomEmpNombre") + ' ' + localStorage.getItem('nomEmpPaterno') + ' ' + localStorage.getItem('nomEmpMaterno');
   const FirmaJefe = FirmaJefeDepartamento;
@@ -24,8 +27,10 @@ function RequestTable() {
 
   const handleClose = () => {
     setShow(false);
+  };
 
-
+  const handleClose2 = () => {
+    setShowHistoryModal(false);
   };
   const handleShow = (requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno) => {
     setShow(true);
@@ -39,6 +44,7 @@ function RequestTable() {
       .then((response) => {
         console.log("the show request get successfully");
         setShowRequest(response.data);
+        setHistorials(response.data.historials);
         setLoading2(true);
 
       })
@@ -46,6 +52,10 @@ function RequestTable() {
         console.log('no se pudieron cargar al usuario')
         alert('no se pudo cargar al usuario error en el servidor', error)
       });
+  };
+
+  const handleHistory = () => {
+    setShowHistoryModal(true);
   };
 
   const handleAutorizar = async (e) => {
@@ -240,11 +250,35 @@ function RequestTable() {
               {" "}
               Close{" "}
             </Button>
-            <Button variant="primary" onClick={(e) => { handleAutorizar(e); }}>
+            <Button variant="success" onClick={(e) => { handleAutorizar(e); }}>
               {" "}
               Autorizar{" "}
             </Button>
+            <Button variant="primary" onClick={(e) => {handleHistory(e); }}>
+                   Comentar
+            </Button>
           </Modal.Footer>
+        </Modal.Body>
+      </Modal>
+
+
+      <Modal show={showHistoryModal} onHide={handleClose2} animation={false}
+      dialogClassName="modal-80"
+      >
+        <Modal.Header closeButton>
+        <Modal.Title>Agregar comentarios a la solicitud de  : {nomEmpNombre + ' ' + nomEmpPaterno + ' ' + nomEmpMaterno}</Modal.Title>
+
+        </Modal.Header>
+       
+        <Modal.Body>
+        <HistoryComments Historials={Historials}/>
+
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose2}>cerrar</Button>
+            <Button variant="success">Enviar Comentario</Button>
+
+          </Modal.Footer>
+
         </Modal.Body>
       </Modal>
     </div>

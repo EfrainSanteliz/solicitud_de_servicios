@@ -10,9 +10,14 @@ import NuevaSolicitud  from './components/NuevaSolicitud';
 import NewUser from './components/NewUser';
 import WelcomeSuperAdministrador from './components/WelcomeSuperAdministrador';
 import WelcomeAdministrador from './components/WelcomeAdministrador';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
+
+    <>
+    <ToastContainer />
     <Router>
     <Routes>
       <Route path="/Login" element = {<Login/>}/>
@@ -29,6 +34,7 @@ function App() {
 
     </Routes>
     </Router>
+    </>
   );
 }
 
