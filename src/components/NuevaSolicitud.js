@@ -30,6 +30,8 @@ function TextControlsExample() {
 
   const [fechaSolicitada, setFechaSolicitada] = useState("");
   const [ConActivosFijosId, setConActivosFijosId] = useState(null);
+  const [imageSelected,setImageSelected] = useState([]);
+
   const Status = 1;
   // Obtener la fecha en formato año-mes-día y hora-minuto en GMT-7
   useEffect(() => {
@@ -89,19 +91,12 @@ function TextControlsExample() {
     console.log("id de inventario seleccionado", ConActivosFijosId);
   };
 
-  const handlePhotoChange = (e) => {
-    setFile(e.target.files[0]);
+  const handlePhotoChange = (event) => {
+    const file = event.target.files[0];
 
-    // if (file) {
-    //const reader = new FileReader();
-    // reader.onloadend = () => {
-    //  setFormData({
-    //  ...formData,
-    //  File: reader.result,
-    // });
-    // };
-    // reader.readAsDataURL(file);
-    // }
+   if (file) {
+    setImageSelected(URL.createObjectURL(file));
+   }
   };
 
   const handleSubmit = async (e) => {
@@ -272,15 +267,14 @@ function TextControlsExample() {
             />
           </Form.Group>
 
-          {formData.File && (
             <div className="mt-3">
               <img
-                src={formData.File}
-                alt="Previzualizacion"
-                style={{ maxWidth: "100%", height: "auto" }}
-              />
+                src={imageSelected}
+                alt="Uploaded"
+                style={{ maxWidth: '800px', maxHeight: '800px' }}
+                />
             </div>
-          )}
+        
 
           <Button type="submit" variant="primary ">
             Enviar

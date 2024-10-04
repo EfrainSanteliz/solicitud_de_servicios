@@ -1,10 +1,17 @@
 import React from 'react';
-import { Table } from 'react-bootstrap';
+import { Form, Table } from 'react-bootstrap';
 
 function HistoryComments({ Historials }) {
 
-    return (
-        <div>
+
+  const handleSudmit = (() => {
+    
+  });
+
+  return (
+
+    <Form onSubmit={handleSudmit}>
+      <div>
         <Table border="1">
           <thead>
             <tr>
@@ -16,7 +23,7 @@ function HistoryComments({ Historials }) {
             {
               Historials.map((historial) => (
                 <tr key={historial.historialID}>
-                   <td>
+                  <td>
                     {new Date(historial.fecha).toLocaleDateString('es-ES', {
                       day: '2-digit',
                       month: '2-digit',
@@ -28,11 +35,12 @@ function HistoryComments({ Historials }) {
                   <td>{historial.comentarios}</td>
                 </tr>
               ))
-           }
+            }
           </tbody>
         </Table>
       </div>
-    );
+    </Form>
+  );
 }
 
 export default HistoryComments;

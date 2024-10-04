@@ -38,8 +38,6 @@ function MisSolicitudes() {
     setShowModalHistoryComments(false);
   };
 
-
-
   const handleShow = (id) => {
 
     if (option === true) {

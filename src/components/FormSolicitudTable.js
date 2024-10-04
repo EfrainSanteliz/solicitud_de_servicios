@@ -13,6 +13,17 @@ function FormSolicitudTable({ showRequest }) {
 
   const downloadPDF = () => { };
 
+  const [imageURL,setImageURL] = useState([]);
+
+  console.log("image",showRequest.file);
+
+  useEffect (() => {
+    if (showRequest.file) {
+      setImageURL(`https://localhost:7145${showRequest.file}`)
+    }
+  },[showRequest.file]);
+ 
+
   return (
     <div>
       <div id="NuevaSolicitud">
@@ -137,9 +148,9 @@ function FormSolicitudTable({ showRequest }) {
 
           <div className="mt-3">
             <img
-              src={showRequest.file}
-              alt="Previzualizacion"
-              style={{ maxWidth: "100%", height: "auto" }}
+              src={imageURL}
+              alt="Uploaded"
+              style={{ maxWidth: '800px', maxHeight: '800px' }}
             />
           </div>
           <Table id="firmas" striped bordered hover>

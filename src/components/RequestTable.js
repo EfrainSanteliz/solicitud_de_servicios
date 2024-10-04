@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { table, Spinner, Alert, Table, Button, Modal } from "react-bootstrap";
+import { table, Spinner, Alert, Table, Button, Modal, Form } from "react-bootstrap";
 import FormSolicitudTable from "./FormSolicitudTable";
 import HistoryComments from "./HistoryComments";
+import { Toast } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
@@ -15,7 +17,7 @@ function RequestTable() {
   const [nomEmpMaterno, setNomEmpMaterno] = useState('');
   const [fullName, setFullName] = useState("");
   const [REQUESTID, SETREQUESTID] = useState("");
-  const [showHistoryModal,setShowHistoryModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [Historials, setHistorials] = useState([]);
 
   const FirmaJefeDepartamento = localStorage.getItem("nomEmpNombre") + ' ' + localStorage.getItem('nomEmpPaterno') + ' ' + localStorage.getItem('nomEmpMaterno');
@@ -83,6 +85,7 @@ function RequestTable() {
           }
         );
         console.log('update Request Sucesfully', response);
+        toast.success("Firmada Con exito");
       }
 
       if (UserRole === "SuperAdministrador") {
@@ -102,6 +105,13 @@ function RequestTable() {
     }
 
   };
+
+  const handleSubmitComentarios = () => {
+
+    //const response = await axios.post(`ht`)
+
+
+  }
 
   useEffect(() => {
     axios
@@ -191,44 +201,44 @@ function RequestTable() {
           {UserRole === "Administrador" && (
             <tbody>
               {requests.map((request) => (
-                  <tr key={request.id}>
-                    <td>{request.id}</td>
-                    <td>
-                      {request.nomEmpleados.nomEmpNombre +
-                        " " +
-                        request.nomEmpleados.nomEmpPaterno +
-                        " " +
-                        request.nomEmpleados.nomEmpMaterno}
-                    </td>
-                    <td>{request.descripcion}</td>
-                    <td>
-                      {new Date(request.fechaSolicitada).toLocaleDateString('es-ES', {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      })}
-                    </td>
-                    <td>{request.status}</td>
-                    <td>
-                      <Button variant="success">Autorizar</Button>{" "}
-                      <Button variant="secondary">Descargar Documento</Button>{" "}
-                      <Button
-                        variant="primary"
-                        onClick={() =>
-                          handleShow(
-                            request.id,
-                            request.nomEmpleados.nomEmpNombre,
-                            request.nomEmpleados.nomEmpPaterno,
-                            request.nomEmpleados.nomEmpMaterno
-                          )
-                        }
-                      >
-                        Ver Detalles
-                      </Button>
-                    </td>
+                <tr key={request.id}>
+                  <td>{request.id}</td>
+                  <td>
+                    {request.nomEmpleados.nomEmpNombre +
+                      " " +
+                      request.nomEmpleados.nomEmpPaterno +
+                      " " +
+                      request.nomEmpleados.nomEmpMaterno}
+                  </td>
+                  <td>{request.descripcion}</td>
+                  <td>
+                    {new Date(request.fechaSolicitada).toLocaleDateString('es-ES', {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}
+                  </td>
+                  <td>{request.status}</td>
+                  <td>
+                    <Button variant="success">Autorizar</Button>{" "}
+                    <Button variant="secondary">Descargar Documento</Button>{" "}
+                    <Button
+                      variant="primary"
+                      onClick={() =>
+                        handleShow(
+                          request.id,
+                          request.nomEmpleados.nomEmpNombre,
+                          request.nomEmpleados.nomEmpPaterno,
+                          request.nomEmpleados.nomEmpMaterno
+                        )
+                      }
+                    >
+                      Ver Detalles
+                    </Button>
+                  </td>
 
-                  </tr>
-                )
+                </tr>
+              )
               )}
             </tbody>
           )}
@@ -254,33 +264,34 @@ function RequestTable() {
               {" "}
               Autorizar{" "}
             </Button>
-            <Button variant="primary" onClick={(e) => {handleHistory(e); }}>
-                   Comentar
+            <Button variant="primary" onClick={(e) => { handleHistory(e); }}>
+              Comentar
             </Button>
           </Modal.Footer>
         </Modal.Body>
       </Modal>
 
+      <Form onSubmit={handleSubmitComentarios}> 
+        <Modal show={showHistoryModal} onHide={handleClose2} animation={false}
+          dialogClassName="modal-80"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Agregar comentarios a la solicitud de  : {nomEmpNombre + ' ' + nomEmpPaterno + ' ' + nomEmpMaterno}</Modal.Title>
 
-      <Modal show={showHistoryModal} onHide={handleClose2} animation={false}
-      dialogClassName="modal-80"
-      >
-        <Modal.Header closeButton>
-        <Modal.Title>Agregar comentarios a la solicitud de  : {nomEmpNombre + ' ' + nomEmpPaterno + ' ' + nomEmpMaterno}</Modal.Title>
+          </Modal.Header>
 
-        </Modal.Header>
-       
-        <Modal.Body>
-        <HistoryComments Historials={Historials}/>
+          <Modal.Body>
+            <HistoryComments Historials={Historials} />
 
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose2}>cerrar</Button>
-            <Button variant="success">Enviar Comentario</Button>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose2}>cerrar</Button>
+              <Button variant="success" onClick={handleSubmitComentarios}>Enviar Comentario</Button>
 
-          </Modal.Footer>
+            </Modal.Footer>
 
-        </Modal.Body>
-      </Modal>
+          </Modal.Body>
+        </Modal>
+      </Form>
     </div>
   );
 }
