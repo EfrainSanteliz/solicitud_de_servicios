@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormSolicitudTable from "./FormSolicitudTable";
 import "./styles.css";
 import HistoryComments from "./HistoryComments";
+import jsPDF from "jspdf";
 
 function MisSolicitudes() {
   const [Request, setRequests] = useState([]);
@@ -63,6 +64,44 @@ function MisSolicitudes() {
         });
     }
   };
+
+  const handleDowloadPdf = async () => {
+
+    try{
+
+    const {
+
+      servicioSolicitado,
+      solicitudDeServicioARealizar,
+      fechaSolicitada,
+      descripcion,
+      firmaEmpleado,
+      firmaJefeDepartamento,
+      firmaJefe
+
+    } = showRequest;
+
+    const doc = new jsPDF();
+
+      // Add content to the PDF
+      doc.setFontSize(12);
+      doc.text("SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS DE LA INFORMACION", 20, 20);
+      // Add the specific data from the response
+      doc.text(`Servicio solicitado: ${servicioSolicitado}`, 20, 40);
+      doc.text(`Requested Date: ${new Date(fechaSolicitada).toLocaleString()}`, 20, 50);
+      doc.text(`solicitud de servicio a realizar: ${solicitudDeServicioARealizar}`, 20, 60);
+      doc.text(`Area Administrativa requirente: ${descripcion}`, 20, 70);
+      doc.text(`solicitante: ${firmaEmpleado}`, 20, 90);
+      doc.text(`Descripcion: ${firmaJefeDepartamento}`, 20, 100);
+      doc.text(`Chief Signature: ${firmaJefe}`, 20, 110);
+
+      // Save the generated PDF
+      doc.save(`Solicitus ${showRequest.nomEmpleados.nomEmpClave}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
+
+  }
 
 
   return (
@@ -136,6 +175,11 @@ function MisSolicitudes() {
         </Modal.Header>
         <Modal.Body>
           {loading && <FormSolicitudTable showRequest={showRequest} />}
+
+
+          <Modal.Footer>
+            <Button variant="primary" onClick={handleDowloadPdf}>Dercargar documento</Button>
+          </Modal.Footer>
         </Modal.Body>
 
       </Modal>

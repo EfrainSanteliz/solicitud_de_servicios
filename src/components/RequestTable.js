@@ -16,7 +16,6 @@ import { toast } from "react-toastify";
 import { DataTime, DateTime } from "luxon";
 import { useFetcher } from "react-router-dom";
 
-
 function RequestTable() {
   const [requests, setRequests] = useState([]);
   const [showRequest, setShowRequest] = useState([]);
@@ -30,7 +29,7 @@ function RequestTable() {
   const [REQUESTID, SETREQUESTID] = useState("");
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [Historials, setHistorials] = useState([]);
-  const [fecha,setFecha] = useState([]);
+  const [fecha, setFecha] = useState([]);
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -52,25 +51,31 @@ function RequestTable() {
     setShowHistoryModal(false);
   };
 
-  const handleShow = async (requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno) => {
-  setShow(true);
-  setNomEmpNombre(nomEmpNombre);
-  setNomEmpPaterno(nomEmpPaterno);
-  setNomEmpMaterno(nomEmpMaterno);
-  SETREQUESTID(requestID); 
+  const handleShow = async (
+    requestID,
+    nomEmpNombre,
+    nomEmpPaterno,
+    nomEmpMaterno
+  ) => {
+    setShow(true);
+    setNomEmpNombre(nomEmpNombre);
+    setNomEmpPaterno(nomEmpPaterno);
+    setNomEmpMaterno(nomEmpMaterno);
+    SETREQUESTID(requestID);
 
-  try {
-    const response = await axios.get(`https://localhost:7145/api/Request/${requestID}`);
+    try {
+      const response = await axios.get(
+        `https://localhost:7145/api/Request/${requestID}`
+      );
 
-    console.log("The show request get successfully");
-    setShowRequest(response.data);
-    setHistorials(response.data.historials);
-    setLoading2(true); // Assuming setLoading2 is used to indicate loading state
-  } catch (error) {
-    console.error("Error updating the Request:", error);
-  }
-};
-
+      console.log("The show request get successfully");
+      setShowRequest(response.data);
+      setHistorials(response.data.historials);
+      setLoading2(true); // Assuming setLoading2 is used to indicate loading state
+    } catch (error) {
+      console.error("Error updating the Request:", error);
+    }
+  };
 
   const handleHistory = () => {
     setShowHistoryModal(true);
@@ -100,6 +105,22 @@ function RequestTable() {
         );
         console.log("update Request Sucesfully", response);
         toast.success("Firmada Con exito");
+        console.log("Request Update Sucessfully", response);
+        const encabezado =
+          "tu solicitud ha sido firmada por tu jede de departamento";
+        const cuerpo =
+          "Inicia sesion para ver el estado de tu solicitud `becas.com`";
+        const response2 = await axios.post(
+          `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+            showRequest.nomEmpleados.email
+          )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
+          {},
+          {
+            headers: {
+              "content-type": "application/json",
+            },
+          }
+        );
       }
 
       if (UserRole === "SuperAdministrador") {
@@ -111,8 +132,24 @@ function RequestTable() {
               "content-type": "application/json",
             },
           }
-        );
+        ); //
+        toast.success("Firmada Con exito");
+
         console.log("Request Update Sucessfully", response);
+        const encabezado =
+          "tu solicitud ha sido firmada por el jefe de sistemas";
+        const cuerpo = "inicia sesion para ver el estado de tu solicitud";
+        const response2 = await axios.post(
+          `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+            showRequest.nomEmpleados.email
+          )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
+          {},
+          {
+            headers: {
+              "content-type": "application/json",
+            },
+          }
+        );
       }
     } catch (error) {
       console.error("Error updating the Request:", error);
@@ -120,77 +157,98 @@ function RequestTable() {
   };
 
   const [formData, setFormData] = useState({
-    fecha: '',
-    comentarios: '',
+    fecha: "",
+    comentarios: "",
   });
 
-    // Obtener la fecha en formato año-mes-día y hora-minuto en GMT-7
-    useEffect(() => {
-     
-    }, []);
+  // Obtener la fecha en formato año-mes-día y hora-minuto en GMT-7
+  useEffect(() => {}, []);
 
   const handleSubmitComentarios = async (e) => {
-
     e.preventDefault();
-    
+  
+    // Get the current date in GMT-7
     const getCurrentDateInGMT7 = () => {
-      // Obtener la fecha en GMT-7 con el formato correcto
       const dateInGMT7 = DateTime.now().setZone("America/Hermosillo");
-
-      // Verifica si la fecha es válida
+  
       if (dateInGMT7.isValid) {
-        // Devuelve la fecha en el formato requerido
         return dateInGMT7.toFormat("yyyy-MM-dd'T'HH:mm");
       } else {
-        // Manejar error si la fecha no es válida
-        console.error(
-          "Fecha inválida obtenida:",
-          dateInGMT7.invalidExplanation
-        );
+        console.error("Fecha inválida obtenida:", dateInGMT7.invalidExplanation);
         return null;
       }
     };
-
-    setFecha(getCurrentDateInGMT7());
   
-    const {
-       comentarios
-    } = formData
-
-    const data = new FormData();
-
-    data.append("fecha",fecha);
-    data.append("comentarios",comentarios);
-    data.append("RequestID",REQUESTID);
+    // Set the fecha to the current date in GMT-7
+    const currentFecha = getCurrentDateInGMT7();
   
-    console.log('fecha',fecha);
-    console.log('comentarios',comentarios);
-    console.log('RequestID',REQUESTID);
-
-
+    // Ensure that the fecha is valid before continuing
+    if (!currentFecha) {
+      console.error("Fecha inválida, no se puede enviar el formulario");
+      return;
+    }
+  
+    const { comentarios } = formData;
+  
+    if (!comentarios || comentarios.trim() === "") {
+      console.error("Los comentarios no pueden estar vacíos.");
+      return;
+    }
+  
+    // Prepare the form data to send
+    const data = {
+      fecha: currentFecha,
+      comentarios: comentarios.trim(),
+      RequestID: REQUESTID,
+    };
+  
     try {
+      // Send the POST request to save the historial
       const response = await axios.post(
-        "https://localhost:7145/api/Historial/",data,
+        "https://localhost:7145/api/Historial/",
+        data,
         {
           headers: {
             "content-type": "application/json",
           },
         }
       );
-      console.log("Historial fech succesfully");
-
+  
+      console.log("Historial enviado con éxito");
+  
+      // Refresh the request after successfully posting the comment
       try {
-        const response = await axios.get(`https://localhost:7145/api/Request/${REQUESTID}`);
-    
-        console.log("The show request get successfully");
+        const response = await axios.get(
+          `https://localhost:7145/api/Request/${REQUESTID}`
+        );
         setShowRequest(response.data);
         setHistorials(response.data.historials);
-        setLoading2(true); // Assuming setLoading2 is used to indicate loading state
+        setLoading2(true);
       } catch (error) {
-        console.error("Error updating the Request:", error);
+        console.error("Error actualizando la solicitud:", error);
       }
     } catch (error) {
-      console.error("error al enviar el formulario");
+      console.error("Error al enviar el historial:", error);
+    }
+  
+    // Send email notification after submitting the comment
+    const encabezado = "Tienes Nuevos Comentarios en Tu solicitud";
+    const cuerpo =
+      "Inicia sesión en la página para ver tus comentarios: becas.com";
+    try {
+      const response = await axios.post(
+        `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+          showRequest.nomEmpleados.email
+        )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
+        {},
+        {
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
+    } catch (emailError) {
+      console.error("Error al enviar el correo electrónico:", emailError);
     }
   };
 
@@ -210,18 +268,15 @@ function RequestTable() {
   }, []);
 
   const handleChange = (e) => {
-    const {name, value } = e.target;
+    const { name, value } = e.target;
 
-    setFormData({
-        ...formData,
-        [name]: value,
-    });
-
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   return (
-    <Form onSubmit={handleSubmitComentarios}>
-
     <div className="container mt-4">
       <h2>Lista de solicitudes {} </h2>
 
@@ -383,47 +438,49 @@ function RequestTable() {
         </Modal.Body>
       </Modal>
 
-        <Modal
-          show={showHistoryModal}
-          onHide={handleClose2}
-          animation={false}
-          dialogClassName="modal-80"
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>
-              Agregar comentarios a la solicitud de :{" "}
-              {nomEmpNombre + " " + nomEmpPaterno + " " + nomEmpMaterno}
-            </Modal.Title>
-          </Modal.Header>
+      <Modal
+        show={showHistoryModal}
+        onHide={handleClose2}
+        animation={false}
+        dialogClassName="modal-80"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Agregar comentarios a la solicitud de :{" "}
+            {nomEmpNombre + " " + nomEmpPaterno + " " + nomEmpMaterno}
+          </Modal.Title>
+        </Modal.Header>
 
-          <Modal.Body>
-            <HistoryComments Historials={Historials} />
-            
-           <br/><br/>
-          <Form.Label>Agrega comentarios aqui</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            name="comentarios"
-            placeholder="Escribe los comentarios aqui"
-            
-            onChange={handleChange} 
-            required
-          />
+        <Modal.Body>
+          <HistoryComments Historials={Historials} />
+
+          <br />
+          <br />
+          <Form onSubmit={handleSubmitComentarios}>
+            <Form.Label>AGREGA LOS COMENTARIOS AQUI</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              name="comentarios"
+              placeholder="agrega los comentarios aqui"
+              value={formData.comentarios}
+              onChange={handleChange}
+              required
+            />
 
             <Modal.Footer>
               <Button variant="secondary" onClick={handleClose2}>
                 cerrar
               </Button>
+
               <Button variant="success" onClick={handleSubmitComentarios}>
                 Enviar Comentario
               </Button>
             </Modal.Footer>
-          </Modal.Body>
-        </Modal>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
-    </Form>
-
   );
 }
 
