@@ -88,12 +88,22 @@ function MisSolicitudes() {
       doc.text("SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS DE LA INFORMACION", 20, 20);
       // Add the specific data from the response
       doc.text(`Servicio solicitado: ${servicioSolicitado}`, 20, 40);
-      doc.text(`Requested Date: ${new Date(fechaSolicitada).toLocaleString()}`, 20, 50);
+      doc.text(`Fecha: ${new Date(fechaSolicitada).toLocaleString()}`, 20, 50);
       doc.text(`solicitud de servicio a realizar: ${solicitudDeServicioARealizar}`, 20, 60);
       doc.text(`Area Administrativa requirente: ${descripcion}`, 20, 70);
       doc.text(`solicitante: ${firmaEmpleado}`, 20, 90);
-      doc.text(`Descripcion: ${firmaJefeDepartamento}`, 20, 100);
-      doc.text(`Chief Signature: ${firmaJefe}`, 20, 110);
+      doc.text(`Descripcion: ${descripcion}`, 20, 100);
+
+      doc.text(`solicitante:`,20,110);
+      doc.text(`${firmaEmpleado}`,20,130);
+      doc.text(`Aurizo `,80,110);
+      doc.text(`Unidad adm solicitante`,80,120); 
+      doc.text(`${firmaJefeDepartamento}`,80,130);
+      doc.text(`Acepta insfreastructura y`,140,110);
+      doc.text(`Tecnologia de la Informacion`,140,120);
+      doc.text(`${firmaJefe}`,140,130)
+
+
 
       // Save the generated PDF
       doc.save(`Solicitus ${showRequest.nomEmpleados.nomEmpClave}.pdf`);

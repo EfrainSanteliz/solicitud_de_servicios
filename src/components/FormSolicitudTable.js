@@ -4,12 +4,7 @@ import Form from "react-bootstrap/Form";
 import "./styles.css";
 
 function FormSolicitudTable({ showRequest }) {
-  const fullyName =
-    showRequest.nomEmpleados.nomEmpNombre +
-    " " +
-    showRequest.nomEmpleados.nomEmpPaterno +
-    " " +
-    showRequest.nomEmpMaterno;
+  const fullyName = showRequest.nomEmpleados.nomEmpNombre + " " + showRequest.nomEmpleados.nomEmpPaterno + " " + showRequest.nomEmpleados.nomEmpMaterno;
 
   const downloadPDF = () => { };
 
