@@ -49,10 +49,10 @@ function Login() {
 
   return (
     <div className="container mt-5">
-      <h2>Login</h2>
+      <h2>Login</h2><br></br>
       <div className="mb-3">
         <label htmlFor="email" className="form-label">
-          Email address
+          Correo Electronico
         </label>
         <input
           type="email"
@@ -65,7 +65,7 @@ function Login() {
       </div>
       <div className="mb-3">
         <label htmlFor="password" className="form-label">
-          Password
+          Contraseña
         </label>
         <input
           type="password"
@@ -79,10 +79,10 @@ function Login() {
       <div className="mb-3">
         <label className="form-label">
           No tienes una cuenta?{" "}
-          <a href="/NewUser">Click aquí para registrarte </a>
+          <a href="/NewUser" style={{label:"#217ABF"}}>Click aquí para registrarte </a>
         </label>
       </div>
-      <button className="btn btn-primary" onClick={handleLogin}>
+      <button className="btn btn-primary" onClick={handleLogin} style={{backgroundColor:"#217ABF"}}>
         Login
       </button>
     </div>

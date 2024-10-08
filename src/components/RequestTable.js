@@ -166,42 +166,45 @@ function RequestTable() {
 
   const handleSubmitComentarios = async (e) => {
     e.preventDefault();
-  
+
     // Get the current date in GMT-7
     const getCurrentDateInGMT7 = () => {
       const dateInGMT7 = DateTime.now().setZone("America/Hermosillo");
-  
+
       if (dateInGMT7.isValid) {
         return dateInGMT7.toFormat("yyyy-MM-dd'T'HH:mm");
       } else {
-        console.error("Fecha inválida obtenida:", dateInGMT7.invalidExplanation);
+        console.error(
+          "Fecha inválida obtenida:",
+          dateInGMT7.invalidExplanation
+        );
         return null;
       }
     };
-  
+
     // Set the fecha to the current date in GMT-7
     const currentFecha = getCurrentDateInGMT7();
-  
+
     // Ensure that the fecha is valid before continuing
     if (!currentFecha) {
       console.error("Fecha inválida, no se puede enviar el formulario");
       return;
     }
-  
+
     const { comentarios } = formData;
-  
+
     if (!comentarios || comentarios.trim() === "") {
       console.error("Los comentarios no pueden estar vacíos.");
       return;
     }
-  
+
     // Prepare the form data to send
     const data = {
       fecha: currentFecha,
       comentarios: comentarios.trim(),
       RequestID: REQUESTID,
     };
-  
+
     try {
       // Send the POST request to save the historial
       const response = await axios.post(
@@ -213,9 +216,9 @@ function RequestTable() {
           },
         }
       );
-  
+
       console.log("Historial enviado con éxito");
-  
+
       // Refresh the request after successfully posting the comment
       try {
         const response = await axios.get(
@@ -230,7 +233,7 @@ function RequestTable() {
     } catch (error) {
       console.error("Error al enviar el historial:", error);
     }
-  
+
     // Send email notification after submitting the comment
     const encabezado = "Tienes Nuevos Comentarios en Tu solicitud";
     const cuerpo =
@@ -339,6 +342,7 @@ function RequestTable() {
                             request.nomEmpleados.nomEmpMaterno
                           )
                         }
+                        style={{backgroundColor:'#217ABF'}}
                       >
                         Ver Detalles
                       </Button>
@@ -375,7 +379,12 @@ function RequestTable() {
                   <td>{request.status}</td>
                   <td>
                     <Button variant="success">Autorizar</Button>{" "}
-                    <Button variant="secondary">Descargar Documento</Button>{" "}
+                    <Button
+                      variant="secondary"
+                      style={{ backgroundColor: "#217ABF" }}
+                    >
+                      Descargar Documento
+                    </Button>{" "}
                     <Button
                       variant="primary"
                       onClick={() =>
@@ -413,7 +422,10 @@ function RequestTable() {
           {loading2 && <FormSolicitudTable showRequest={showRequest} />}
 
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
+            <Button variant="secondary" onClick={handleClose}
+                          style={{backgroundColor:'#666666'}}
+
+            >
               {" "}
               Close{" "}
             </Button>
@@ -422,6 +434,7 @@ function RequestTable() {
               onClick={(e) => {
                 handleAutorizar(e);
               }}
+              style={{backgroundColor:'#237469'}}
             >
               {" "}
               Autorizar{" "}
@@ -431,6 +444,7 @@ function RequestTable() {
               onClick={(e) => {
                 handleHistory(e);
               }}
+              style={{backgroundColor:'#217ABF'}}
             >
               Comentar
             </Button>

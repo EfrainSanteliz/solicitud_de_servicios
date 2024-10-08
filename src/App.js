@@ -12,11 +12,13 @@ import WelcomeSuperAdministrador from './components/WelcomeSuperAdministrador';
 import WelcomeAdministrador from './components/WelcomeAdministrador';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Navbar2 from './components/Navbar2';
 
 function App() {
   return (
 
     <>
+    <Navbar2/>
     <ToastContainer />
     <Router>
     <Routes>

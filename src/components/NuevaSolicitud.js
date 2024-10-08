@@ -93,6 +93,8 @@ function TextControlsExample() {
 
   const handlePhotoChange = (event) => {
     const file = event.target.files[0];
+    
+    setFile(event.target.files[0]);
 
    if (file) {
     setImageSelected(URL.createObjectURL(file));
@@ -131,6 +133,7 @@ function TextControlsExample() {
     if(ConActivosFijosId) {
       data.append("conActivosFijosId", ConActivosFijosId);
     }
+    console.log("imagen",file);
   
     // Log FormData content (optional, since FormData can't be fully logged)
     for (let pair of data.entries()) {
@@ -276,7 +279,7 @@ function TextControlsExample() {
             </div>
         
 
-          <Button type="submit" variant="primary ">
+          <Button type="submit" variant="primary " style={{backgroundColor:'#237469'}}>
             Enviar
           </Button>
         </Form.Group>
