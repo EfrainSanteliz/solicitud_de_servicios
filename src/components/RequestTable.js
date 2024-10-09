@@ -93,15 +93,25 @@ function RequestTable() {
 
   const handleAutorizar = async (e) => {
 
-    const { FirmaJefeDepartamento, prioridad } = formData;
+    const { prioridad } = formData;
 
     const data = new FormData();
 
-    data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
-    data.append("prioridad", prioridad);
+   
 
     try {
       if (UserRole === "Administrador") {
+
+        if (prioridad === 0) {
+          toast.error("eliga un nivel de prioridad antes de firmar");
+        } else {
+
+        data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
+        data.append("prioridad", prioridad);
+    
+        console.log('firmaJefeDepartamento',FirmaJefeDepartamento);
+        console.log('prioridad',prioridad);
+
         const response = await axios.put(
           `https://localhost:7145/api/Request/${REQUESTID}`,
           data,
@@ -132,8 +142,17 @@ function RequestTable() {
         );
         window.location.reload();
       }
+      }
 
       if (UserRole === "SuperAdministrador") {
+
+        
+        data.append("firmaJefe", FirmaJefeDepartamento);
+        data.append("prioridad", prioridad);
+    
+        console.log('firmaJefe',FirmaJefeDepartamento);
+        console.log('prioridad',prioridad);
+
         const response = await axios.put(
           `https://localhost:7145/api/Request/${REQUESTID}`,
           data,
@@ -428,6 +447,10 @@ function RequestTable() {
                     </td>
                     <td>{request.status}</td>
 
+                    {request.prioridad === 0 && (
+                    <td>{<Button style={{width: "120px"}}> Sin Asignar </Button>} </td>
+                  )}
+
                     {request.prioridad === 1 && (
                     <td>{<Button style={{width: "70px"}}> Baja </Button>} </td>
                   )}
@@ -484,6 +507,10 @@ function RequestTable() {
                     )}
                   </td>
                   <td>{request.status}</td>
+
+                  {request.prioridad === 0 && (
+                    <td>{<Button style={{width: "120px"}}> Sin Asignar </Button>} </td>
+                  )}
 
                   {request.prioridad === 1 && (
                     <td>{<Button style={{width: "70px"}}> Baja </Button>} </td>
