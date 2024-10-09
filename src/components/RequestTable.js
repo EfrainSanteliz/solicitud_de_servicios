@@ -19,7 +19,6 @@ import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import jsPDF from "jspdf";
 
-
 function RequestTable() {
   const [requests, setRequests] = useState([]);
   const [showRequest, setShowRequest] = useState([]);
@@ -34,6 +33,7 @@ function RequestTable() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [Historials, setHistorials] = useState([]);
   const [fecha, setFecha] = useState([]);
+  const [prioridad, setPrioridad] = useState(null);
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -85,22 +85,26 @@ function RequestTable() {
     setShowHistoryModal(true);
   };
 
+  const [formData, setFormData] = useState({
+    fecha: "",
+    comentarios: "",
+    prioridad: 0,
+  });
+
   const handleAutorizar = async (e) => {
-    e.preventDefault();
 
-    const AutorizarRequestJefeDepartamento = {
-      FirmaJefeDepartamento: FirmaJefeDepartamento,
-    };
+    const { FirmaJefeDepartamento, prioridad } = formData;
 
-    const AutorizarRequestJefe = {
-      FirmaJefe: FirmaJefe,
-    };
+    const data = new FormData();
+
+    data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
+    data.append("prioridad", prioridad);
 
     try {
       if (UserRole === "Administrador") {
         const response = await axios.put(
           `https://localhost:7145/api/Request/${REQUESTID}`,
-          AutorizarRequestJefeDepartamento,
+          data,
           {
             headers: {
               "content-type": "application/json",
@@ -108,6 +112,7 @@ function RequestTable() {
           }
         );
         console.log("update Request Sucesfully", response);
+
         toast.success("Firmada Con exito");
         console.log("Request Update Sucessfully", response);
         const encabezado =
@@ -125,12 +130,13 @@ function RequestTable() {
             },
           }
         );
+        window.location.reload();
       }
 
       if (UserRole === "SuperAdministrador") {
         const response = await axios.put(
           `https://localhost:7145/api/Request/${REQUESTID}`,
-          AutorizarRequestJefe,
+          data,
           {
             headers: {
               "content-type": "application/json",
@@ -154,16 +160,12 @@ function RequestTable() {
             },
           }
         );
+        window.location.reload()
       }
     } catch (error) {
       console.error("Error updating the Request:", error);
     }
   };
-
-  const [formData, setFormData] = useState({
-    fecha: "",
-    comentarios: "",
-  });
 
   // Obtener la fecha en formato año-mes-día y hora-minuto en GMT-7
   useEffect(() => {}, []);
@@ -285,16 +287,18 @@ function RequestTable() {
 
   const handleDowloadPdf = async () => {
     try {
+      console.log("requestId", showRequest.id);
 
-      console.log("requestId",showRequest.id)
-
-      const descripcion2 = showRequest.nomEmpleados.direccionesICEES.descripcion;
-      const fechaSolicitada = new Date(showRequest.fechaSolicitada).toLocaleDateString("es-ES", {
+      const descripcion2 =
+        showRequest.nomEmpleados.direccionesICEES.descripcion;
+      const fechaSolicitada = new Date(
+        showRequest.fechaSolicitada
+      ).toLocaleDateString("es-ES", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
-      })
-      
+      });
+
       const {
         servicioSolicitado,
         solicitudDeServicioARealizar,
@@ -303,7 +307,6 @@ function RequestTable() {
         firmaJefeDepartamento,
         firmaJefe,
         file,
-        
       } = showRequest;
 
       const doc = new jsPDF();
@@ -351,23 +354,20 @@ function RequestTable() {
             reject(err); // Reject the promise on error
           };
         });
-
-        
       } else {
         doc.text("No image provided", 20, 100);
       }
-      
+
       doc.setFontSize(10);
 
-      
-      doc.text(`solicitante:`,20,260);
-      doc.text(`${firmaEmpleado}`,20,280);
-      doc.text(`Aurizo `,80,260);
-      doc.text(`Unidad adm solicitante`,80,270); 
-      doc.text(`${firmaJefeDepartamento}`,80,280);
-      doc.text(`Acepta insfreastructura y`,140,260);
-      doc.text(`Tecnologia de la Informacion`,140,270);
-      doc.text(`${firmaJefe}`,140,280)
+      doc.text(`solicitante:`, 20, 260);
+      doc.text(`${firmaEmpleado}`, 20, 280);
+      doc.text(`Aurizo `, 80, 260);
+      doc.text(`Unidad adm solicitante`, 80, 270);
+      doc.text(`${firmaJefeDepartamento}`, 80, 280);
+      doc.text(`Acepta insfreastructura y`, 140, 260);
+      doc.text(`Tecnologia de la Informacion`, 140, 270);
+      doc.text(`${firmaJefe}`, 140, 280);
 
       // Save the PDF after the image has loaded
       doc.save(`Solicitud ${showRequest.nomEmpleados.nomEmpClave}.pdf`);
@@ -397,6 +397,7 @@ function RequestTable() {
               <th>Descripción</th>
               <th>Fecha</th>
               <th>Estado</th>
+              <th>Prioridad</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -426,7 +427,16 @@ function RequestTable() {
                       )}
                     </td>
                     <td>{request.status}</td>
-                    <td>
+
+                    {request.prioridad === 1 && (
+                    <td>{<Button style={{width: "70px"}}> Baja </Button>} </td>
+                  )}
+                  {request.prioridad === 2 && (
+                    <td>{<Button style={{width: "70px"}}> Media </Button>} </td>
+                  )}
+                  {request.prioridad === 3 && (
+                    <td>{<Button style={{width: "70px"}}> Alta </Button>} </td>
+                  )}                    <td>
                       <Button variant="success">Autorizar</Button>{" "}
                       <Button variant="secondary">Descargar Documento</Button>{" "}
                       <Button
@@ -439,7 +449,7 @@ function RequestTable() {
                             request.nomEmpleados.nomEmpMaterno
                           )
                         }
-                        style={{backgroundColor:'#217ABF'}}
+                        style={{ backgroundColor: "#217ABF" }}
                       >
                         Ver Detalles
                       </Button>
@@ -474,8 +484,18 @@ function RequestTable() {
                     )}
                   </td>
                   <td>{request.status}</td>
+
+                  {request.prioridad === 1 && (
+                    <td>{<Button style={{width: "70px"}}> Baja </Button>} </td>
+                  )}
+                  {request.prioridad === 2 && (
+                    <td>{<Button style={{width: "70px"}}> Media </Button>} </td>
+                  )}
+                  {request.prioridad === 3 && (
+                    <td>{<Button style={{width: "70px"}}> Alta </Button>} </td>
+                  )}
+
                   <td>
-                   
                     <Button
                       variant="primary"
                       onClick={() =>
@@ -488,8 +508,7 @@ function RequestTable() {
                       }
                       style={{ backgroundColor: "#217ABF" }}
                     >
-                     <FontAwesomeIcon icon={faEye} />
-
+                      <FontAwesomeIcon icon={faEye} />
                     </Button>
                   </td>
                 </tr>
@@ -499,60 +518,100 @@ function RequestTable() {
         </Table>
       )}
 
-      <Modal
-        show={show}
-        onHide={handleClose}
-        animation={false}
-        dialogClassName="modal-80"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Solicitud del usuario:{" "}
-            {nomEmpNombre + " " + nomEmpPaterno + " " + nomEmpMaterno}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {loading2 && <FormSolicitudTable showRequest={showRequest} />}
+      {loading2 && (
+        <Modal
+          show={show}
+          onHide={handleClose}
+          animation={false}
+          dialogClassName="modal-80"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              Solicitud del usuario:{" "}
+              {nomEmpNombre + " " + nomEmpPaterno + " " + nomEmpMaterno}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {loading2 && <FormSolicitudTable showRequest={showRequest} />}
 
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}
-                          style={{backgroundColor:'#666666'}}
-            >
-              {" "}
-              Close{" "}
-            </Button>
-            <Button
-              variant="success"
-              onClick={(e) => {
-                handleAutorizar(e);
-              }}
-              style={{backgroundColor:'#237469'}}
-            >
-              {" "}
-              Autorizar{" "}
-            </Button>
-            <Button
-              variant="primary"
-              onClick={(e) => {
-                handleHistory(e);
-              }}
-              style={{backgroundColor:'#217ABF'}}
-            >
-              Comentar
-            </Button>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={handleClose}
+                style={{ backgroundColor: "#666666" }}
+              >
+                {" "}
+                Close{" "}
+              </Button>
 
-            <Button
-              variant="primary"
-              onClick={(e) => {
-                handleDowloadPdf(e);
-              }}
-              style={{backgroundColor:'#217ABF'}}
-            >
-              Descargar 
-            </Button>
-          </Modal.Footer>
-        </Modal.Body>
-      </Modal>
+              <Button
+                variant="primary"
+                onClick={(e) => {
+                  handleHistory(e);
+                }}
+                style={{ backgroundColor: "#217ABF" }}
+              >
+                Comentar
+              </Button>
+
+              <Button
+                variant="success"
+                onClick={handleAutorizar}
+                style={{ backgroundColor: "#237469" }}
+              >
+                {" "}
+                Autorizar{" "}
+              </Button>
+
+              {UserRole === "Administrador" && (
+                <Form.Select
+                  aria-label="Default select example"
+                  style={{ width: "120px", backgroundColor: "#DC7F37" }}
+                  onChange={handleChange}
+                  name="prioridad"
+                  disabled={
+                    showRequest.prioridad === 1 ||
+                    showRequest.prioridad === 2 ||
+                    showRequest.prioridad === 3
+                  } // Disable if prioridad is 1, 2, or 3
+                  defaultValue={showRequest.prioridad}
+                >
+                  <option value="0">Prioridad</option>
+                  <option value="1">Baja</option>
+                  <option value="2">Media</option>
+                  <option value="3">Alta</option>
+                </Form.Select>
+              )}
+
+              {UserRole === "SuperAdministrador" && (
+                <Form.Select
+                  aria-label="Default select example"
+                  style={{ width: "120px", backgroundColor: "#DC7F37" }}
+                  onChange={handleChange}
+                  name="prioridad"
+                  defaultValue={showRequest.prioridad}
+                >
+                  <option value="0">Prioridad</option>
+                  <option value="1">Baja</option>
+                  <option value="2">Media</option>
+                  <option value="3">Alta</option>
+                  <option value="3">hola</option>
+                </Form.Select>
+              )}
+
+              <Button
+                variant="primary"
+                onClick={(e) => {
+                  handleDowloadPdf(e);
+                }}
+                style={{ backgroundColor: "#217ABF" }}
+              >
+                Descargar
+              </Button>
+            </Modal.Footer>
+          </Modal.Body>
+        </Modal>
+      )} 
 
       <Modal
         show={showHistoryModal}

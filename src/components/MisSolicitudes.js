@@ -91,7 +91,7 @@ function MisSolicitudes() {
       const doc = new jsPDF();
 
       // Add content to the PDF
-      doc.setFont("helvetica", "bold"); // Use helvetica bold instead
+      doc.setFont( "bold"); // Use helvetica bold instead
       doc.setFontSize(14);
       doc.text(
         "SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA ",

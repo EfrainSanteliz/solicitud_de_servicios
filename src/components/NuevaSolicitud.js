@@ -25,6 +25,7 @@ function TextControlsExample() {
     FirmaEmpleado: "0",
     FirmaJefeDepartamento: "0",
     FirmaJefe: "0",
+    Prioridad: 0,
     
   });
 
@@ -111,6 +112,7 @@ function TextControlsExample() {
       FirmaEmpleado,
       FirmaJefeDepartamento,
       FirmaJefe,
+      Prioridad,
     } = formData;
 
     // Use FormData to create a multipart form request
@@ -124,6 +126,7 @@ function TextControlsExample() {
     data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
     data.append("firmaJefe", FirmaJefe);
     data.append("nomEmpleadosId", NomEmpleadosId);
+    data.append("prioridad",Prioridad);
 
   
     // Add file only if it exists
@@ -211,7 +214,6 @@ function TextControlsExample() {
               <Form.Control
                 as="select"
                 name="SolicitudDeServicioARealizar"
-                value={formData.SolicitudDeServicioARealizar}
                 onChange={handleChange}
               >
                 <option value="">Seleccione el tipo de servicio</option>
