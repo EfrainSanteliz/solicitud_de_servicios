@@ -15,6 +15,10 @@ import { Toast } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { DataTime, DateTime } from "luxon";
 import { useFetcher } from "react-router-dom";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import jsPDF from "jspdf";
+
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
@@ -279,6 +283,99 @@ function RequestTable() {
     }));
   };
 
+  const handleDowloadPdf = async () => {
+    try {
+
+      console.log("requestId",showRequest.id)
+
+      const descripcion2 = showRequest.nomEmpleados.direccionesICEES.descripcion;
+      const fechaSolicitada = new Date(showRequest.fechaSolicitada).toLocaleDateString("es-ES", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+      
+      const {
+        servicioSolicitado,
+        solicitudDeServicioARealizar,
+        descripcion,
+        firmaEmpleado,
+        firmaJefeDepartamento,
+        firmaJefe,
+        file,
+        
+      } = showRequest;
+
+      const doc = new jsPDF();
+
+      // Add content to the PDF
+      doc.setFont("bold"); // Use helvetica bold instead
+      doc.setFontSize(14);
+      doc.text(
+        "SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA ",
+        20,
+        20
+      );
+      doc.text(" Y TECNOLOGIAS DE LA INFORMACION", 50, 30);
+
+      doc.setFontSize(16);
+      // Add the specific data from the response
+      doc.text(`Servicio solicitado: ${servicioSolicitado}`, 20, 40);
+      doc.text(`Fecha: ${fechaSolicitada}`, 20, 50);
+      doc.text(
+        `Solicitud de servicio a realizar: ${solicitudDeServicioARealizar}`,
+        20,
+        60
+      );
+      doc.text(`Area Administrativa requirente: ${descripcion2}`, 20, 70);
+      doc.text(`Solicitante: ${firmaEmpleado}`, 20, 80);
+      doc.text(`Descripcion: ${descripcion}`, 20, 90);
+
+      // Check if there is an image file
+      if (file) {
+        const baseURL = "https://localhost:7145"; // Replace this with your actual server URL
+        const fullImageUrl = `${baseURL}${file}`;
+
+        const img = new Image();
+        img.src = fullImageUrl;
+
+        await new Promise((resolve, reject) => {
+          img.onload = function () {
+            // Add the image to the PDF
+            doc.addImage(img, "JPEG", 20, 100, 140, 140); // Adjust the dimensions and position
+            resolve();
+          };
+
+          img.onerror = function (err) {
+            console.error("Failed to load image:", err, fullImageUrl);
+            reject(err); // Reject the promise on error
+          };
+        });
+
+        
+      } else {
+        doc.text("No image provided", 20, 100);
+      }
+      
+      doc.setFontSize(10);
+
+      
+      doc.text(`solicitante:`,20,260);
+      doc.text(`${firmaEmpleado}`,20,280);
+      doc.text(`Aurizo `,80,260);
+      doc.text(`Unidad adm solicitante`,80,270); 
+      doc.text(`${firmaJefeDepartamento}`,80,280);
+      doc.text(`Acepta insfreastructura y`,140,260);
+      doc.text(`Tecnologia de la Informacion`,140,270);
+      doc.text(`${firmaJefe}`,140,280)
+
+      // Save the PDF after the image has loaded
+      doc.save(`Solicitud ${showRequest.nomEmpleados.nomEmpClave}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
+  };
+
   return (
     <div className="container mt-4">
       <h2>Lista de solicitudes {} </h2>
@@ -378,13 +475,7 @@ function RequestTable() {
                   </td>
                   <td>{request.status}</td>
                   <td>
-                    <Button variant="success">Autorizar</Button>{" "}
-                    <Button
-                      variant="secondary"
-                      style={{ backgroundColor: "#217ABF" }}
-                    >
-                      Descargar Documento
-                    </Button>{" "}
+                   
                     <Button
                       variant="primary"
                       onClick={() =>
@@ -395,8 +486,10 @@ function RequestTable() {
                           request.nomEmpleados.nomEmpMaterno
                         )
                       }
+                      style={{ backgroundColor: "#217ABF" }}
                     >
-                      Ver Detalles
+                     <FontAwesomeIcon icon={faEye} />
+
                     </Button>
                   </td>
                 </tr>
@@ -424,7 +517,6 @@ function RequestTable() {
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}
                           style={{backgroundColor:'#666666'}}
-
             >
               {" "}
               Close{" "}
@@ -447,6 +539,16 @@ function RequestTable() {
               style={{backgroundColor:'#217ABF'}}
             >
               Comentar
+            </Button>
+
+            <Button
+              variant="primary"
+              onClick={(e) => {
+                handleDowloadPdf(e);
+              }}
+              style={{backgroundColor:'#217ABF'}}
+            >
+              Descargar 
             </Button>
           </Modal.Footer>
         </Modal.Body>

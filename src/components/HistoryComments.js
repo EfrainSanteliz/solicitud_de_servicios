@@ -4,14 +4,12 @@ import { Form, Table } from 'react-bootstrap';
 function HistoryComments({ Historials }) {
 
 
-  const handleSudmit = (() => {
-    
-  });
-
   return (
-
-    <Form onSubmit={handleSudmit}>
-      <div>
+    <div>
+        {Historials.length === 0 ? (
+        <p>Aún no tienes comentarios </p>
+      ) : (
+      <Form onSubmit={''}>
         <Table border="1">
           <thead>
             <tr>
@@ -38,8 +36,12 @@ function HistoryComments({ Historials }) {
             }
           </tbody>
         </Table>
-      </div>
-    </Form>
+
+
+
+      </Form>
+      )}
+    </div>
   );
 }
 

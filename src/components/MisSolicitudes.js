@@ -18,7 +18,7 @@ function MisSolicitudes() {
   const [showModalHistoryComments, setShowModalHistoryComments] =
     useState(false);
   const [history, setHistory] = useState([]);
-  const [option, setOption] = useState(true);
+  const [option, setOption] = useState(false);
   const [Historials, setHistorials] = useState([]);
 
   const userId = localStorage.getItem("userid");
@@ -39,8 +39,8 @@ function MisSolicitudes() {
     setShowModalHistoryComments(false);
   };
 
-  const handleShow = (id) => {
-    if (option === true) {
+  const handleShow1 = (id) => {
+   
       axios
         .get(`https://localhost:7145/api/Request/${id}`, {
           withCredentials: true,
@@ -53,53 +53,63 @@ function MisSolicitudes() {
         .catch((error) => {
           console.log("dont show request", error);
         });
-    }
-
-    if (option === false) {
-      axios
-        .get(`https://localhost:7145/api/Request/${id}`) // Replace with your actual API endpoint
-        .then((response) => {
-          setHistorials(response.data.historials); // Update state with the historials array
-        })
-        .catch((error) => {
-          console.error("Error fetching historials:", error);
-        });
-    }
+    
   };
+
+  const handleShow2 = (id) => {
+    axios
+    .get(`https://localhost:7145/api/Request/${id}`) // Replace with your actual API endpoint
+    .then((response) => {
+      setHistorials(response.data.historials); // Update state with the historials array
+    })
+    .catch((error) => {
+      console.error("Error fetching historials:", error);
+    });
+  }
 
   const handleDowloadPdf = async () => {
     try {
+
+      const descripcion2 = showRequest.nomEmpleados.direccionesICEES.descripcion;
+      const fechaSolicitada = new Date(showRequest.fechaSolicitada).toLocaleDateString("es-ES", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+      
       const {
         servicioSolicitado,
         solicitudDeServicioARealizar,
-        fechaSolicitada,
         descripcion,
         firmaEmpleado,
         firmaJefeDepartamento,
         firmaJefe,
         file,
+        
       } = showRequest;
 
       const doc = new jsPDF();
 
       // Add content to the PDF
-      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold"); // Use helvetica bold instead
+      doc.setFontSize(14);
       doc.text(
-        "SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS",
+        "SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA ",
         20,
         20
       );
-      doc.text("DE LA INFORMACION", 85, 30);
+      doc.text(" Y TECNOLOGIAS DE LA INFORMACION", 50, 30);
 
+      doc.setFontSize(16);
       // Add the specific data from the response
       doc.text(`Servicio solicitado: ${servicioSolicitado}`, 20, 40);
-      doc.text(`Fecha: ${new Date(fechaSolicitada).toLocaleString()}`, 20, 50);
+      doc.text(`Fecha: ${fechaSolicitada}`, 20, 50);
       doc.text(
         `Solicitud de servicio a realizar: ${solicitudDeServicioARealizar}`,
         20,
         60
       );
-      doc.text(`Area Administrativa requirente: ${descripcion}`, 20, 70);
+      doc.text(`Area Administrativa requirente: ${descripcion2}`, 20, 70);
       doc.text(`Solicitante: ${firmaEmpleado}`, 20, 80);
       doc.text(`Descripcion: ${descripcion}`, 20, 90);
 
@@ -124,18 +134,22 @@ function MisSolicitudes() {
           };
         });
 
-        doc.text(`solicitante:`,20,260);
-        doc.text(`${firmaEmpleado}`,20,280);
-        doc.text(`Aurizo `,80,260);
-        doc.text(`Unidad adm solicitante`,80,270); 
-        doc.text(`${firmaJefeDepartamento}`,80,280);
-        doc.text(`Acepta insfreastructura y`,140,260);
-        doc.text(`Tecnologia de la Informacion`,140,270);
-        doc.text(`${firmaJefe}`,140,280)
         
       } else {
         doc.text("No image provided", 20, 100);
       }
+      
+      doc.setFontSize(10);
+
+      
+      doc.text(`solicitante:`,20,260);
+      doc.text(`${firmaEmpleado}`,20,280);
+      doc.text(`Aurizo `,80,260);
+      doc.text(`Unidad adm solicitante`,80,270); 
+      doc.text(`${firmaJefeDepartamento}`,80,280);
+      doc.text(`Acepta insfreastructura y`,140,260);
+      doc.text(`Tecnologia de la Informacion`,140,270);
+      doc.text(`${firmaJefe}`,140,280)
 
       // Save the PDF after the image has loaded
       doc.save(`Solicitud ${showRequest.nomEmpleados.nomEmpClave}.pdf`);
@@ -175,9 +189,8 @@ function MisSolicitudes() {
               <td style={{ textAlign: "center" }}>
                 <Button
                   onClick={() => {
-                    handleShow(Reques.id);
+                    handleShow1(Reques.id);
                     setShow(true);
-                    setOption(true);
                   }}
                   variant="primary"
                   style={{backgroundColor:'#217ABF'}}
@@ -190,8 +203,7 @@ function MisSolicitudes() {
               <td style={{ textAlign: "center" }}>
                 <Button
                   onClick={() => {
-                    setOption(false);
-                    handleShow(Reques.id);
+                    handleShow2(Reques.id);
                     setShowModalHistoryComments(true);
                     
                   }}
