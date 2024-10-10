@@ -92,66 +92,67 @@ function RequestTable() {
   });
 
   const handleAutorizar = async (e) => {
-
-    const { prioridad } = formData;
+   // const { prioridad } = formData;
 
     const data = new FormData();
 
-   
-
     try {
       if (UserRole === "Administrador") {
-
         if (prioridad === 0) {
           toast.error("eliga un nivel de prioridad antes de firmar");
         } else {
+          data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
+          //data.append("prioridad", prioridad);
 
-        data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
-        data.append("prioridad", prioridad);
-    
-        console.log('firmaJefeDepartamento',FirmaJefeDepartamento);
-        console.log('prioridad',prioridad);
+          //console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
+         // console.log("prioridad", prioridad);
 
-        const response = await axios.put(
-          `https://localhost:7145/api/Request/${REQUESTID}`,
-          data,
-          {
-            headers: {
-              "content-type": "application/json",
-            },
-          }
-        );
-        console.log("update Request Sucesfully", response);
+          const response = await axios.put(
+            `https://localhost:7145/api/Request/${REQUESTID}`,
+            data,
+            {
+              headers: {
+                "content-type": "application/json",
+              },
+            }
+          );
+          console.log("update Request Sucesfully", response);
 
-        toast.success("Firmada Con exito");
-        console.log("Request Update Sucessfully", response);
-        const encabezado =
-          "tu solicitud ha sido firmada por tu jede de departamento";
-        const cuerpo =
-          "Inicia sesion para ver el estado de tu solicitud `becas.com`";
-        const response2 = await axios.post(
-          `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
-            showRequest.nomEmpleados.email
-          )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
-          {},
-          {
-            headers: {
-              "content-type": "application/json",
-            },
-          }
-        );
-        window.location.reload();
-      }
+          toast.success("Firmada Con exito");
+          console.log("Request Update Sucessfully", response);
+          const encabezado =
+            "tu solicitud ha sido firmada por tu jede de departamento";
+          const cuerpo =
+            "Inicia sesion para ver el estado de tu solicitud `becas.com`";
+          const response2 = await axios.post(
+            `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+              showRequest.nomEmpleados.email
+            )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
+            {},
+            {
+              headers: {
+                "content-type": "application/json",
+              },
+            }
+          );
+          window.location.reload();
+        }
       }
 
       if (UserRole === "SuperAdministrador") {
+        if (prioridad === 0) {
+          data.append("firmaJefe", FirmaJefeDepartamento);
+         // data.append("prioridad", showRequest.prioridad);
 
-        
-        data.append("firmaJefe", FirmaJefeDepartamento);
-        data.append("prioridad", prioridad);
-    
-        console.log('firmaJefe',FirmaJefeDepartamento);
-        console.log('prioridad',prioridad);
+          //console.log("firmaJefe", FirmaJefeDepartamento);
+         // console.log("prioridad", showRequest.prioridad);
+        } else {
+          data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
+         // data.append("prioridad", prioridad);
+
+          //console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
+        //  console.log("prioridad", prioridad);
+        }
 
         const response = await axios.put(
           `https://localhost:7145/api/Request/${REQUESTID}`,
@@ -179,7 +180,7 @@ function RequestTable() {
             },
           }
         );
-        window.location.reload()
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error updating the Request:", error);
@@ -281,19 +282,23 @@ function RequestTable() {
   };
 
   useEffect(() => {
-    axios
-      .get(`https://localhost:7145/api/Request/`)
-      .then((response) => {
-        console.log("the request get sucessfully", response);
-        setRequests(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.log("error to get the request", error);
-        setError("El servidor no puede obtener las solicitudes");
-        setLoading(false);
-      });
+    UpdateTableRequest();
   }, []);
+
+  const UpdateTableRequest = () => {
+    axios
+    .get(`https://localhost:7145/api/Request/`)
+    .then((response) => {
+      console.log("the request get sucessfully", response);
+      setRequests(response.data);
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.log("error to get the request", error);
+      setError("El servidor no puede obtener las solicitudes");
+      setLoading(false);
+    });
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -395,6 +400,33 @@ function RequestTable() {
     }
   };
 
+  const handleUpdatePrioridad = async (e) => {
+    e.preventDefault();
+   
+    const { prioridad } = formData;
+
+    const data = new FormData();
+
+    data.append("prioridad",prioridad);
+
+    try {
+      const response = await axios.put(
+        `https://localhost:7145/api/Request/${REQUESTID}`,
+        data,
+        {
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      ); //
+
+      UpdateTableRequest();
+
+    } catch (error) {
+      console.log("0");
+    }
+  };
+
   return (
     <div className="container mt-4">
       <h2>Lista de solicitudes {} </h2>
@@ -446,20 +478,32 @@ function RequestTable() {
                       )}
                     </td>
                     <td>{request.status}</td>
-
                     {request.prioridad === 0 && (
-                    <td>{<Button style={{width: "120px"}}> Sin Asignar </Button>} </td>
-                  )}
-
+                      <td>
+                        {
+                          <Button style={{ width: "120px" }}>
+                            {" "}
+                            Sin Asignar{" "}
+                          </Button>
+                        }{" "}
+                      </td>
+                    )}
                     {request.prioridad === 1 && (
-                    <td>{<Button style={{width: "70px"}}> Baja </Button>} </td>
-                  )}
-                  {request.prioridad === 2 && (
-                    <td>{<Button style={{width: "70px"}}> Media </Button>} </td>
-                  )}
-                  {request.prioridad === 3 && (
-                    <td>{<Button style={{width: "70px"}}> Alta </Button>} </td>
-                  )}                    <td>
+                      <td>
+                        {<Button style={{ width: "70px" }}> Baja </Button>}{" "}
+                      </td>
+                    )}
+                    {request.prioridad === 2 && (
+                      <td>
+                        {<Button style={{ width: "70px" }}> Media </Button>}{" "}
+                      </td>
+                    )}
+                    {request.prioridad === 3 && (
+                      <td>
+                        {<Button style={{ width: "70px" }}> Alta </Button>}{" "}
+                      </td>
+                    )}{" "}
+                    <td>
                       <Button variant="success">Autorizar</Button>{" "}
                       <Button variant="secondary">Descargar Documento</Button>{" "}
                       <Button
@@ -509,17 +553,30 @@ function RequestTable() {
                   <td>{request.status}</td>
 
                   {request.prioridad === 0 && (
-                    <td>{<Button style={{width: "120px"}}> Sin Asignar </Button>} </td>
+                    <td>
+                      {
+                        <Button style={{ width: "120px" }}>
+                          {" "}
+                          Sin Asignar{" "}
+                        </Button>
+                      }{" "}
+                    </td>
                   )}
 
                   {request.prioridad === 1 && (
-                    <td>{<Button style={{width: "70px"}}> Baja </Button>} </td>
+                    <td>
+                      {<Button style={{ width: "70px" }}> Baja </Button>}{" "}
+                    </td>
                   )}
                   {request.prioridad === 2 && (
-                    <td>{<Button style={{width: "70px"}}> Media </Button>} </td>
+                    <td>
+                      {<Button style={{ width: "70px" }}> Media </Button>}{" "}
+                    </td>
                   )}
                   {request.prioridad === 3 && (
-                    <td>{<Button style={{width: "70px"}}> Alta </Button>} </td>
+                    <td>
+                      {<Button style={{ width: "70px" }}> Alta </Button>}{" "}
+                    </td>
                   )}
 
                   <td>
@@ -615,6 +672,9 @@ function RequestTable() {
                   aria-label="Default select example"
                   style={{ width: "120px", backgroundColor: "#DC7F37" }}
                   onChange={handleChange}
+                  onClick={(e) => {
+                    handleUpdatePrioridad(e);
+                  }}
                   name="prioridad"
                   defaultValue={showRequest.prioridad}
                 >
@@ -638,7 +698,7 @@ function RequestTable() {
             </Modal.Footer>
           </Modal.Body>
         </Modal>
-      )} 
+      )}
 
       <Modal
         show={showHistoryModal}
