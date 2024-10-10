@@ -25,7 +25,7 @@ function TextControlsExample() {
     FirmaEmpleado: "0",
     FirmaJefeDepartamento: "0",
     FirmaJefe: "0",
-    Prioridad: 0,
+    Prioridad: "sin asignar",
     
   });
 
@@ -33,7 +33,7 @@ function TextControlsExample() {
   const [ConActivosFijosId, setConActivosFijosId] = useState(null);
   const [imageSelected,setImageSelected] = useState([]);
 
-  const Status = 1;
+  const Status = "Activo";
   // Obtener la fecha en formato año-mes-día y hora-minuto en GMT-7
   useEffect(() => {
     const getCurrentDateInGMT7 = () => {

@@ -17,7 +17,9 @@ import { DataTime, DateTime } from "luxon";
 import { useFetcher } from "react-router-dom";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import jsPDF from "jspdf";
+import SearchBar from "./SearchBar";
+import UpdateStatus from "./UpdateStatus";
+import DownloadPdf from "./DownloadPdf";
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
@@ -34,6 +36,8 @@ function RequestTable() {
   const [Historials, setHistorials] = useState([]);
   const [fecha, setFecha] = useState([]);
   const [prioridad, setPrioridad] = useState(null);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -54,6 +58,15 @@ function RequestTable() {
   const handleClose2 = () => {
     setShowHistoryModal(false);
   };
+  const[requestID, setRequestID] = useState(null);
+
+  
+  useEffect(() => {
+    if (requestID) {
+      handleShow(requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno);
+    }
+  }, [requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno]); // Add dependencies to trigger only when these values change
+
 
   const handleShow = async (
     requestID,
@@ -89,23 +102,27 @@ function RequestTable() {
     fecha: "",
     comentarios: "",
     prioridad: 0,
+    status: "Activo",
   });
 
   const handleAutorizar = async (e) => {
-   // const { prioridad } = formData;
+    // const { prioridad } = formData;
+    e.preventDefault();
 
     const data = new FormData();
+
+    const { prioridad } = formData;
 
     try {
       if (UserRole === "Administrador") {
         if (prioridad === 0) {
-          toast.error("eliga un nivel de prioridad antes de firmar");
+          toast.error("Elija un nivel de prioridad antes de firmar");
         } else {
           data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
-          //data.append("prioridad", prioridad);
+          data.append("prioridad", prioridad);
 
-          //console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
-         // console.log("prioridad", prioridad);
+          console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
+          console.log("prioridad", prioridad);
 
           const response = await axios.put(
             `https://localhost:7145/api/Request/${REQUESTID}`,
@@ -135,23 +152,25 @@ function RequestTable() {
               },
             }
           );
-          window.location.reload();
+          toast.success("Firmada Con exito");
+          await handleShow(requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno); // Refresh after update
+
         }
       }
 
       if (UserRole === "SuperAdministrador") {
         if (prioridad === 0) {
           data.append("firmaJefe", FirmaJefeDepartamento);
-         // data.append("prioridad", showRequest.prioridad);
+          data.append("prioridad", showRequest.prioridad);
 
           //console.log("firmaJefe", FirmaJefeDepartamento);
-         // console.log("prioridad", showRequest.prioridad);
+          // console.log("prioridad", showRequest.prioridad);
         } else {
           data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
-         // data.append("prioridad", prioridad);
+          data.append("prioridad", prioridad);
 
           //console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
-        //  console.log("prioridad", prioridad);
+          //  console.log("prioridad", prioridad);
         }
 
         const response = await axios.put(
@@ -180,15 +199,14 @@ function RequestTable() {
             },
           }
         );
-        window.location.reload();
+        await handleShow(requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno); // Refresh after update
+
+        
       }
     } catch (error) {
       console.error("Error updating the Request:", error);
     }
   };
-
-  // Obtener la fecha en formato año-mes-día y hora-minuto en GMT-7
-  useEffect(() => {}, []);
 
   const handleSubmitComentarios = async (e) => {
     e.preventDefault();
@@ -287,18 +305,37 @@ function RequestTable() {
 
   const UpdateTableRequest = () => {
     axios
-    .get(`https://localhost:7145/api/Request/`)
-    .then((response) => {
-      console.log("the request get sucessfully", response);
-      setRequests(response.data);
-      setLoading(false);
-    })
-    .catch((error) => {
-      console.log("error to get the request", error);
-      setError("El servidor no puede obtener las solicitudes");
-      setLoading(false);
-    });
-  }
+      .get(`https://localhost:7145/api/Request/`)
+      .then((response) => {
+        console.log("the request get sucessfully", response);
+        setRequests(response.data);
+        setLoading(false);
+        setFilteredData(response.data);
+      })
+      .catch((error) => {
+        console.log("error to get the request", error);
+        setError("El servidor no puede obtener las solicitudes");
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    // Filter data based on search term
+    const filtered = requests.filter(
+      (item) =>
+        item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.servicioSolicitado
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        item.solicitudDeServicioARealizar
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        item.fechaSolicitada.toString().includes(searchTerm.toLowerCase()) ||
+        item.status.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchTerm, requests]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -309,105 +346,14 @@ function RequestTable() {
     }));
   };
 
-  const handleDowloadPdf = async () => {
-    try {
-      console.log("requestId", showRequest.id);
-
-      const descripcion2 =
-        showRequest.nomEmpleados.direccionesICEES.descripcion;
-      const fechaSolicitada = new Date(
-        showRequest.fechaSolicitada
-      ).toLocaleDateString("es-ES", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-
-      const {
-        servicioSolicitado,
-        solicitudDeServicioARealizar,
-        descripcion,
-        firmaEmpleado,
-        firmaJefeDepartamento,
-        firmaJefe,
-        file,
-      } = showRequest;
-
-      const doc = new jsPDF();
-
-      // Add content to the PDF
-      doc.setFont("bold"); // Use helvetica bold instead
-      doc.setFontSize(14);
-      doc.text(
-        "SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA ",
-        20,
-        20
-      );
-      doc.text(" Y TECNOLOGIAS DE LA INFORMACION", 50, 30);
-
-      doc.setFontSize(16);
-      // Add the specific data from the response
-      doc.text(`Servicio solicitado: ${servicioSolicitado}`, 20, 40);
-      doc.text(`Fecha: ${fechaSolicitada}`, 20, 50);
-      doc.text(
-        `Solicitud de servicio a realizar: ${solicitudDeServicioARealizar}`,
-        20,
-        60
-      );
-      doc.text(`Area Administrativa requirente: ${descripcion2}`, 20, 70);
-      doc.text(`Solicitante: ${firmaEmpleado}`, 20, 80);
-      doc.text(`Descripcion: ${descripcion}`, 20, 90);
-
-      // Check if there is an image file
-      if (file) {
-        const baseURL = "https://localhost:7145"; // Replace this with your actual server URL
-        const fullImageUrl = `${baseURL}${file}`;
-
-        const img = new Image();
-        img.src = fullImageUrl;
-
-        await new Promise((resolve, reject) => {
-          img.onload = function () {
-            // Add the image to the PDF
-            doc.addImage(img, "JPEG", 20, 100, 140, 140); // Adjust the dimensions and position
-            resolve();
-          };
-
-          img.onerror = function (err) {
-            console.error("Failed to load image:", err, fullImageUrl);
-            reject(err); // Reject the promise on error
-          };
-        });
-      } else {
-        doc.text("No image provided", 20, 100);
-      }
-
-      doc.setFontSize(10);
-
-      doc.text(`solicitante:`, 20, 260);
-      doc.text(`${firmaEmpleado}`, 20, 280);
-      doc.text(`Aurizo `, 80, 260);
-      doc.text(`Unidad adm solicitante`, 80, 270);
-      doc.text(`${firmaJefeDepartamento}`, 80, 280);
-      doc.text(`Acepta insfreastructura y`, 140, 260);
-      doc.text(`Tecnologia de la Informacion`, 140, 270);
-      doc.text(`${firmaJefe}`, 140, 280);
-
-      // Save the PDF after the image has loaded
-      doc.save(`Solicitud ${showRequest.nomEmpleados.nomEmpClave}.pdf`);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    }
-  };
-
   const handleUpdatePrioridad = async (e) => {
     e.preventDefault();
-   
+
     const { prioridad } = formData;
 
     const data = new FormData();
 
-    data.append("prioridad",prioridad);
+    data.append("prioridad", prioridad);
 
     try {
       const response = await axios.put(
@@ -421,7 +367,6 @@ function RequestTable() {
       ); //
 
       UpdateTableRequest();
-
     } catch (error) {
       console.log("0");
     }
@@ -430,15 +375,14 @@ function RequestTable() {
   return (
     <div className="container mt-4">
       <h2>Lista de solicitudes {} </h2>
-
+      <br />
+      <SearchBar setSearchTerm={setSearchTerm} /> <br />
       {loading && (
         <Spinner animation="border" role="status">
           <span className="sr-only">Cargando..</span>
         </Spinner>
       )}
-
       {error && <Alert variant="danger">{error}</Alert>}
-
       {!loading && !error && (
         <Table striped bordered hover>
           <thead>
@@ -455,17 +399,11 @@ function RequestTable() {
 
           {UserRole === "SuperAdministrador" && (
             <tbody>
-              {requests.map((request) =>
+              {filteredData.map((request) =>
                 request.firmaJefeDepartamento !== "0" ? (
                   <tr key={request.id}>
                     <td>{request.id}</td>
-                    <td>
-                      {request.nomEmpleados.nomEmpNombre +
-                        " " +
-                        request.nomEmpleados.nomEmpPaterno +
-                        " " +
-                        request.nomEmpleados.nomEmpMaterno}
-                    </td>
+                    <td>{request.firmaEmpleado}</td>
                     <td>{request.descripcion}</td>
                     <td>
                       {new Date(request.fechaSolicitada).toLocaleDateString(
@@ -478,31 +416,14 @@ function RequestTable() {
                       )}
                     </td>
                     <td>{request.status}</td>
-                    {request.prioridad === 0 && (
-                      <td>
-                        {
-                          <Button style={{ width: "120px" }}>
-                            {" "}
-                            Sin Asignar{" "}
-                          </Button>
-                        }{" "}
-                      </td>
-                    )}
-                    {request.prioridad === 1 && (
-                      <td>
-                        {<Button style={{ width: "70px" }}> Baja </Button>}{" "}
-                      </td>
-                    )}
-                    {request.prioridad === 2 && (
-                      <td>
-                        {<Button style={{ width: "70px" }}> Media </Button>}{" "}
-                      </td>
-                    )}
-                    {request.prioridad === 3 && (
-                      <td>
-                        {<Button style={{ width: "70px" }}> Alta </Button>}{" "}
-                      </td>
-                    )}{" "}
+                    <td>
+                      {
+                        <Button style={{ width: "120px" }}>
+                          {" "}
+                          {request.prioridad}{" "}
+                        </Button>
+                      }{" "}
+                    </td>{" "}
                     <td>
                       <Button variant="success">Autorizar</Button>{" "}
                       <Button variant="secondary">Descargar Documento</Button>{" "}
@@ -529,16 +450,10 @@ function RequestTable() {
 
           {UserRole === "Administrador" && (
             <tbody>
-              {requests.map((request) => (
+              {filteredData.map((request) => (
                 <tr key={request.id}>
                   <td>{request.id}</td>
-                  <td>
-                    {request.nomEmpleados.nomEmpNombre +
-                      " " +
-                      request.nomEmpleados.nomEmpPaterno +
-                      " " +
-                      request.nomEmpleados.nomEmpMaterno}
-                  </td>
+                  <td>{request.firmaEmpleado}</td>
                   <td>{request.descripcion}</td>
                   <td>
                     {new Date(request.fechaSolicitada).toLocaleDateString(
@@ -552,32 +467,14 @@ function RequestTable() {
                   </td>
                   <td>{request.status}</td>
 
-                  {request.prioridad === 0 && (
-                    <td>
-                      {
-                        <Button style={{ width: "120px" }}>
-                          {" "}
-                          Sin Asignar{" "}
-                        </Button>
-                      }{" "}
-                    </td>
-                  )}
-
-                  {request.prioridad === 1 && (
-                    <td>
-                      {<Button style={{ width: "70px" }}> Baja </Button>}{" "}
-                    </td>
-                  )}
-                  {request.prioridad === 2 && (
-                    <td>
-                      {<Button style={{ width: "70px" }}> Media </Button>}{" "}
-                    </td>
-                  )}
-                  {request.prioridad === 3 && (
-                    <td>
-                      {<Button style={{ width: "70px" }}> Alta </Button>}{" "}
-                    </td>
-                  )}
+                  <td>
+                    {
+                      <Button style={{ width: "120px" }}>
+                        {" "}
+                        {request.prioridad}{" "}
+                      </Button>
+                    }{" "}
+                  </td>
 
                   <td>
                     <Button
@@ -601,7 +498,6 @@ function RequestTable() {
           )}
         </Table>
       )}
-
       {loading2 && (
         <Modal
           show={show}
@@ -654,16 +550,16 @@ function RequestTable() {
                   onChange={handleChange}
                   name="prioridad"
                   disabled={
-                    showRequest.prioridad === 1 ||
-                    showRequest.prioridad === 2 ||
-                    showRequest.prioridad === 3
+                    showRequest.prioridad === "Baja" ||
+                    showRequest.prioridad === "Alta" ||
+                    showRequest.prioridad === "Media"
                   } // Disable if prioridad is 1, 2, or 3
                   defaultValue={showRequest.prioridad}
                 >
-                  <option value="0">Prioridad</option>
-                  <option value="1">Baja</option>
-                  <option value="2">Media</option>
-                  <option value="3">Alta</option>
+                  <option value="Prioridad">Prioridad</option>
+                  <option value="Baja">Baja</option>
+                  <option value="Media">Media</option>
+                  <option value="Alta">Alta</option>
                 </Form.Select>
               )}
 
@@ -678,28 +574,25 @@ function RequestTable() {
                   name="prioridad"
                   defaultValue={showRequest.prioridad}
                 >
-                  <option value="0">Prioridad</option>
-                  <option value="1">Baja</option>
-                  <option value="2">Media</option>
-                  <option value="3">Alta</option>
-                  <option value="3">hola</option>
+                  <option value="Prioridad">Prioridad</option>
+                  <option value="Baja">Baja</option>
+                  <option value="Media">Media</option>
+                  <option value="Alta">Alta</option>
                 </Form.Select>
               )}
+              {UserRole === "SuperAdministrador" && (
+                <UpdateStatus
+                  handleChange={handleChange}
+                  showRequest={showRequest}
+                  formData={formData}
+                ></UpdateStatus>
+              )}
 
-              <Button
-                variant="primary"
-                onClick={(e) => {
-                  handleDowloadPdf(e);
-                }}
-                style={{ backgroundColor: "#217ABF" }}
-              >
-                Descargar
-              </Button>
+              <DownloadPdf showRequest={showRequest}></DownloadPdf>
             </Modal.Footer>
           </Modal.Body>
         </Modal>
       )}
-
       <Modal
         show={showHistoryModal}
         onHide={handleClose2}
