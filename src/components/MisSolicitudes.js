@@ -8,6 +8,7 @@ import FormSolicitudTable from "./FormSolicitudTable";
 import "./styles.css";
 import HistoryComments from "./HistoryComments";
 import jsPDF from "jspdf";
+import DownloadPdf from "./DownloadPdf";
 
 function MisSolicitudes() {
   const [Request, setRequests] = useState([]);
@@ -40,134 +41,52 @@ function MisSolicitudes() {
   };
 
   const handleShow1 = (id) => {
-   
-      axios
-        .get(`https://localhost:7145/api/Request/${id}`, {
-          withCredentials: true,
-        })
-        .then((response) => {
-          setShowRequests(response.data);
-          console.log("Show Request get sucessfully1", response.data);
-          setLoading(true);
-        })
-        .catch((error) => {
-          console.log("dont show request", error);
-        });
-    
+    axios
+      .get(`https://localhost:7145/api/Request/${id}`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setShowRequests(response.data);
+        console.log("Show Request get sucessfully1", response.data);
+        setLoading(true);
+      })
+      .catch((error) => {
+        console.log("dont show request", error);
+      });
   };
 
   const handleShow2 = (id) => {
     axios
-    .get(`https://localhost:7145/api/Request/${id}`) // Replace with your actual API endpoint
-    .then((response) => {
-      setHistorials(response.data.historials); // Update state with the historials array
-    })
-    .catch((error) => {
-      console.error("Error fetching historials:", error);
-    });
-  }
-
-  const handleDowloadPdf = async () => {
-    try {
-
-      const descripcion2 = showRequest.nomEmpleados.direccionesICEES.descripcion;
-      const fechaSolicitada = new Date(showRequest.fechaSolicitada).toLocaleDateString("es-ES", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
+      .get(`https://localhost:7145/api/Request/${id}`) // Replace with your actual API endpoint
+      .then((response) => {
+        setHistorials(response.data.historials); // Update state with the historials array
       })
-      
-      const {
-        servicioSolicitado,
-        solicitudDeServicioARealizar,
-        descripcion,
-        firmaEmpleado,
-        firmaJefeDepartamento,
-        firmaJefe,
-        file,
-        
-      } = showRequest;
-
-      const doc = new jsPDF();
-
-      // Add content to the PDF
-      doc.setFont( "bold"); // Use helvetica bold instead
-      doc.setFontSize(14);
-      doc.text(
-        "SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA ",
-        20,
-        20
-      );
-      doc.text(" Y TECNOLOGIAS DE LA INFORMACION", 50, 30);
-
-      doc.setFontSize(16);
-      // Add the specific data from the response
-      doc.text(`Servicio solicitado: ${servicioSolicitado}`, 20, 40);
-      doc.text(`Fecha: ${fechaSolicitada}`, 20, 50);
-      doc.text(
-        `Solicitud de servicio a realizar: ${solicitudDeServicioARealizar}`,
-        20,
-        60
-      );
-      doc.text(`Area Administrativa requirente: ${descripcion2}`, 20, 70);
-      doc.text(`Solicitante: ${firmaEmpleado}`, 20, 80);
-      doc.text(`Descripcion: ${descripcion}`, 20, 90);
-
-      // Check if there is an image file
-      if (file) {
-        const baseURL = "https://localhost:7145"; // Replace this with your actual server URL
-        const fullImageUrl = `${baseURL}${file}`;
-
-        const img = new Image();
-        img.src = fullImageUrl;
-
-        await new Promise((resolve, reject) => {
-          img.onload = function () {
-            // Add the image to the PDF
-            doc.addImage(img, "JPEG", 20, 100, 140, 140); // Adjust the dimensions and position
-            resolve();
-          };
-
-          img.onerror = function (err) {
-            console.error("Failed to load image:", err, fullImageUrl);
-            reject(err); // Reject the promise on error
-          };
-        });
-
-        
-      } else {
-        doc.text("No image provided", 20, 100);
-      }
-      
-      doc.setFontSize(10);
-
-      
-      doc.text(`solicitante:`,20,260);
-      doc.text(`${firmaEmpleado}`,20,280);
-      doc.text(`Aurizo `,80,260);
-      doc.text(`Unidad adm solicitante`,80,270); 
-      doc.text(`${firmaJefeDepartamento}`,80,280);
-      doc.text(`Acepta insfreastructura y`,140,260);
-      doc.text(`Tecnologia de la Informacion`,140,270);
-      doc.text(`${firmaJefe}`,140,280)
-
-      // Save the PDF after the image has loaded
-      doc.save(`Solicitud ${showRequest.nomEmpleados.nomEmpClave}.pdf`);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    }
+      .catch((error) => {
+        console.error("Error fetching historials:", error);
+      });
   };
+
+  
 
   return (
     <div className="container mt-4">
       <h2>Tus Solicitudes</h2>
-      <Table striped bordered hover>
-        <thead>
+      <Table striped bordered hover style={{ tableLayout: 'fixed', width: '100%' }}>
+      <thead>
           <tr>
-            <th>Servicio Solicitado</th>
-            <th>Descripcion</th>
-            <th>Fecha</th>
-            <th>Estatus</th>
+            <th style={{width:"170px"}}>Servicio Solicitado</th>
+            <th
+              style={{
+                width: "200px",
+                //whiteSpace: "nowrap",
+                overflow: "hidden",
+                //textOverflow: "ellipsis",
+              }}
+            >
+              Descripcion
+            </th>{" "}
+            <th style={{width:"100px"}}>Fecha</th>
+            <th style={{width:"80px"}}>Estatus</th>
             <th style={{ textAlign: "center" }}>Acciones</th>
             <th style={{ textAlign: "center" }}>Historial</th>
           </tr>
@@ -175,16 +94,27 @@ function MisSolicitudes() {
         <tbody>
           {Request.map((Reques, index) => (
             <tr key={Reques.id}>
-              <td>{Reques.servicioSolicitado}</td>
-              <td>{Reques.descripcion}</td>
-              <td>
+              <td width={"150px"}>{Reques.servicioSolicitado}</td>
+              <td
+                style={{
+                  width: "300px",
+                 // whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  //textOverflow: "ellipsis",
+                  fontWeight: 'normal' // Quita las negritas
+
+                }}
+              >
+                {Reques.descripcion}
+              </td>
+              <td width={"150px"}>
                 {new Date(Reques.fechaSolicitada).toLocaleDateString("es-ES", {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",
                 })}
               </td>
-              <td>{Reques.status}</td>
+              <td width={"100px"}>{Reques.status}</td>
 
               <td style={{ textAlign: "center" }}>
                 <Button
@@ -193,11 +123,10 @@ function MisSolicitudes() {
                     setShow(true);
                   }}
                   variant="primary"
-                  style={{backgroundColor:'#217ABF'}}
+                  style={{ backgroundColor: "#217ABF" }}
                 >
                   <FontAwesomeIcon icon={faEye} />
                 </Button>{" "}
-                
               </td>
 
               <td style={{ textAlign: "center" }}>
@@ -205,10 +134,8 @@ function MisSolicitudes() {
                   onClick={() => {
                     handleShow2(Reques.id);
                     setShowModalHistoryComments(true);
-                    
                   }}
-                  style={{backgroundColor:'#217ABF'}}
-
+                  style={{ backgroundColor: "#217ABF" }}
                 >
                   <FontAwesomeIcon icon={faEye} />
                 </Button>
@@ -231,9 +158,7 @@ function MisSolicitudes() {
           {loading && <FormSolicitudTable showRequest={showRequest} />}
 
           <Modal.Footer>
-            <Button variant="primary" onClick={handleDowloadPdf}>
-              Dercargar documento
-            </Button>
+          <DownloadPdf showRequest={showRequest}></DownloadPdf>
           </Modal.Footer>
         </Modal.Body>
       </Modal>

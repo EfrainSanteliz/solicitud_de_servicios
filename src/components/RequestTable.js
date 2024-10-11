@@ -58,15 +58,13 @@ function RequestTable() {
   const handleClose2 = () => {
     setShowHistoryModal(false);
   };
-  const[requestID, setRequestID] = useState(null);
+  const [requestID, setRequestID] = useState(null);
 
-  
   useEffect(() => {
     if (requestID) {
       handleShow(requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno);
     }
   }, [requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno]); // Add dependencies to trigger only when these values change
-
 
   const handleShow = async (
     requestID,
@@ -153,8 +151,12 @@ function RequestTable() {
             }
           );
           toast.success("Firmada Con exito");
-          await handleShow(requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno); // Refresh after update
-
+          await handleShow(
+            requestID,
+            nomEmpNombre,
+            nomEmpPaterno,
+            nomEmpMaterno
+          ); // Refresh after update
         }
       }
 
@@ -200,8 +202,6 @@ function RequestTable() {
           }
         );
         await handleShow(requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno); // Refresh after update
-
-        
       }
     } catch (error) {
       console.error("Error updating the Request:", error);
@@ -384,16 +384,29 @@ function RequestTable() {
       )}
       {error && <Alert variant="danger">{error}</Alert>}
       {!loading && !error && (
-        <Table striped bordered hover>
+        <Table
+          striped
+          bordered
+          hover
+          style={{ tableLayout: "fixed", width: "100%" }}
+        >
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Nombre del empleado</th>
-              <th>Descripción</th>
-              <th>Fecha</th>
-              <th>Estado</th>
-              <th>Prioridad</th>
-              <th>Acciones</th>
+              <th style={{ width: "150px" }}>Nombre del empleado</th>
+              <th
+                style={{
+                  width: "200px",
+                  whiteSpace: "nowrap", // Evita que el texto haga wrap a otra línea
+                  overflow: "hidden", // Oculta el texto que no cabe
+                  textOverflow: "ellipsis", // Añade los puntos suspensivos (...)
+                }}
+              >
+                Descripción
+              </th>
+              <th style={{ width: "100px" }}>Fecha</th>
+              <th style={{ width: "80px" }}>Estatus</th>
+              <th style={{ width: "80px" }}>Prioridad</th>
+              <th style={{ width: "100px", textAlign: "center" }}>Acciones</th>
             </tr>
           </thead>
 
@@ -402,9 +415,18 @@ function RequestTable() {
               {filteredData.map((request) =>
                 request.firmaJefeDepartamento !== "0" ? (
                   <tr key={request.id}>
-                    <td>{request.id}</td>
-                    <td>{request.firmaEmpleado}</td>
-                    <td>{request.descripcion}</td>
+                    <td style={{ width: "150px" }}>{request.firmaEmpleado}</td>
+                    <td
+                      style={{
+                        width: "300px",
+                        whiteSpace: "nowrap", // Evita que el texto haga wrap
+                        overflow: "hidden", // Oculta el texto que no cabe
+                        textOverflow: "ellipsis", // Añade puntos suspensivos
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {request.descripcion}
+                    </td>
                     <td>
                       {new Date(request.fechaSolicitada).toLocaleDateString(
                         "es-ES",
@@ -417,31 +439,30 @@ function RequestTable() {
                     </td>
                     <td>{request.status}</td>
                     <td>
-                      {
-                        <Button style={{ width: "120px" }}>
-                          {" "}
-                          {request.prioridad}{" "}
-                        </Button>
-                      }{" "}
-                    </td>{" "}
-                    <td>
-                      <Button variant="success">Autorizar</Button>{" "}
-                      <Button variant="secondary">Descargar Documento</Button>{" "}
-                      <Button
-                        variant="primary"
-                        onClick={() =>
-                          handleShow(
-                            request.id,
-                            request.nomEmpleados.nomEmpNombre,
-                            request.nomEmpleados.nomEmpPaterno,
-                            request.nomEmpleados.nomEmpMaterno
-                          )
-                        }
-                        style={{ backgroundColor: "#217ABF" }}
-                      >
-                        Ver Detalles
+                      <Button style={{ width: "120px" }}>
+                        {request.prioridad}
                       </Button>
                     </td>
+                    <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                    <Button
+                      variant="primary"
+                      onClick={() =>
+                        handleShow(
+                          request.id,
+                          request.nomEmpleados.nomEmpNombre,
+                          request.nomEmpleados.nomEmpPaterno,
+                          request.nomEmpleados.nomEmpMaterno
+                        )
+                      }
+                      style={{
+                        backgroundColor: "#217ABF",
+                        width: "70px",
+                        margin: "0 auto",
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faEye} style={{ width: "50px" }} />
+                    </Button>
+                  </td>
                   </tr>
                 ) : null
               )}
@@ -452,9 +473,17 @@ function RequestTable() {
             <tbody>
               {filteredData.map((request) => (
                 <tr key={request.id}>
-                  <td>{request.id}</td>
                   <td>{request.firmaEmpleado}</td>
-                  <td>{request.descripcion}</td>
+                  <td
+                    style={{
+                      width: "250px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {request.descripcion}
+                  </td>
                   <td>
                     {new Date(request.fechaSolicitada).toLocaleDateString(
                       "es-ES",
@@ -466,17 +495,12 @@ function RequestTable() {
                     )}
                   </td>
                   <td>{request.status}</td>
-
                   <td>
-                    {
-                      <Button style={{ width: "120px" }}>
-                        {" "}
-                        {request.prioridad}{" "}
-                      </Button>
-                    }{" "}
+                    <Button style={{ width: "120px" }}>
+                      {request.prioridad}
+                    </Button>
                   </td>
-
-                  <td>
+                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                     <Button
                       variant="primary"
                       onClick={() =>
@@ -487,9 +511,13 @@ function RequestTable() {
                           request.nomEmpleados.nomEmpMaterno
                         )
                       }
-                      style={{ backgroundColor: "#217ABF" }}
+                      style={{
+                        backgroundColor: "#217ABF",
+                        width: "70px",
+                        margin: "0 auto",
+                      }}
                     >
-                      <FontAwesomeIcon icon={faEye} />
+                      <FontAwesomeIcon icon={faEye} style={{ width: "50px" }} />
                     </Button>
                   </td>
                 </tr>

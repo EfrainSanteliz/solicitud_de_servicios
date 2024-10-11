@@ -4,20 +4,35 @@ import Form from "react-bootstrap/Form";
 import "./styles.css";
 
 function FormSolicitudTable({ showRequest }) {
-  const fullyName = showRequest.nomEmpleados.nomEmpNombre + " " + showRequest.nomEmpleados.nomEmpPaterno + " " + showRequest.nomEmpleados.nomEmpMaterno;
+  const fullyName =
+    showRequest.nomEmpleados.nomEmpNombre +
+    " " +
+    showRequest.nomEmpleados.nomEmpPaterno +
+    " " +
+    showRequest.nomEmpleados.nomEmpMaterno;
 
-  const downloadPDF = () => { };
+  const downloadPDF = () => {};
 
-  const [imageURL,setImageURL] = useState([]);
+  const [imageURL, setImageURL] = useState([]);
 
-  console.log("image",showRequest.file);
+  console.log("image", showRequest.file);
 
-  useEffect (() => {
+  useEffect(() => {
     if (showRequest.file) {
-      setImageURL(`https://localhost:7145${showRequest.file}`)
+      setImageURL(`https://localhost:7145${showRequest.file}`);
     }
-  },[showRequest.file]);
- 
+  }, [showRequest.file]);
+
+const recurso = 1;
+
+if(showRequest.conActivosFijos === null) {
+    const recurso =
+      showRequest.conActivosFijos.afClave +
+      " " +
+      showRequest.conActivosFijos.afDescripcion;
+}
+
+  console.log("ser", showRequest.servicioSolicitado);
 
   return (
     <div>
@@ -110,6 +125,20 @@ function FormSolicitudTable({ showRequest }) {
                 </Form.Control>
               </>
             )}
+
+            {showRequest.servicioSolicitado === "Mantenimiento" && (
+              <>
+                <Form.Control
+                  as="select"
+                  name="infraestructuraVozDatos" // React-friendly name without spaces
+                  value={showRequest.servicioSolicitado} // Dynamic value from showRequest
+                  disabled // Keeps the field disabled since it's for "Mantenimiento"
+                >
+                  <option value="Mantenimiento">Mantenimiento</option>{" "}
+                  {/* Add this */}
+                </Form.Control>
+              </>
+            )}
           </div>
 
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -131,6 +160,19 @@ function FormSolicitudTable({ showRequest }) {
               disabled
             />
           </div>
+
+          {showRequest.conActivosFijos && (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Form.Label>Recurso que presenta el problema </Form.Label>
+              <Form.Control
+                type="text"
+                name="recurso"
+                value={recurso}
+                disabled
+              />
+            </div>
+          )}
+
           <br />
           <Form.Label>DESCRIPCION DETALLADA SEL SERVICIO SOLICITADO</Form.Label>
           <Form.Control
@@ -145,7 +187,7 @@ function FormSolicitudTable({ showRequest }) {
             <img
               src={imageURL}
               alt="Uploaded"
-              style={{ maxWidth: '800px', maxHeight: '800px' }}
+              style={{ maxWidth: "800px", maxHeight: "800px" }}
             />
           </div>
           <Table id="firmas" striped bordered hover>
@@ -171,8 +213,7 @@ function FormSolicitudTable({ showRequest }) {
                   {showRequest.firmaJefeDepartamento !== 0 &&
                     showRequest.firmaJefeDepartamento}
                 </td>
-                <td>{showRequest.firmaJefe !== 0 &&
-                  showRequest.firmaJefe}</td>
+                <td>{showRequest.firmaJefe !== 0 && showRequest.firmaJefe}</td>
               </tr>
             </tbody>
 

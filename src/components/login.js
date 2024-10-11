@@ -21,22 +21,26 @@ function Login() {
       console.log("Login successful:", response.data);
       alert("Login successful!");
   
-      localStorage.setItem("userid", response.data.empleadoID);
-      localStorage.setItem("nomEmpNombre",response.data.nomEmpNombre);
-      localStorage.setItem("nomEmpPaterno",response.data.nomEmpPaterno);
-      localStorage.setItem("nomEmpMaterno",response.data.nomEmpMaterno);
-      localStorage.setItem("UserRole",response.data.userRole);
+      localStorage.setItem("userid", response.data.user.empleadoID);
+      localStorage.setItem("nomEmpNombre",response.data.user.nomEmpNombre);
+      localStorage.setItem("nomEmpPaterno",response.data.user.nomEmpPaterno);
+      localStorage.setItem("nomEmpMaterno",response.data.user.nomEmpMaterno);
+      localStorage.setItem("UserRole",response.data.user.userRole);
+      localStorage.setItem("token",response.data.token);
+
   
-      console.log("UserRole:", response.data.userRole);
+      console.log("UserRole:", response.data.user.userRole);
+      console.log("token:", response.data.token);
+
       console.log("Navigating to the correct page...");
   
-      if (response.data.userRole === "UsuarioNormal") {
+      if (response.data.user.userRole === "UsuarioNormal") {
         console.log("Navigating to /Welcome");
         navigate("/Welcome");
-      } else if (response.data.userRole === "Administrador") {
+      } else if (response.data.user.userRole === "Administrador") {
         console.log("Navigating to /WelcomeAdministrador");
         navigate("/WelcomeAdministrador");
-      } else if (response.data.userRole === "SuperAdministrador") {
+      } else if (response.data.user.userRole === "SuperAdministrador") {
         console.log("Navigating to /WelcomeSuperAdministrador");
         navigate("/WelcomeSuperAdministrador");
       }

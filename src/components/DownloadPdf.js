@@ -39,19 +39,35 @@ function DownloadPdf({showRequest}) {
       );
       doc.text(" Y TECNOLOGIAS DE LA INFORMACION", 50, 30);
 
-      doc.setFontSize(16);
+      doc.setFontSize(12);
       // Add the specific data from the response
       doc.text(`Servicio solicitado: ${servicioSolicitado}`, 20, 40);
       doc.text(`Fecha: ${fechaSolicitada}`, 20, 50);
-      doc.text(
-        `Solicitud de servicio a realizar: ${solicitudDeServicioARealizar}`,
-        20,
-        60
-      );
+
+      if (solicitudDeServicioARealizar && solicitudDeServicioARealizar !== "0") {
+        doc.text(
+          `Solicitud de servicio a realizar: ${solicitudDeServicioARealizar}`,
+          20,
+          60
+        );
+      }
+
+      if (solicitudDeServicioARealizar && solicitudDeServicioARealizar === "0") {
+        doc.text(
+          `recurso que presenta el problema: ${showRequest.conActivosFijos.afClave}`,
+          20,
+          60
+        );
+      }
+      
+
+    
+      
       doc.text(`Area Administrativa requirente: ${descripcion2}`, 20, 70);
       doc.text(`Solicitante: ${firmaEmpleado}`, 20, 80);
-      doc.text(`Descripcion: ${descripcion}`, 20, 90);
-
+      const descriptionLines = doc.splitTextToSize(descripcion,170); // 170 is the max line width
+      doc.text('Descripcion:',20,90)
+      doc.text(descriptionLines, 20, 95); // Start at position 20, 90
       // Check if there is an image file
       if (file) {
         const baseURL = "https://localhost:7145"; // Replace this with your actual server URL
@@ -63,7 +79,7 @@ function DownloadPdf({showRequest}) {
         await new Promise((resolve, reject) => {
           img.onload = function () {
             // Add the image to the PDF
-            doc.addImage(img, "JPEG", 20, 100, 140, 140); // Adjust the dimensions and position
+            doc.addImage(img, "JPEG", 20, 130, 120, 120); // Adjust the dimensions and position
             resolve();
           };
 

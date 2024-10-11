@@ -21,7 +21,7 @@ function Navbar2() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link href="#home">Salir</Nav.Link>
+              <Nav.Link href="/login">Salir</Nav.Link>
             
             </Nav>
           </Navbar.Collapse>
