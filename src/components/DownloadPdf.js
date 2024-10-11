@@ -39,7 +39,7 @@ function DownloadPdf({showRequest}) {
       );
       doc.text(" Y TECNOLOGIAS DE LA INFORMACION", 50, 30);
 
-      doc.setFontSize(16);
+      doc.setFontSize(12);
       // Add the specific data from the response
       doc.text(`Servicio solicitado: ${servicioSolicitado}`, 20, 40);
       doc.text(`Fecha: ${fechaSolicitada}`, 20, 50);
@@ -63,7 +63,7 @@ function DownloadPdf({showRequest}) {
         await new Promise((resolve, reject) => {
           img.onload = function () {
             // Add the image to the PDF
-            doc.addImage(img, "JPEG", 20, 100, 140, 140); // Adjust the dimensions and position
+            doc.addImage(img, "JPEG", 20, 120, 120, 120); // Adjust the dimensions and position
             resolve();
           };
 
