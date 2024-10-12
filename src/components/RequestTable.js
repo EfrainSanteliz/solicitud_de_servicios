@@ -66,18 +66,7 @@ function RequestTable() {
     }
   }, [requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno]); // Add dependencies to trigger only when these values change
 
-  const handleShow = async (
-    requestID,
-    nomEmpNombre,
-    nomEmpPaterno,
-    nomEmpMaterno
-  ) => {
-    setShow(true);
-    setNomEmpNombre(nomEmpNombre);
-    setNomEmpPaterno(nomEmpPaterno);
-    setNomEmpMaterno(nomEmpMaterno);
-    SETREQUESTID(requestID);
-
+  const showRequest2 =  async (requestID) => {
     try {
       const response = await axios.get(
         `https://localhost:7145/api/Request/${requestID}`
@@ -90,6 +79,21 @@ function RequestTable() {
     } catch (error) {
       console.error("Error updating the Request:", error);
     }
+  }
+
+  const handleShow = async (
+    requestID,
+    nomEmpNombre,
+    nomEmpPaterno,
+    nomEmpMaterno
+  ) => {
+    setShow(true);
+    setNomEmpNombre(nomEmpNombre);
+    setNomEmpPaterno(nomEmpPaterno);
+    setNomEmpMaterno(nomEmpMaterno);
+    SETREQUESTID(requestID);
+
+    showRequest2(requestID);
   };
 
   const handleHistory = () => {
@@ -133,8 +137,6 @@ function RequestTable() {
           );
           console.log("update Request Sucesfully", response);
 
-          toast.success("Firmada Con exito");
-          console.log("Request Update Sucessfully", response);
           const encabezado =
             "tu solicitud ha sido firmada por tu jede de departamento";
           const cuerpo =
@@ -151,12 +153,8 @@ function RequestTable() {
             }
           );
           toast.success("Firmada Con exito");
-          await handleShow(
-            requestID,
-            nomEmpNombre,
-            nomEmpPaterno,
-            nomEmpMaterno
-          ); // Refresh after update
+          showRequest2(REQUESTID);
+
         }
       }
 
@@ -201,7 +199,9 @@ function RequestTable() {
             },
           }
         );
-        await handleShow(requestID, nomEmpNombre, nomEmpPaterno, nomEmpMaterno); // Refresh after update
+        showRequest2(REQUESTID);
+
+        
       }
     } catch (error) {
       console.error("Error updating the Request:", error);

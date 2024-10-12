@@ -221,7 +221,7 @@ function TextControlsExample() {
                   subir informacion al portal web
                 </option>
                 <option value="cambio en plasa IBCESS">
-                  cambio en palsa IBCESS
+                  cambio en plasa IBCESS
                 </option>
                 <option value="cambio en plataforma WEB">
                   cambio en plataforma WEB

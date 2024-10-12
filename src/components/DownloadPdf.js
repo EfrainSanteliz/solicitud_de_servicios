@@ -40,6 +40,7 @@ function DownloadPdf({showRequest}) {
       doc.text(" Y TECNOLOGIAS DE LA INFORMACION", 50, 30);
 
       doc.setFontSize(12);
+      doc.setFontSize(12);
       // Add the specific data from the response
       doc.text(`Servicio solicitado: ${servicioSolicitado}`, 20, 40);
       doc.text(`Fecha: ${fechaSolicitada}`, 20, 50);
