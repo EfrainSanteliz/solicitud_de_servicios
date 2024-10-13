@@ -181,8 +181,8 @@ function TextControlsExample() {
             label="Mantenimiento a equipo de computo etc."
             name="servicioSolicitado" // Ensure this matches the state key
             type="radio"
-            value="Mantenimiento"
-            checked={formData.servicioSolicitado === "Mantenimiento"}
+            value="Infraestructura voz/datos"
+            checked={formData.servicioSolicitado === "Infraestructura voz/datos"}
             id="inline-radio-1"
             onChange={(e)=> {handleChange(e);handleRadioChange(e);}}
           />

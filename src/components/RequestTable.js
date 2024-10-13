@@ -460,7 +460,7 @@ function RequestTable() {
                         margin: "0 auto",
                       }}
                     >
-                      <FontAwesomeIcon icon={faEye} style={{ width: "50px" }} />
+                      <FontAwesomeIcon icon={faEye} style={{ }} />
                     </Button>
                   </td>
                   </tr>
@@ -496,7 +496,7 @@ function RequestTable() {
                   </td>
                   <td>{request.status}</td>
                   <td>
-                    <Button style={{ width: "120px" }}>
+                    <Button style={{backgroundColor: "#217ABF",}}>
                       {request.prioridad}
                     </Button>
                   </td>
@@ -513,11 +513,10 @@ function RequestTable() {
                       }
                       style={{
                         backgroundColor: "#217ABF",
-                        width: "70px",
                         margin: "0 auto",
                       }}
                     >
-                      <FontAwesomeIcon icon={faEye} style={{ width: "50px" }} />
+                      <FontAwesomeIcon icon={faEye}  />
                     </Button>
                   </td>
                 </tr>

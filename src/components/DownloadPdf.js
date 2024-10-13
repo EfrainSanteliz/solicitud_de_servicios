@@ -45,7 +45,7 @@ function DownloadPdf({showRequest}) {
       doc.text(`Servicio solicitado: ${servicioSolicitado}`, 20, 40);
       doc.text(`Fecha: ${fechaSolicitada}`, 20, 50);
 
-      if (solicitudDeServicioARealizar && solicitudDeServicioARealizar !== "0") {
+      if (solicitudDeServicioARealizar !== "0") {
         doc.text(
           `Solicitud de servicio a realizar: ${solicitudDeServicioARealizar}`,
           20,
@@ -53,16 +53,15 @@ function DownloadPdf({showRequest}) {
         );
       }
 
-      if (solicitudDeServicioARealizar && solicitudDeServicioARealizar === "0") {
+      if (solicitudDeServicioARealizar === "0") {
         doc.text(
-          `recurso que presenta el problema: ${showRequest.conActivosFijos.afClave}`,
+          `recurso que presenta el problema: ${showRequest.conActivosFijos.afClave +
+            " " +
+            showRequest.conActivosFijos.afDescripcion}`,
           20,
           60
         );
       }
-      
-
-    
       
       doc.text(`Area Administrativa requirente: ${descripcion2}`, 20, 70);
       doc.text(`Solicitante: ${firmaEmpleado}`, 20, 80);

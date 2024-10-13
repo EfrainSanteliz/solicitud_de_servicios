@@ -9,6 +9,7 @@ import "./styles.css";
 import HistoryComments from "./HistoryComments";
 import jsPDF from "jspdf";
 import DownloadPdf from "./DownloadPdf";
+import DownloadPdfAsp from "./DownloadPdfAsp";
 
 function MisSolicitudes() {
   const [Request, setRequests] = useState([]);
@@ -87,8 +88,8 @@ function MisSolicitudes() {
             </th>{" "}
             <th style={{width:"100px"}}>Fecha</th>
             <th style={{width:"80px"}}>Estatus</th>
-            <th style={{ textAlign: "center" }}>Acciones</th>
-            <th style={{ textAlign: "center" }}>Historial</th>
+            <th style={{ width:"80px",textAlign: "center" }}>Acciones</th>
+            <th style={{width:"80px", textAlign: "center" }}>Historial</th>
           </tr>
         </thead>
         <tbody>
@@ -158,7 +159,7 @@ function MisSolicitudes() {
           {loading && <FormSolicitudTable showRequest={showRequest} />}
 
           <Modal.Footer>
-          <DownloadPdf showRequest={showRequest}></DownloadPdf>
+          <DownloadPdfAsp showRequest={showRequest}></DownloadPdfAsp>
           </Modal.Footer>
         </Modal.Body>
       </Modal>

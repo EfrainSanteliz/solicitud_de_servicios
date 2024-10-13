@@ -11,7 +11,6 @@ function FormSolicitudTable({ showRequest }) {
     " " +
     showRequest.nomEmpleados.nomEmpMaterno;
 
-  const downloadPDF = () => {};
 
   const [imageURL, setImageURL] = useState([]);
 
@@ -23,16 +22,7 @@ function FormSolicitudTable({ showRequest }) {
     }
   }, [showRequest.file]);
 
-const recurso = 1;
 
-if(showRequest.conActivosFijos === null) {
-    const recurso =
-      showRequest.conActivosFijos.afClave +
-      " " +
-      showRequest.conActivosFijos.afDescripcion;
-}
-
-  console.log("ser", showRequest.servicioSolicitado);
 
   return (
     <div>
@@ -167,7 +157,9 @@ if(showRequest.conActivosFijos === null) {
               <Form.Control
                 type="text"
                 name="recurso"
-                value={recurso}
+                value={showRequest.conActivosFijos.afClave +
+                  " " +
+                  showRequest.conActivosFijos.afDescripcion}
                 disabled
               />
             </div>
@@ -183,13 +175,16 @@ if(showRequest.conActivosFijos === null) {
             disabled
           />
 
-          <div className="mt-3">
+          {showRequest.file && (
+            <div className="mt-3">
             <img
               src={imageURL}
               alt="Uploaded"
               style={{ maxWidth: "800px", maxHeight: "800px" }}
             />
-          </div>
+          </div>)}
+
+
           <Table id="firmas" striped bordered hover>
             <thead>
               <tr>
