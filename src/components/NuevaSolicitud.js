@@ -156,6 +156,12 @@ function TextControlsExample() {
       );
       setMessage("Formulario enviado con éxito");
       toast.success("Formulario Eviado Con exito");
+      setFormData({
+        servicioSolicitado:'',
+        SolicitudDeServicioARealizar:'',
+        Descripcion:'',
+      });
+
     } catch (error) {
       console.error("Error al enviar el formulario:", error);
       toast.error("error al enviar el formulario");

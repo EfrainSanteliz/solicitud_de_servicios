@@ -38,6 +38,8 @@ function RequestTable() {
   const [prioridad, setPrioridad] = useState(null);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loadingAutorizan,setLoadingAutorizar] = useState(false);
+  
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -110,6 +112,7 @@ function RequestTable() {
   const handleAutorizar = async (e) => {
     // const { prioridad } = formData;
     e.preventDefault();
+    setLoadingAutorizar(true);
 
     const data = new FormData();
 
@@ -205,11 +208,16 @@ function RequestTable() {
       }
     } catch (error) {
       console.error("Error updating the Request:", error);
+    } finally {
+      setLoadingAutorizar(false);
     }
   };
-
+  const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
   const handleSubmitComentarios = async (e) => {
     e.preventDefault();
+
+
+
 
     // Get the current date in GMT-7
     const getCurrentDateInGMT7 = () => {
@@ -246,6 +254,7 @@ function RequestTable() {
     const data = {
       fecha: currentFecha,
       comentarios: comentarios.trim(),
+      remitente: AreaAdministrativa,
       RequestID: REQUESTID,
     };
 
@@ -308,9 +317,20 @@ function RequestTable() {
       .get(`https://localhost:7145/api/Request/`)
       .then((response) => {
         console.log("the request get sucessfully", response);
-        setRequests(response.data);
         setLoading(false);
-        setFilteredData(response.data);
+
+        if (UserRole === "Administrador") {
+          const filteredRequest = response.data.filter(request => 
+            request.nomEmpleados.direccionesICEES.descripcion === AreaAdministrativa
+          );
+          setRequests(filteredRequest);
+          setFilteredData(filteredRequest);
+
+        } else {
+          setRequests(response.data); // SuperAdmin sees all requests
+          setFilteredData(response.data);
+
+        }
       })
       .catch((error) => {
         console.log("error to get the request", error);
@@ -645,10 +665,10 @@ function RequestTable() {
               rows={3}
               name="comentarios"
               placeholder="agrega los comentarios aqui"
-              value={formData.comentarios}
               onChange={handleChange}
               required
             />
+            </Form>
 
             <Modal.Footer>
               <Button variant="secondary" onClick={handleClose2}>
@@ -659,7 +679,7 @@ function RequestTable() {
                 Enviar Comentario
               </Button>
             </Modal.Footer>
-          </Form>
+          
         </Modal.Body>
       </Modal>
     </div>

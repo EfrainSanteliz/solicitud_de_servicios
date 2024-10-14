@@ -15,6 +15,7 @@ function HistoryComments({ Historials }) {
             <tr>
               <th>Fecha</th>
               <th>Observacion</th>
+              <th>Remitente</th>
             </tr>
           </thead>
           <tbody>
@@ -31,6 +32,7 @@ function HistoryComments({ Historials }) {
                     })}
                   </td>
                   <td>{historial.comentarios}</td>
+                  <td>{historial.remitente}</td>
                 </tr>
               ))
             }

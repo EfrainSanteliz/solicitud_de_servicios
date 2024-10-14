@@ -14,6 +14,7 @@ import DownloadPdfAsp from "./DownloadPdfAsp";
 function MisSolicitudes() {
   const [Request, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingRequest, setLoadingRequest] = useState(false);
   const [error, setError] = useState(null);
   const [showRequest, setShowRequests] = useState([]);
   const [show, setShow] = useState(false);
@@ -26,15 +27,24 @@ function MisSolicitudes() {
   const userId = localStorage.getItem("userid");
 
   useEffect(() => {
-    axios
-      .get(`https://localhost:7145/api/Request/byNomEmpleadoId/${userId}`)
-      .then((response) => {
-        setRequests(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching users:", error);
-      });
+  listRequest();
   }, [userId]);
+
+
+  const listRequest = async () => {
+
+    try {
+
+      const response = await axios.get(`https://localhost:7145/api/Request/byNomEmpleadoId/${userId}`)
+      setRequests(response.data);
+      setLoadingRequest(true);
+      console.log("id", response.data)
+
+    } catch (error) {
+        console.error("get request failed",error)
+    }
+
+  }
 
   const handleClose = () => {
     setShow(false);
@@ -67,84 +77,88 @@ function MisSolicitudes() {
       });
   };
 
-  
+
 
   return (
     <div className="container mt-4">
       <h2>Tus Solicitudes</h2>
-      <Table striped bordered hover style={{ tableLayout: 'fixed', width: '100%' }}>
-      <thead>
-          <tr>
-            <th style={{width:"170px"}}>Servicio Solicitado</th>
-            <th
-              style={{
-                width: "200px",
-                //whiteSpace: "nowrap",
-                overflow: "hidden",
-                //textOverflow: "ellipsis",
-              }}
-            >
-              Descripcion
-            </th>{" "}
-            <th style={{width:"100px"}}>Fecha</th>
-            <th style={{width:"80px"}}>Estatus</th>
-            <th style={{ width:"80px",textAlign: "center" }}>Acciones</th>
-            <th style={{width:"80px", textAlign: "center" }}>Historial</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Request.map((Reques, index) => (
-            <tr key={Reques.id}>
-              <td width={"150px"}>{Reques.servicioSolicitado}</td>
-              <td
+
+      {loadingRequest ? (
+        <Table striped bordered hover style={{ tableLayout: 'fixed', width: '100%' }}>
+          <thead>
+            <tr>
+              <th style={{ width: "170px" }}>Servicio Solicitado</th>
+              <th
                 style={{
-                  width: "300px",
-                 // whiteSpace: "nowrap",
+                  width: "200px",
+                  //whiteSpace: "nowrap",
                   overflow: "hidden",
                   //textOverflow: "ellipsis",
-                  fontWeight: 'normal' // Quita las negritas
-
                 }}
               >
-                {Reques.descripcion}
-              </td>
-              <td width={"150px"}>
-                {new Date(Reques.fechaSolicitada).toLocaleDateString("es-ES", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })}
-              </td>
-              <td width={"100px"}>{Reques.status}</td>
-
-              <td style={{ textAlign: "center" }}>
-                <Button
-                  onClick={() => {
-                    handleShow1(Reques.id);
-                    setShow(true);
-                  }}
-                  variant="primary"
-                  style={{ backgroundColor: "#217ABF" }}
-                >
-                  <FontAwesomeIcon icon={faEye} />
-                </Button>{" "}
-              </td>
-
-              <td style={{ textAlign: "center" }}>
-                <Button
-                  onClick={() => {
-                    handleShow2(Reques.id);
-                    setShowModalHistoryComments(true);
-                  }}
-                  style={{ backgroundColor: "#217ABF" }}
-                >
-                  <FontAwesomeIcon icon={faEye} />
-                </Button>
-              </td>
+                Descripcion
+              </th>{" "}
+              <th style={{ width: "100px" }}>Fecha</th>
+              <th style={{ width: "80px" }}>Estatus</th>
+              <th style={{ width: "80px", textAlign: "center" }}>Acciones</th>
+              <th style={{ width: "80px", textAlign: "center" }}>Historial</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {Request.map((Reques, index) => (
+              <tr key={Reques.id}>
+                <td width={"150px"}>{Reques.servicioSolicitado}</td>
+                <td
+                  style={{
+                    width: "300px",
+                    // whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    //textOverflow: "ellipsis",
+                    fontWeight: 'normal' // Quita las negritas
+
+                  }}
+                >
+                  {Reques.descripcion}
+                </td>
+                <td width={"150px"}>
+                  {new Date(Reques.fechaSolicitada).toLocaleDateString("es-ES", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+                </td>
+                <td width={"100px"}>{Reques.status}</td>
+
+                <td style={{ textAlign: "center" }}>
+                  <Button
+                    onClick={() => {
+                      handleShow1(Reques.id);
+                      setShow(true);
+                    }}
+                    variant="primary"
+                    style={{ backgroundColor: "#217ABF" }}
+                  >
+                    <FontAwesomeIcon icon={faEye} />
+                  </Button>{" "}
+                </td>
+
+                <td style={{ textAlign: "center" }}>
+                  <Button
+                    onClick={() => {
+                      handleShow2(Reques.id);
+                      setShowModalHistoryComments(true);
+                    }}
+                    style={{ backgroundColor: "#217ABF" }}
+                  >
+                    <FontAwesomeIcon icon={faEye} />
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      ) : (<div>cargando...</div>)}
+
 
       <Modal
         show={show}
@@ -159,7 +173,7 @@ function MisSolicitudes() {
           {loading && <FormSolicitudTable showRequest={showRequest} />}
 
           <Modal.Footer>
-          <DownloadPdfAsp showRequest={showRequest}></DownloadPdfAsp>
+            <DownloadPdfAsp showRequest={showRequest}></DownloadPdfAsp>
           </Modal.Footer>
         </Modal.Body>
       </Modal>

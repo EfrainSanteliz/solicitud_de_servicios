@@ -27,6 +27,7 @@ function Login() {
       localStorage.setItem("nomEmpMaterno",response.data.user.nomEmpMaterno);
       localStorage.setItem("UserRole",response.data.user.userRole);
       localStorage.setItem("token",response.data.token);
+      localStorage.setItem("AreaAdministrativa", response.data.user.direccionesICEES.descripcion);
 
   
       console.log("UserRole:", response.data.user.userRole);
