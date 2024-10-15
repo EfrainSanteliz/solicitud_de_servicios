@@ -7,6 +7,7 @@ import { Button, Alert, Row, Col } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { DataTime, DateTime } from "luxon";
 import { toast } from 'react-toastify';
+import { SendFormSucess, SendFormLoading, SendtFormFailed } from "./AlertService";
 
 function TextControlsExample() {
   const [options, setOptions] = useState([]);
@@ -103,6 +104,7 @@ function TextControlsExample() {
   };
 
   const handleSubmit = async (e) => {
+    SendFormLoading();
     e.preventDefault();
   
     const {
@@ -154,8 +156,7 @@ function TextControlsExample() {
           },
         }
       );
-      setMessage("Formulario enviado con éxito");
-      toast.success("Formulario Eviado Con exito");
+      SendFormSucess();
       setFormData({
         servicioSolicitado:'',
         SolicitudDeServicioARealizar:'',
@@ -164,7 +165,7 @@ function TextControlsExample() {
 
     } catch (error) {
       console.error("Error al enviar el formulario:", error);
-      toast.error("error al enviar el formulario");
+      SendtFormFailed();
       setMessage("Hubo un error al enviar el formulario.");
     }
   };

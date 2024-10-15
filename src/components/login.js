@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { setToken } from "./JwtHelper";
 
 function Login() {
   // State variables for email and password
@@ -26,12 +27,16 @@ function Login() {
       localStorage.setItem("nomEmpPaterno",response.data.user.nomEmpPaterno);
       localStorage.setItem("nomEmpMaterno",response.data.user.nomEmpMaterno);
       localStorage.setItem("UserRole",response.data.user.userRole);
-      localStorage.setItem("token",response.data.token);
+
+
+      setToken("token",response.data.token);
+
+
       localStorage.setItem("AreaAdministrativa", response.data.user.direccionesICEES.descripcion);
 
   
       console.log("UserRole:", response.data.user.userRole);
-      console.log("token:", response.data.token);
+      
 
       console.log("Navigating to the correct page...");
   

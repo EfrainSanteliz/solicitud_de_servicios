@@ -3,7 +3,7 @@ import axios from "axios";
 import { waitFor } from "@testing-library/react";
 import { Form } from "react-bootstrap";
 
-function UpdateStatus({handleChange,showRequest,formData}) {
+function UpdateStatus({handleChange,showRequest,formData,UpdateTableRequest}) {
 
 
   const handleUpdateStatus = async (e) => {
@@ -22,6 +22,7 @@ function UpdateStatus({handleChange,showRequest,formData}) {
             },
           }
       );
+      UpdateTableRequest();
     } catch (error) {
       console.log("no update status succesfully");
     }
