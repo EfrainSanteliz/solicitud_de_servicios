@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import RequestTable  from "./RequestTable";
+import RequestTableAdministrador  from "./RequestTableAdministrador";
 
 function WelcomeAdministrador() {
   const [requests, setRequests] = useState([]);
@@ -10,7 +10,7 @@ function WelcomeAdministrador() {
   return (
     <div className="container mt-5">
       <h2>hola Administrador Tus Solicitudes</h2>
-      <RequestTable/>
+      <RequestTableAdministrador/>
 
     </div>
   );

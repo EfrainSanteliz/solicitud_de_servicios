@@ -40,6 +40,7 @@ function RequestTable() {
   const [Historials, setHistorials] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [Loading3,setLoading3 ] = useState(false);
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -47,7 +48,6 @@ function RequestTable() {
     localStorage.getItem("nomEmpPaterno") +
     " " +
     localStorage.getItem("nomEmpMaterno");
-  const FirmaJefe = FirmaJefeDepartamento;
   const UserRole = localStorage.getItem("UserRole");
   console.log("userRole", UserRole);
 
@@ -55,6 +55,8 @@ function RequestTable() {
 
   const handleClose = () => {
     setShow(false);
+    setLoading2(false); 
+
   };
 
   const handleClose2 = () => {
@@ -76,7 +78,7 @@ function RequestTable() {
       console.log("The show request get successfully");
       setShowRequest(response.data);
       setHistorials(response.data.historials);
-      setLoading2(true); // Assuming setLoading2 is used to indicate loading state
+      setLoading2(true); 
     } catch (error) {
       console.error("Error updating the Request:", error);
     }
@@ -117,53 +119,7 @@ function RequestTable() {
     const { prioridad } = formData;
 
     try {
-      console.log("FirmaJefe",showRequest.firmaJefeDepartamento)
-      if (showRequest.firmaJefeDepartamento === FirmaJefeDepartamento) {
-        toast.error("Formulario ya firmado");
-      } else if (UserRole === "Administrador") {
-        if (prioridad === 0) {
-          toast.error("Elija un nivel de prioridad antes de firmar");
-        } else {
-          showLoadingAlertAutorizar();
-
-          data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
-          data.append("prioridad", prioridad);
-
-          console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
-          console.log("prioridad", prioridad);
-
-          const response = await axios.put(
-            `https://localhost:7145/api/Request/${REQUESTID}`,
-            data,
-            {
-              headers: {
-                "content-type": "application/json",
-              },
-            }
-          );
-          console.log("update Request Sucesfully", response);
-
-          const encabezado =
-            "tu solicitud ha sido firmada por tu jede de departamento";
-          const cuerpo =
-            "Inicia sesion para ver el estado de tu solicitud `becas.com`";
-          const response2 = await axios.post(
-            `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
-              showRequest.nomEmpleados.email
-            )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
-            {},
-            {
-              headers: {
-                "content-type": "application/json",
-              },
-            }
-          );
-          showSueccesAlertAutorizar();
-          showRequest2(REQUESTID);
-        }
-      }
-
-      if (UserRole === "SuperAdministrador") {
+      
         showLoadingAlertAutorizar();
 
         if (prioridad === 0) {
@@ -207,7 +163,7 @@ function RequestTable() {
         );
         showRequest2(REQUESTID);
         showSueccesAlertAutorizar();
-      }
+      
     } catch (error) {
       console.error("Error updating the Request:", error);
       showErrorAlerAutorizar();
@@ -318,18 +274,10 @@ function RequestTable() {
         console.log("the request get sucessfully", response);
         setLoading(false);
 
-        if (UserRole === "Administrador") {
-          const filteredRequest = response.data.filter(
-            (request) =>
-              request.nomEmpleados.direccionesICEES.descripcion ===
-              AreaAdministrativa
-          );
-          setRequests(filteredRequest);
-          setFilteredData(filteredRequest);
-        } else {
+     
           setRequests(response.data); // SuperAdmin sees all requests
           setFilteredData(response.data);
-        }
+        
       })
       .catch((error) => {
         console.log("error to get the request", error);
@@ -435,7 +383,7 @@ function RequestTable() {
               </tr>
             </thead>
 
-            {UserRole === "SuperAdministrador" && (
+         
               <tbody>
                 {filteredData.map((request) =>
                   request.firmaJefeDepartamento !== "0" ? (
@@ -495,64 +443,9 @@ function RequestTable() {
                   ) : null
                 )}
               </tbody>
-            )}
+            
 
-            {UserRole === "Administrador" && (
-              <tbody>
-                {filteredData.map((request) => (
-                  <tr key={request.id}>
-                    <td>{request.firmaEmpleado}</td>
-                    <td
-                      style={{
-                        width: "250px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {request.descripcion}
-                    </td>
-                    <td>
-                      {new Date(request.fechaSolicitada).toLocaleDateString(
-                        "es-ES",
-                        {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        }
-                      )}
-                    </td>
-                    <td>{request.status}</td>
-                    <td>
-                      <Button style={{ backgroundColor: "#217ABF" }}>
-                        {request.prioridad}
-                      </Button>
-                    </td>
-                    <td
-                      style={{ textAlign: "center", verticalAlign: "middle" }}
-                    >
-                      <Button
-                        variant="primary"
-                        onClick={() =>
-                          handleShow(
-                            request.id,
-                            request.nomEmpleados.nomEmpNombre,
-                            request.nomEmpleados.nomEmpPaterno,
-                            request.nomEmpleados.nomEmpMaterno
-                          )
-                        }
-                        style={{
-                          backgroundColor: "#217ABF",
-                          margin: "0 auto",
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faEye} />
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            )}
+           
           </Table>
         )
       )}
@@ -601,27 +494,6 @@ function RequestTable() {
                 Autorizar{" "}
               </Button>
 
-              {UserRole === "Administrador" && (
-                <Form.Select
-                  aria-label="Default select example"
-                  style={{ width: "120px", backgroundColor: "#DC7F37" }}
-                  onChange={handleChange}
-                  name="prioridad"
-                  disabled={
-                    showRequest.prioridad === "Baja" ||
-                    showRequest.prioridad === "Alta" ||
-                    showRequest.prioridad === "Media"
-                  } // Disable if prioridad is 1, 2, or 3
-                  defaultValue={showRequest.prioridad}
-                >
-                  <option value="Prioridad">Prioridad</option>
-                  <option value="Baja">Baja</option>
-                  <option value="Media">Media</option>
-                  <option value="Alta">Alta</option>
-                </Form.Select>
-              )}
-
-              {UserRole === "SuperAdministrador" && (
                 <Form.Select
                   aria-label="Default select example"
                   style={{ width: "120px", backgroundColor: "#DC7F37" }}
@@ -637,14 +509,15 @@ function RequestTable() {
                   <option value="Media">Media</option>
                   <option value="Alta">Alta</option>
                 </Form.Select>
-              )}
-              {UserRole === "SuperAdministrador" && (
+              
+              
                 <UpdateStatus
                   handleChange={handleChange}
+                  UpdateTableRequest={UpdateTableRequest}
                   showRequest={showRequest}
                   formData={formData}
                 ></UpdateStatus>
-              )}
+              
 
               <DownloadPdfAsp showRequest={showRequest}> </DownloadPdfAsp>
             </Modal.Footer>

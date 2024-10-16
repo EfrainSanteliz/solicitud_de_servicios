@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import RequestTable from "./RequestTable";
+import RequestTableSuperAdministrador from "./RequestTableSuperAdministrador";
 import axios from "axios";
 
 function WelcomeSuperAdministrador() {
@@ -7,8 +7,8 @@ function WelcomeSuperAdministrador() {
 
     return (
       <div className="container mt-5">
-        <h2>Hola Super Adminstrador Tus Solicitudes</h2>
-        <RequestTable></RequestTable>
+        <h2>Hola Super Administrador Tus Solicitudes</h2>
+        <RequestTableSuperAdministrador/>
       </div>
     );
 }

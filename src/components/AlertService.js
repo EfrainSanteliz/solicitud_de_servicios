@@ -6,7 +6,7 @@ const MySwal = withReactContent(Swal);
 export const showLoadingAlertAutorizar = () => {
   MySwal.fire({
     title: "Autorizando...",
-    text: "Espera Mientras se Autoriza el docummento",
+    text: "Espera Mientras se Autoriza el documento",
     icon: "info",
     allowOutsideClick: false,
     showConfirmButton: false,

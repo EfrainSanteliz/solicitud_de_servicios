@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  table,
   Spinner,
   Alert,
   Table,
@@ -11,14 +10,11 @@ import {
 } from "react-bootstrap";
 import FormSolicitudTable from "./FormSolicitudTable";
 import HistoryComments from "./HistoryComments";
-import { Toast } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { DataTime, DateTime } from "luxon";
-import { useFetcher } from "react-router-dom";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SearchBar from "./SearchBar";
-import UpdateStatus from "./UpdateStatus";
 import DownloadPdfAsp from "./DownloadPdfAsp";
 import {
   showLoadingAlertAutorizar,
@@ -60,11 +56,10 @@ function RequestTable() {
   const handleClose2 = () => {
     setShowHistoryModal(false);
   };
- 
+
   useEffect(() => {
-   
-      handleShow();
-    
+    handleShow();
+    showRequest2();
   }, []); // Add dependencies to trigger only when these values change
 
   const showRequest2 = async (requestID) => {
@@ -117,69 +112,19 @@ function RequestTable() {
     const { prioridad } = formData;
 
     try {
-      console.log("FirmaJefe",showRequest.firmaJefeDepartamento)
       if (showRequest.firmaJefeDepartamento === FirmaJefeDepartamento) {
         toast.error("Formulario ya firmado");
-      } else if (UserRole === "Administrador") {
-        if (prioridad === 0) {
-          toast.error("Elija un nivel de prioridad antes de firmar");
-        } else {
-          showLoadingAlertAutorizar();
-
-          data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
-          data.append("prioridad", prioridad);
-
-          console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
-          console.log("prioridad", prioridad);
-
-          const response = await axios.put(
-            `https://localhost:7145/api/Request/${REQUESTID}`,
-            data,
-            {
-              headers: {
-                "content-type": "application/json",
-              },
-            }
-          );
-          console.log("update Request Sucesfully", response);
-
-          const encabezado =
-            "tu solicitud ha sido firmada por tu jede de departamento";
-          const cuerpo =
-            "Inicia sesion para ver el estado de tu solicitud `becas.com`";
-          const response2 = await axios.post(
-            `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
-              showRequest.nomEmpleados.email
-            )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
-            {},
-            {
-              headers: {
-                "content-type": "application/json",
-              },
-            }
-          );
-          showSueccesAlertAutorizar();
-          showRequest2(REQUESTID);
-        }
       }
 
-      if (UserRole === "SuperAdministrador") {
+      else if (prioridad === 0) {
+        toast.error("Elija un nivel de prioridad antes de firmar");
+      } else {
         showLoadingAlertAutorizar();
 
-        if (prioridad === 0) {
-          data.append("firmaJefe", FirmaJefeDepartamento);
-          data.append("prioridad", showRequest.prioridad);
+        data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
+        data.append("prioridad", prioridad);
 
-          //console.log("firmaJefe", FirmaJefeDepartamento);
-          // console.log("prioridad", showRequest.prioridad);
-        } else {
-          data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
-          data.append("prioridad", prioridad);
-
-          //console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
-          //  console.log("prioridad", prioridad);
-        }
-
+       
         const response = await axios.put(
           `https://localhost:7145/api/Request/${REQUESTID}`,
           data,
@@ -188,12 +133,13 @@ function RequestTable() {
               "content-type": "application/json",
             },
           }
-        ); //
+        );
+        //console.log("update Request Sucesfully", response);
 
-        console.log("Request Update Sucessfully", response);
         const encabezado =
-          "tu solicitud ha sido firmada por el jefe de sistemas";
-        const cuerpo = "inicia sesion para ver el estado de tu solicitud";
+          "tu solicitud ha sido firmada por tu jede de departamento";
+        const cuerpo =
+          "Inicia sesion para ver el estado de tu solicitud `becas.com`";
         const response2 = await axios.post(
           `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
             showRequest.nomEmpleados.email
@@ -205,11 +151,11 @@ function RequestTable() {
             },
           }
         );
-        showRequest2(REQUESTID);
         showSueccesAlertAutorizar();
+        showRequest2(REQUESTID);
       }
     } catch (error) {
-      console.error("Error updating the Request:", error);
+      //console.error("Error updating the Request:", error);
       showErrorAlerAutorizar();
     } finally {
     }
@@ -318,7 +264,7 @@ function RequestTable() {
         console.log("the request get sucessfully", response);
         setLoading(false);
 
-        if (UserRole === "Administrador") {
+        
           const filteredRequest = response.data.filter(
             (request) =>
               request.nomEmpleados.direccionesICEES.descripcion ===
@@ -326,13 +272,10 @@ function RequestTable() {
           );
           setRequests(filteredRequest);
           setFilteredData(filteredRequest);
-        } else {
-          setRequests(response.data); // SuperAdmin sees all requests
-          setFilteredData(response.data);
-        }
+      
       })
       .catch((error) => {
-        console.log("error to get the request", error);
+        //console.log("error to get the request", error);
         setError("El servidor no puede obtener las solicitudes");
         setLoading(false);
       });
@@ -365,31 +308,7 @@ function RequestTable() {
     }));
   };
 
-  const handleUpdatePrioridad = async (e) => {
-    e.preventDefault();
-
-    const { prioridad } = formData;
-
-    const data = new FormData();
-
-    data.append("prioridad", prioridad);
-
-    try {
-      const response = await axios.put(
-        `https://localhost:7145/api/Request/${REQUESTID}`,
-        data,
-        {
-          headers: {
-            "content-type": "application/json",
-          },
-        }
-      ); //
-
-      UpdateTableRequest();
-    } catch (error) {
-      console.log("0");
-    }
-  };
+ 
 
   return (
     <div className="container mt-4">
@@ -435,69 +354,7 @@ function RequestTable() {
               </tr>
             </thead>
 
-            {UserRole === "SuperAdministrador" && (
-              <tbody>
-                {filteredData.map((request) =>
-                  request.firmaJefeDepartamento !== "0" ? (
-                    <tr key={request.id}>
-                      <td style={{ width: "150px" }}>
-                        {request.firmaEmpleado}
-                      </td>
-                      <td
-                        style={{
-                          width: "300px",
-                          whiteSpace: "nowrap", // Evita que el texto haga wrap
-                          overflow: "hidden", // Oculta el texto que no cabe
-                          textOverflow: "ellipsis", // Añade puntos suspensivos
-                          fontWeight: "normal",
-                        }}
-                      >
-                        {request.descripcion}
-                      </td>
-                      <td>
-                        {new Date(request.fechaSolicitada).toLocaleDateString(
-                          "es-ES",
-                          {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          }
-                        )}
-                      </td>
-                      <td>{request.status}</td>
-                      <td>
-                        <Button >
-                          {request.prioridad}
-                        </Button>
-                      </td>
-                      <td
-                        style={{ textAlign: "center", verticalAlign: "middle" }}
-                      >
-                        <Button
-                          variant="primary"
-                          onClick={() =>
-                            handleShow(
-                              request.id,
-                              request.nomEmpleados.nomEmpNombre,
-                              request.nomEmpleados.nomEmpPaterno,
-                              request.nomEmpleados.nomEmpMaterno
-                            )
-                          }
-                          style={{
-                            backgroundColor: "#217ABF",
-                           
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faEye} style={{}} />
-                        </Button>
-                      </td>
-                    </tr>
-                  ) : null
-                )}
-              </tbody>
-            )}
-
-            {UserRole === "Administrador" && (
+          
               <tbody>
                 {filteredData.map((request) => (
                   <tr key={request.id}>
@@ -552,7 +409,7 @@ function RequestTable() {
                   </tr>
                 ))}
               </tbody>
-            )}
+          
           </Table>
         )
       )}
@@ -601,7 +458,7 @@ function RequestTable() {
                 Autorizar{" "}
               </Button>
 
-              {UserRole === "Administrador" && (
+              
                 <Form.Select
                   aria-label="Default select example"
                   style={{ width: "120px", backgroundColor: "#DC7F37" }}
@@ -619,32 +476,9 @@ function RequestTable() {
                   <option value="Media">Media</option>
                   <option value="Alta">Alta</option>
                 </Form.Select>
-              )}
+              
 
-              {UserRole === "SuperAdministrador" && (
-                <Form.Select
-                  aria-label="Default select example"
-                  style={{ width: "120px", backgroundColor: "#DC7F37" }}
-                  onChange={handleChange}
-                  onClick={(e) => {
-                    handleUpdatePrioridad(e);
-                  }}
-                  name="prioridad"
-                  defaultValue={showRequest.prioridad}
-                >
-                  <option value="Prioridad">Prioridad</option>
-                  <option value="Baja">Baja</option>
-                  <option value="Media">Media</option>
-                  <option value="Alta">Alta</option>
-                </Form.Select>
-              )}
-              {UserRole === "SuperAdministrador" && (
-                <UpdateStatus
-                  handleChange={handleChange}
-                  showRequest={showRequest}
-                  formData={formData}
-                ></UpdateStatus>
-              )}
+          
 
               <DownloadPdfAsp showRequest={showRequest}> </DownloadPdfAsp>
             </Modal.Footer>
