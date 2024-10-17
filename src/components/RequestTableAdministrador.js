@@ -51,6 +51,7 @@ function RequestTable() {
 
   const handleClose = () => {
     setShow(false);
+    loading2(false);
   };
 
   const handleClose2 = () => {

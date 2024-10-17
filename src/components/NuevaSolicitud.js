@@ -21,7 +21,7 @@ function TextControlsExample() {
 
   const [formData, setFormData] = useState({
     servicioSolicitado: "0",
-    SolicitudDeServicioARealizar: "0",
+    Solicitud_de_S: "0",
     Descripcion: "",
     FirmaEmpleado: "0",
     FirmaJefeDepartamento: "0",
@@ -185,7 +185,7 @@ function TextControlsExample() {
           <div className="mb-3">
           <Form.Check
             inline
-            label="Mantenimiento a equipo de computo etc."
+            label="Infraestructura voz/datos."
             name="servicioSolicitado" // Ensure this matches the state key
             type="radio"
             value="Infraestructura voz/datos"

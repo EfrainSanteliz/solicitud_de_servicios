@@ -22,17 +22,17 @@ function Login() {
       console.log("Login successful:", response.data);
       alert("Login successful!");
   
-      localStorage.setItem("userid", response.data.user.empleadoID);
-      localStorage.setItem("nomEmpNombre",response.data.user.nomEmpNombre);
-      localStorage.setItem("nomEmpPaterno",response.data.user.nomEmpPaterno);
-      localStorage.setItem("nomEmpMaterno",response.data.user.nomEmpMaterno);
+      localStorage.setItem("userid", response.data.user.nomEmpleados.empleadoID);
+      localStorage.setItem("nomEmpNombre",response.data.user.nomEmpleados.nomEmpNombre);
+      localStorage.setItem("nomEmpPaterno",response.data.user.nomEmpleados.nomEmpPaterno);
+      localStorage.setItem("nomEmpMaterno",response.data.user.nomEmpleados.nomEmpMaterno);
       localStorage.setItem("UserRole",response.data.user.userRole);
 
 
       setToken("token",response.data.token);
 
 
-      localStorage.setItem("AreaAdministrativa", response.data.user.direccionesICEES.descripcion);
+      localStorage.setItem("AreaAdministrativa", response.data.user.nomEmpleados.direccionesICEES.descripcion);
 
   
       console.log("UserRole:", response.data.user.userRole);
