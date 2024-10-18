@@ -163,7 +163,7 @@ function MisSolicitudes() {
       <Modal
         show={show}
         onHide={handleClose}
-        dialogClassName="modal-80"
+        dialogClassName="modal-80w"
         animation={false}
       >
         <Modal.Header closeButton>
@@ -181,7 +181,7 @@ function MisSolicitudes() {
       <Modal
         show={showModalHistoryComments}
         onHide={handleClose}
-        dialogClassName="modal-80"
+        dialogClassName="modal-80w"
         animation={false}
       >
         <Modal.Header closeButton>

@@ -21,6 +21,7 @@ import {
   showSueccesAlertAutorizar,
   showErrorAlerAutorizar,
 } from "./AlertService";
+import UpdateForm from "./UpdateForm";
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
@@ -43,6 +44,7 @@ function RequestTable() {
     localStorage.getItem("nomEmpPaterno") +
     " " +
     localStorage.getItem("nomEmpMaterno");
+
   const FirmaJefe = FirmaJefeDepartamento;
   const UserRole = localStorage.getItem("UserRole");
   console.log("userRole", UserRole);
@@ -51,16 +53,16 @@ function RequestTable() {
 
   const handleClose = () => {
     setShow(false);
-    loading2(false);
+    setLoading2(false);
   };
 
   const handleClose2 = () => {
     setShowHistoryModal(false);
+    setLoading2(false);
+
   };
 
   useEffect(() => {
-    handleShow();
-    showRequest2();
   }, []); // Add dependencies to trigger only when these values change
 
   const showRequest2 = async (requestID) => {
@@ -72,7 +74,7 @@ function RequestTable() {
       console.log("The show request get successfully");
       setShowRequest(response.data);
       setHistorials(response.data.historials);
-      setLoading2(true); // Assuming setLoading2 is used to indicate loading state
+      setLoading2(true); 
     } catch (error) {
       console.error("Error updating the Request:", error);
     }
@@ -143,7 +145,7 @@ function RequestTable() {
           "Inicia sesion para ver el estado de tu solicitud `becas.com`";
         const response2 = await axios.post(
           `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
-            showRequest.nomEmpleados.email
+            showRequest.usuarios.email
           )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
           {},
           {
@@ -240,7 +242,7 @@ function RequestTable() {
     try {
       const response = await axios.post(
         `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
-          showRequest.nomEmpleados.email
+          showRequest.usuarios.email
         )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
         {},
         {
@@ -268,7 +270,7 @@ function RequestTable() {
         
           const filteredRequest = response.data.filter(
             (request) =>
-              request.nomEmpleados.direccionesICEES.descripcion ===
+              request.usuarios.nomEmpleados.direccionesICEES.descripcion ===
               AreaAdministrativa
           );
           setRequests(filteredRequest);
@@ -289,9 +291,6 @@ function RequestTable() {
         item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.servicioSolicitado
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        item.solicitudDeServicioARealizar
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
         item.fechaSolicitada.toString().includes(searchTerm.toLowerCase()) ||
@@ -315,6 +314,8 @@ function RequestTable() {
     <div className="container mt-4">
       <h2>Lista de solicitudes {} </h2>
       <br />
+      
+
       <SearchBar setSearchTerm={setSearchTerm} /> <br />
       {loading && (
         <Spinner animation="border" role="status">
@@ -394,9 +395,9 @@ function RequestTable() {
                         onClick={() =>
                           handleShow(
                             request.id,
-                            request.nomEmpleados.nomEmpNombre,
-                            request.nomEmpleados.nomEmpPaterno,
-                            request.nomEmpleados.nomEmpMaterno
+                            request.usuarios.nomEmpleados.nomEmpNombre,
+                            request.usuarios.nomEmpleados.nomEmpPaterno,
+                            request.usuarios.nomEmpleados.nomEmpMaterno
                           )
                         }
                         style={{

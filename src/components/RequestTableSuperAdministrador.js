@@ -25,6 +25,7 @@ import {
   showSueccesAlertAutorizar,
   showErrorAlerAutorizar,
 } from "./AlertService";
+import UpdateForm from "./UpdateForm";
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
@@ -152,7 +153,7 @@ function RequestTable() {
         const cuerpo = "inicia sesion para ver el estado de tu solicitud";
         const response2 = await axios.post(
           `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
-            showRequest.nomEmpleados.email
+            showRequest.usuarios.email
           )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
           {},
           {
@@ -249,7 +250,7 @@ function RequestTable() {
     try {
       const response = await axios.post(
         `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
-          showRequest.nomEmpleados.email
+          showRequest.usuarios.email
         )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
         {},
         {
@@ -294,9 +295,7 @@ function RequestTable() {
         item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.servicioSolicitado
           .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        item.solicitudDeServicioARealizar
-          .toLowerCase()
+          
           .includes(searchTerm.toLowerCase()) ||
         item.fechaSolicitada.toString().includes(searchTerm.toLowerCase()) ||
         item.status.toLowerCase().includes(searchTerm.toLowerCase())
@@ -343,6 +342,8 @@ function RequestTable() {
     <div className="container mt-4">
       <h2>Lista de solicitudes {} </h2>
       <br />
+      <UpdateForm></UpdateForm>
+      <br></br>
       <SearchBar setSearchTerm={setSearchTerm} /> <br />
       {loading && (
         <Spinner animation="border" role="status">
@@ -426,9 +427,9 @@ function RequestTable() {
                           onClick={() =>
                             handleShow(
                               request.id,
-                              request.nomEmpleados.nomEmpNombre,
-                              request.nomEmpleados.nomEmpPaterno,
-                              request.nomEmpleados.nomEmpMaterno
+                              request.usuarios.nomEmpleados.nomEmpNombre,
+                              request.usuarios.nomEmpleados.nomEmpPaterno,
+                              request.usuarios.nomEmpleados.nomEmpMaterno
                             )
                           }
                           style={{

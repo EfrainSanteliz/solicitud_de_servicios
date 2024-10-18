@@ -5,12 +5,11 @@ import "./styles.css";
 
 function FormSolicitudTable({ showRequest }) {
   const fullyName =
-    showRequest.nomEmpleados.nomEmpNombre +
+    showRequest.usuarios.nomEmpleados.nomEmpNombre +
     " " +
-    showRequest.nomEmpleados.nomEmpPaterno +
+    showRequest.usuarios.nomEmpleados.nomEmpPaterno +
     " " +
-    showRequest.nomEmpleados.nomEmpMaterno;
-
+    showRequest.usuarios.nomEmpleados.nomEmpMaterno;
 
   const [imageURL, setImageURL] = useState([]);
 
@@ -21,8 +20,6 @@ function FormSolicitudTable({ showRequest }) {
       setImageURL(`https://localhost:7145${showRequest.file}`);
     }
   }, [showRequest.file]);
-
-
 
   return (
     <div>
@@ -95,23 +92,12 @@ function FormSolicitudTable({ showRequest }) {
                 <Form.Control
                   as="select"
                   name="SolicitudDeServicioARealizar"
-                  value={showRequest.solicitudDeServicioARealizar}
+                  value={showRequest.solicitud_de_servicio?.descripcion || ""}
                   disabled
                 >
-                  <option value="">Seleccione el tipo de servicio</option>
-                  <option value="subir informacion al portal web">
-                    subir informacion al portal web
+                  <option>
+                    {showRequest.solicitud_de_servicio?.descripcion}
                   </option>
-                  <option value="cambio en plasa IBCESS">
-                    cambio en plasa IBCESS
-                  </option>
-                  <option value="cambio en plataforma WEB">
-                    cambio en plataforma WEB
-                  </option>
-                  <option value="Publicacion web institucional">
-                    Publicacion web institucional
-                  </option>
-                  <option value="permisos Usuarios">permisos Usuarios</option>
                 </Form.Control>
               </>
             )}
@@ -136,7 +122,9 @@ function FormSolicitudTable({ showRequest }) {
             <Form.Control
               type="text"
               name="AreaAdministrativaRequirente"
-              value={showRequest.nomEmpleados.direccionesICEES.descripcion}
+              value={
+                showRequest.usuarios.nomEmpleados.direccionesICEES.descripcion
+              }
               disabled
             />
           </div>
@@ -157,9 +145,11 @@ function FormSolicitudTable({ showRequest }) {
               <Form.Control
                 type="text"
                 name="recurso"
-                value={showRequest.conActivosFijos.afClave +
+                value={
+                  showRequest.conActivosFijos.afClave +
                   " " +
-                  showRequest.conActivosFijos.afDescripcion}
+                  showRequest.conActivosFijos.afDescripcion
+                }
                 disabled
               />
             </div>
@@ -177,13 +167,13 @@ function FormSolicitudTable({ showRequest }) {
 
           {showRequest.file && (
             <div className="mt-3">
-            <img
-              src={imageURL}
-              alt="Uploaded"
-              style={{ maxWidth: "800px", maxHeight: "800px" }}
-            />
-          </div>)}
-
+              <img
+                src={imageURL}
+                alt="Uploaded"
+                style={{ maxWidth: "800px", maxHeight: "800px" }}
+              />
+            </div>
+          )}
 
           <Table id="firmas" striped bordered hover>
             <thead>

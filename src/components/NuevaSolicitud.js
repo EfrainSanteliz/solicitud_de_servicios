@@ -8,20 +8,25 @@ import { useLocation } from "react-router-dom";
 import { DataTime, DateTime } from "luxon";
 import { toast } from 'react-toastify';
 import { SendFormSucess, SendFormLoading, SendtFormFailed } from "./AlertService";
+import { useNavigate } from "react-router-dom";
 
 function TextControlsExample() {
   const [options, setOptions] = useState([]);
+  const [options2, setOptions2] = useState([]);
+  const Navigate = useNavigate();
+
   const [selectedService, setSelectedService] = useState("");
   const [message, setMessage] = useState("");
   const [file, setFile] = useState(null);
+  const [selectedSolicitudDeServicio, setSelectedSolicitudDeServicio] = useState("");
+
 
   const location = useLocation();
-  const NomEmpleadosId =
+  const usuarioId =
     location.state?.userId || localStorage.getItem("userid");
 
   const [formData, setFormData] = useState({
     servicioSolicitado: "0",
-    Solicitud_de_S: "0",
     Descripcion: "",
     FirmaEmpleado: "0",
     FirmaJefeDepartamento: "0",
@@ -32,6 +37,8 @@ function TextControlsExample() {
 
   const [fechaSolicitada, setFechaSolicitada] = useState("");
   const [ConActivosFijosId, setConActivosFijosId] = useState(null);
+  const [Solicitud_de_Servicio_id, setSolicitud_de_Servicio_id] = useState(null);
+
   const [imageSelected,setImageSelected] = useState([]);
 
   const Status = "Activo";
@@ -75,6 +82,23 @@ function TextControlsExample() {
       });
   }, []);
 
+  useEffect(() => {
+    axios
+      .get(`https://localhost:7145/api/Solicitud_de_servicio/`)
+      .then((response) => {
+        console.log("get successful", response.data);
+
+        const formattedOptions = response.data.map((item) => ({
+          value: item.solicitud_de_servicio_id,
+          label: `${item.descripcion}`,
+        }));
+        setOptions2(formattedOptions);
+      })
+      .catch((error) => {
+        console.error("Error al cargar los datos", error);
+      });
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -93,10 +117,28 @@ function TextControlsExample() {
     console.log("id de inventario seleccionado", ConActivosFijosId);
   };
 
+  const handleSelectChangeselectedSolicitudDeServicio = (selectedOption) => {
+    setSolicitud_de_Servicio_id(selectedOption.value);
+    console.log("id de solicitud de servicio a realizar", Solicitud_de_Servicio_id);
+  };
+
   const handlePhotoChange = (event) => {
     const file = event.target.files[0];
     
     setFile(event.target.files[0]);
+
+
+    if (file) {
+      // Check if file size is less than 2 MB
+      const fileSizeInMB = file.size / 1024 / 1024; // size in MB
+      if (fileSizeInMB > 2) {
+        alert("File size should be less than 2 MB");
+        event.target.value = ""; // Clear the input if the file is too large
+        return;
+      }
+    }
+
+    
 
    if (file) {
     setImageSelected(URL.createObjectURL(file));
@@ -109,7 +151,6 @@ function TextControlsExample() {
   
     const {
       servicioSolicitado,
-      SolicitudDeServicioARealizar,
       Descripcion,
       FirmaEmpleado,
       FirmaJefeDepartamento,
@@ -121,13 +162,12 @@ function TextControlsExample() {
     const data = new FormData();
     data.append("servicioSolicitado", servicioSolicitado);
     data.append("fechaSolicitada", fechaSolicitada);
-    data.append("solicitudDeServicioARealizar", SolicitudDeServicioARealizar);
     data.append("descripcion", Descripcion);
     data.append("status", Status);
     data.append("firmaEmpleado", FirmaEmpleado);
     data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
     data.append("firmaJefe", FirmaJefe);
-    data.append("nomEmpleadosId", NomEmpleadosId);
+    data.append("usuarioId", usuarioId);
     data.append("prioridad",Prioridad);
 
   
@@ -138,8 +178,27 @@ function TextControlsExample() {
     if(ConActivosFijosId) {
       data.append("conActivosFijosId", ConActivosFijosId);
     }
+
+    if(Solicitud_de_Servicio_id) {
+      data.append("solicitud_de_Servicio_id", Solicitud_de_Servicio_id);
+    }
     console.log("imagen",file);
-  
+
+    console.log("servicioSolicitado", servicioSolicitado);
+    console.log("fechaSolicitada", fechaSolicitada);
+    console.log("descripcion", Descripcion);
+    console.log("status", Status);
+    console.log("firmaEmpleado", FirmaEmpleado);
+    console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
+    console.log("firmaJefe", FirmaJefe);
+    console.log("nomEmpleadosId", usuarioId);
+    console.log("prioridad",Prioridad);
+    console.log("conActivosFijosId",ConActivosFijosId);
+    console.log("file",file);
+    console.log("solicitud_de_Servicio_id",Solicitud_de_Servicio_id);
+
+
+
     // Log FormData content (optional, since FormData can't be fully logged)
     for (let pair of data.entries()) {
       console.log(pair[0] + ': ' + pair[1]);
@@ -157,6 +216,9 @@ function TextControlsExample() {
         }
       );
       SendFormSucess();
+      Navigate("/welcome")
+
+
       setFormData({
         servicioSolicitado:'',
         SolicitudDeServicioARealizar:'',
@@ -218,26 +280,15 @@ function TextControlsExample() {
           <Form.Label>Solicitud de servicio a realizar</Form.Label>
           {selectedService === "inline-radio-2" && (
             <>
-              <Form.Control
-                as="select"
-                name="SolicitudDeServicioARealizar"
-                onChange={handleChange}
-              >
-                <option value="">Seleccione el tipo de servicio</option>
-                <option value="subir informacion al portal web">
-                  subir informacion al portal web
-                </option>
-                <option value="cambio en plasa IBCESS">
-                  cambio en plasa IBCESS
-                </option>
-                <option value="cambio en plataforma WEB">
-                  cambio en plataforma WEB
-                </option>
-                <option value="Publicacion web institucional">
-                  Publicacion web institucional
-                </option>
-                <option value="permisos Usuarios">permisos Usuarios</option>
-              </Form.Control>
+              <option>Seleccione una opcion de servicio </option>
+              <Select
+                options={options2}
+                placeholder="Selecciona el recurso que presenta problemas"
+                isSearchable={true} // Enables the search bar
+                className="basic-single"
+                classNamePrefix="select"
+                onChange={handleSelectChangeselectedSolicitudDeServicio}
+              />
             </>
           )}
 
@@ -278,7 +329,7 @@ function TextControlsExample() {
               
             />
           </Form.Group>
-
+          {file && (
             <div className="mt-3">
               <img
                 src={imageSelected}
@@ -286,6 +337,7 @@ function TextControlsExample() {
                 style={{ maxWidth: '800px', maxHeight: '800px' }}
                 />
             </div>
+          )}
         
 
           <Button type="submit" variant="primary " style={{backgroundColor:'#237469'}}>
