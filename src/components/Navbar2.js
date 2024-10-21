@@ -13,10 +13,24 @@ function Navbar2() {
     navigate("/");  // Redirect to home page
   };
 
+
+  const handleWelcome  = () => {
+    if (localStorage.getItem("UserRole") === "UsuarioNormal") {
+      navigate("/welcome");
+    }
+    if (localStorage.getItem("UserRole") === "Administrador") {
+      navigate("/welcomeAdministrador");
+    }
+    if (localStorage.getItem("UserRole") === "SuperAdministrador") {
+      navigate("/welcomeSuperAdministrador");
+    }
+
+  };
+
   return (
     <Navbar expand="lg" style={{ backgroundColor: '#960E53' }} variant="dark">
       <Container>
-        <Navbar.Brand href="#home">
+        <Navbar.Brand onClick={handleWelcome}>
           <img
             src="/logo.png"  // Ensure logo is in public folder
             alt="Logo"

@@ -420,7 +420,7 @@ function RequestTable() {
           show={show}
           onHide={handleClose}
           animation={false}
-          dialogClassName="modal-80"
+          size="xl" 
         >
           <Modal.Header closeButton>
             <Modal.Title>
@@ -491,7 +491,7 @@ function RequestTable() {
         show={showHistoryModal}
         onHide={handleClose2}
         animation={false}
-        dialogClassName="modal-80"
+        size="xl" 
       >
         <Modal.Header closeButton>
           <Modal.Title>

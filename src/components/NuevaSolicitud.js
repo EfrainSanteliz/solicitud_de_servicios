@@ -6,8 +6,12 @@ import "./styles.css";
 import { Button, Alert, Row, Col } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { DataTime, DateTime } from "luxon";
-import { toast } from 'react-toastify';
-import { SendFormSucess, SendFormLoading, SendtFormFailed } from "./AlertService";
+import { toast } from "react-toastify";
+import {
+  SendFormSucess,
+  SendFormLoading,
+  SendtFormFailed,
+} from "./AlertService";
 import { useNavigate } from "react-router-dom";
 
 function TextControlsExample() {
@@ -18,12 +22,11 @@ function TextControlsExample() {
   const [selectedService, setSelectedService] = useState("");
   const [message, setMessage] = useState("");
   const [file, setFile] = useState(null);
-  const [selectedSolicitudDeServicio, setSelectedSolicitudDeServicio] = useState("");
-
+  const [selectedSolicitudDeServicio, setSelectedSolicitudDeServicio] =
+    useState("");
 
   const location = useLocation();
-  const usuarioId =
-    location.state?.userId || localStorage.getItem("userid");
+  const usuarioId = location.state?.userId || localStorage.getItem("userid");
 
   const [formData, setFormData] = useState({
     servicioSolicitado: "0",
@@ -32,14 +35,14 @@ function TextControlsExample() {
     FirmaJefeDepartamento: "0",
     FirmaJefe: "0",
     Prioridad: "sin asignar",
-    
   });
 
   const [fechaSolicitada, setFechaSolicitada] = useState("");
   const [ConActivosFijosId, setConActivosFijosId] = useState(null);
-  const [Solicitud_de_Servicio_id, setSolicitud_de_Servicio_id] = useState(null);
+  const [Solicitud_de_Servicio_id, setSolicitud_de_Servicio_id] =
+    useState(null);
 
-  const [imageSelected,setImageSelected] = useState([]);
+  const [imageSelected, setImageSelected] = useState([]);
 
   const Status = "Activo";
   // Obtener la fecha en formato año-mes-día y hora-minuto en GMT-7
@@ -88,10 +91,16 @@ function TextControlsExample() {
       .then((response) => {
         console.log("get successful", response.data);
 
-        const formattedOptions = response.data.map((item) => ({
-          value: item.solicitud_de_servicio_id,
-          label: `${item.descripcion}`,
-        }));
+        const formattedOptions = response.data
+          .map((item) =>
+            item.habilitado === true
+              ? {
+                  value: item.solicitud_de_servicio_id,
+                  label: `${item.descripcion}`,
+                }
+              : null
+          )
+          .filter((option) => option !== null);
         setOptions2(formattedOptions);
       })
       .catch((error) => {
@@ -119,27 +128,68 @@ function TextControlsExample() {
 
   const handleSelectChangeselectedSolicitudDeServicio = (selectedOption) => {
     setSolicitud_de_Servicio_id(selectedOption.value);
-    console.log("id de solicitud de servicio a realizar", Solicitud_de_Servicio_id);
+    console.log(
+      "id de solicitud de servicio a realizar",
+      Solicitud_de_Servicio_id
+    );
   };
 
   const handlePhotoChange = (event) => {
     const file = event.target.files[0];
-    
-    setFile(event.target.files[0]);
-
 
     if (file) {
-      // Check if file size is less than 2 MB
-      const fileSizeInMB = file.size / 1024 / 1024; // size in MB
-      if (fileSizeInMB > 2) {
-        alert("File size should be less than 2 MB");
-        event.target.value = ""; // Clear the input if the file is too large
-        return;
-      }
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
+          const MAX_WIDTH = 3000;
+          const MAX_HEIGHT = 3000;
+
+          let width = img.width;
+          let height = img.height;
+
+          // Maintain aspect ratio while resizing
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = Math.round(height * (MAX_WIDTH / width));
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = Math.round(width * (MAX_HEIGHT / height));
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          // Draw the resized image on the canvas
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert canvas to Blob
+          canvas.toBlob((blob) => {
+            const resizedFile = new File([blob], file.name, {
+              type: file.type,
+              lastModified: Date.now(),
+            });
+
+            // Set the resized file to state
+            setFile(resizedFile);
+          }, file.type);
+        };
+      };
+
+      reader.readAsDataURL(file);
     }
 
     
-
    if (file) {
     setImageSelected(URL.createObjectURL(file));
    }
@@ -148,7 +198,7 @@ function TextControlsExample() {
   const handleSubmit = async (e) => {
     SendFormLoading();
     e.preventDefault();
-  
+
     const {
       servicioSolicitado,
       Descripcion,
@@ -168,21 +218,20 @@ function TextControlsExample() {
     data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
     data.append("firmaJefe", FirmaJefe);
     data.append("usuarioId", usuarioId);
-    data.append("prioridad",Prioridad);
+    data.append("prioridad", Prioridad);
 
-  
     // Add file only if it exists
     if (file) {
       data.append("file", file); // Append the file to the form data
     }
-    if(ConActivosFijosId) {
+    if (ConActivosFijosId) {
       data.append("conActivosFijosId", ConActivosFijosId);
     }
 
-    if(Solicitud_de_Servicio_id) {
+    if (Solicitud_de_Servicio_id) {
       data.append("solicitud_de_Servicio_id", Solicitud_de_Servicio_id);
     }
-    console.log("imagen",file);
+    console.log("imagen", file);
 
     console.log("servicioSolicitado", servicioSolicitado);
     console.log("fechaSolicitada", fechaSolicitada);
@@ -192,18 +241,16 @@ function TextControlsExample() {
     console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
     console.log("firmaJefe", FirmaJefe);
     console.log("nomEmpleadosId", usuarioId);
-    console.log("prioridad",Prioridad);
-    console.log("conActivosFijosId",ConActivosFijosId);
-    console.log("file",file);
-    console.log("solicitud_de_Servicio_id",Solicitud_de_Servicio_id);
-
-
+    console.log("prioridad", Prioridad);
+    console.log("conActivosFijosId", ConActivosFijosId);
+    console.log("file", file);
+    console.log("solicitud_de_Servicio_id", Solicitud_de_Servicio_id);
 
     // Log FormData content (optional, since FormData can't be fully logged)
     for (let pair of data.entries()) {
-      console.log(pair[0] + ': ' + pair[1]);
+      console.log(pair[0] + ": " + pair[1]);
     }
-  
+
     // Send the form data as multipart/form-data
     try {
       const response = await axios.post(
@@ -216,15 +263,13 @@ function TextControlsExample() {
         }
       );
       SendFormSucess();
-      Navigate("/welcome")
-
+      Navigate("/welcome");
 
       setFormData({
-        servicioSolicitado:'',
-        SolicitudDeServicioARealizar:'',
-        Descripcion:'',
+        servicioSolicitado: "",
+        SolicitudDeServicioARealizar: "",
+        Descripcion: "",
       });
-
     } catch (error) {
       console.error("Error al enviar el formulario:", error);
       SendtFormFailed();
@@ -245,36 +290,47 @@ function TextControlsExample() {
 
           <Form.Label>Servicio Solicitado </Form.Label>
           <div className="mb-3">
-          <Form.Check
-            inline
-            label="Infraestructura voz/datos."
-            name="servicioSolicitado" // Ensure this matches the state key
-            type="radio"
-            value="Infraestructura voz/datos"
-            checked={formData.servicioSolicitado === "Infraestructura voz/datos"}
-            id="inline-radio-1"
-            onChange={(e)=> {handleChange(e);handleRadioChange(e);}}
-          />
-          <Form.Check
-            inline
-            label="Sistema Tecnologico"
-            name="servicioSolicitado" // Ensure this matches the state key
-            type="radio"
-            value="Sistema Tecnologico"
-            checked={formData.servicioSolicitado === "Sistema Tecnologico"}
-            id="inline-radio-2"
-            onChange={(e)=> {handleChange(e);handleRadioChange(e);}}
-          />
-          <Form.Check
-            inline
-            label="Proyecto Nuevo"
-            name="servicioSolicitado" // Ensure this matches the state key
-            type="radio"
-            value="Proyecto Nuevo"
-            checked={formData.servicioSolicitado === "Proyecto Nuevo"}
-            id="inline-radio-3"
-            onChange={(e)=> {handleChange(e);handleRadioChange(e);}}
-          />
+            <Form.Check
+              inline
+              label="Infraestructura voz/datos."
+              name="servicioSolicitado" // Ensure this matches the state key
+              type="radio"
+              value="Infraestructura voz/datos"
+              checked={
+                formData.servicioSolicitado === "Infraestructura voz/datos"
+              }
+              id="inline-radio-1"
+              onChange={(e) => {
+                handleChange(e);
+                handleRadioChange(e);
+              }}
+            />
+            <Form.Check
+              inline
+              label="Sistema Tecnologico"
+              name="servicioSolicitado" // Ensure this matches the state key
+              type="radio"
+              value="Sistema Tecnologico"
+              checked={formData.servicioSolicitado === "Sistema Tecnologico"}
+              id="inline-radio-2"
+              onChange={(e) => {
+                handleChange(e);
+                handleRadioChange(e);
+              }}
+            />
+            <Form.Check
+              inline
+              label="Proyecto Nuevo"
+              name="servicioSolicitado" // Ensure this matches the state key
+              type="radio"
+              value="Proyecto Nuevo"
+              checked={formData.servicioSolicitado === "Proyecto Nuevo"}
+              id="inline-radio-3"
+              onChange={(e) => {
+                handleChange(e);
+                handleRadioChange(e);
+              }}
+            />
           </div>
 
           <Form.Label>Solicitud de servicio a realizar</Form.Label>
@@ -326,7 +382,7 @@ function TextControlsExample() {
               type="file"
               onChange={handlePhotoChange}
               accept="image/*"
-              
+              //capture="environment" // Use the phone's camera
             />
           </Form.Group>
           {file && (
@@ -334,13 +390,16 @@ function TextControlsExample() {
               <img
                 src={imageSelected}
                 alt="Uploaded"
-                style={{ maxWidth: '800px', maxHeight: '800px' }}
-                />
+                style={{ maxWidth: "500px", maxHeight: "500px" }}
+              />
             </div>
           )}
-        
 
-          <Button type="submit" variant="primary " style={{backgroundColor:'#237469'}}>
+          <Button
+            type="submit"
+            variant="primary "
+            style={{ backgroundColor: "#237469" }}
+          >
             Enviar
           </Button>
         </Form.Group>

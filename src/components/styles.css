@@ -23,3 +23,9 @@
     
     font-size: 11px;
 }
+
+.fullscreen-modal {
+    max-width: 90%; /* Adjust width as needed */
+    margin: 20px auto; /* Center and add vertical margin */
+    height: auto; /* Height can be adjusted */
+}

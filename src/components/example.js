@@ -1,83 +1,123 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, Button } from 'react-bootstrap';
-import { useState, useEffect } from "react";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function MisSolicitudes() {
+const InteractiveTable = () => {
+  const [data, setData] = useState([]);
+  const [newRow, setNewRow] = useState({ name: '', email: '' });
+  const [modifiedData, setModifiedData] = useState([]);
 
-  const [Request, setRequests]= useState([]);
-  const [loading, setLoading] = useState([]);
-  const [showRequest, setShowRequests] = useState([]);
-
-  const userId = localStorage.getItem('userid');
-
+  // Fetch data on component mount
   useEffect(() => {
-    axios.get(`https://localhost:7145/api/Request/byNomEmpleadoId/${userId}`) // Replace with your API endpoint
+    axios.get('http://localhost:5000/api/users')
       .then(response => {
-        setRequests(response.data);
+        setData(response.data);
       })
       .catch(error => {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching data:', error);
       });
+  }, []);
 
-  }, [userId]);
+  // Handle value changes for editing the table
+  const handleEdit = (index, field, value) => {
+    const updatedData = [...data];
+    updatedData[index][field] = value;
+    setData(updatedData);
 
-  const view = (id) => {
-
-    axios.get(`https://localhost:7145/api/Request/${id}`)
-    .then((response) => {
-      setShowRequests(response.data)
-
-    })
-    .catch((error) => {
-        console.log("dont show request",error)
-    });
-
+    // Track modified rows
+    if (!modifiedData.includes(updatedData[index])) {
+      setModifiedData([...modifiedData, updatedData[index]]);
+    }
   };
 
+  // Handle new row input (always the last row)
+  const handleNewRowChange = (field, value) => {
+    setNewRow({ ...newRow, [field]: value });
+  };
+
+  // Save all changes (existing rows and new row if filled)
+  const handleSaveChanges = () => {
+    // Update modified rows
+    modifiedData.forEach(row => {
+      axios.put(`http://localhost:5000/api/users/${row.id}`, row)
+        .then(response => {
+          console.log('Data updated successfully:', response.data);
+        })
+        .catch(error => {
+          console.error('Error updating data:', error);
+        });
+    });
+
+    // Add the new row if both fields are filled
+    if (newRow.name && newRow.email) {
+      axios.post('http://localhost:5000/api/users', newRow)
+        .then(response => {
+          setData([...data, response.data]);
+          setNewRow({ name: '', email: '' });  // Clear the new row
+        })
+        .catch(error => {
+          console.error('Error adding new row:', error);
+        });
+    }
+
+    // Clear modified data tracking
+    setModifiedData([]);
+  };
 
   return (
-
-    <div className="container mt-4">
-      <h2>Tus Solicitudes</h2>
-      <Table striped bordered hover>
-
+    <div>
+      <h1>Interactive Table (Excel-like)</h1>
+      <table border="1" cellPadding="5">
         <thead>
           <tr>
-            <th>Servicio Solicitado</th>
-            <th>Descripcion</th>
-            <th>Fecha</th>
-            <th>Estatus</th>
-            <th>Acciones</th>
-
-
+            <th>Name</th>
+            <th>Email</th>
           </tr>
         </thead>
         <tbody>
-          {Request.map((Reques, index) => (
-            <tr key={Reques.id}>
-
-              <td>{Reques.servicioSolicitado}</td>
-              <td>{Reques.descripcion}</td>
-              <td>{Reques.fechaSolicitada}</td>
-              <td>{Reques.status}</td>
-              <td><Button onClick={view(Reques.id)} variant="primary">
-
-                <FontAwesomeIcon icon={faEye} />
-
-              </Button></td>
-
+          {data.map((row, index) => (
+            <tr key={row.id}>
+              <td>
+                <input
+                  type="text"
+                  value={row.name}
+                  onChange={(e) => handleEdit(index, 'name', e.target.value)}
+                />
+              </td>
+              <td>
+                <input
+                  type="email"
+                  value={row.email}
+                  onChange={(e) => handleEdit(index, 'email', e.target.value)}
+                />
+              </td>
             </tr>
           ))}
-
+          {/* Always an empty row for adding new entries */}
+          <tr>
+            <td>
+              <input
+                type="text"
+                placeholder="Enter name"
+                value={newRow.name}
+                onChange={(e) => handleNewRowChange('name', e.target.value)}
+              />
+            </td>
+            <td>
+              <input
+                type="email"
+                placeholder="Enter email"
+                value={newRow.email}
+                onChange={(e) => handleNewRowChange('email', e.target.value)}
+              />
+            </td>
+          </tr>
         </tbody>
-      </Table>
+      </table>
 
+      {/* Save changes button */}
+      <button onClick={handleSaveChanges}>Save Changes</button>
     </div>
-
   );
+};
 
-}
-export default MisSolicitudes;
+export default InteractiveTable;

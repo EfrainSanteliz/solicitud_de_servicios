@@ -26,6 +26,7 @@ import {
   showErrorAlerAutorizar,
 } from "./AlertService";
 import UpdateForm from "./UpdateForm";
+import FilteringByTerm from "./FilteringByTerm";
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
@@ -41,7 +42,8 @@ function RequestTable() {
   const [Historials, setHistorials] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [Loading3,setLoading3 ] = useState(false);
+  const [Loading3, setLoading3] = useState(false);
+  const [options, setOptions] = useState([]);
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -56,18 +58,15 @@ function RequestTable() {
 
   const handleClose = () => {
     setShow(false);
-    setLoading2(false); 
-
+    setLoading2(false);
   };
 
   const handleClose2 = () => {
     setShowHistoryModal(false);
   };
- 
+
   useEffect(() => {
-   
-      handleShow();
-    
+    handleShow();
   }, []); // Add dependencies to trigger only when these values change
 
   const showRequest2 = async (requestID) => {
@@ -79,7 +78,7 @@ function RequestTable() {
       console.log("The show request get successfully");
       setShowRequest(response.data);
       setHistorials(response.data.historials);
-      setLoading2(true); 
+      setLoading2(true);
     } catch (error) {
       console.error("Error updating the Request:", error);
     }
@@ -120,57 +119,55 @@ function RequestTable() {
     const { prioridad } = formData;
 
     try {
-      
-        showLoadingAlertAutorizar();
+      showLoadingAlertAutorizar();
 
-        if (prioridad === 0) {
-          data.append("firmaJefe", FirmaJefeDepartamento);
-          data.append("prioridad", showRequest.prioridad);
+      if (prioridad === 0) {
+        data.append("firmaJefe", FirmaJefeDepartamento);
+        data.append("prioridad", showRequest.prioridad);
 
-          //console.log("firmaJefe", FirmaJefeDepartamento);
-          // console.log("prioridad", showRequest.prioridad);
-        } else {
-          data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
-          data.append("prioridad", prioridad);
+        //console.log("firmaJefe", FirmaJefeDepartamento);
+        // console.log("prioridad", showRequest.prioridad);
+      } else {
+        data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
+        data.append("prioridad", prioridad);
 
-          //console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
-          //  console.log("prioridad", prioridad);
+        //console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
+        //  console.log("prioridad", prioridad);
+      }
+
+      const response = await axios.put(
+        `https://localhost:7145/api/Request/${REQUESTID}`,
+        data,
+        {
+          headers: {
+            "content-type": "application/json",
+          },
         }
+      ); //
 
-        const response = await axios.put(
-          `https://localhost:7145/api/Request/${REQUESTID}`,
-          data,
-          {
-            headers: {
-              "content-type": "application/json",
-            },
-          }
-        ); //
-
-        console.log("Request Update Sucessfully", response);
-        const encabezado =
-          "tu solicitud ha sido firmada por el jefe de sistemas";
-        const cuerpo = "inicia sesion para ver el estado de tu solicitud";
-        const response2 = await axios.post(
-          `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
-            showRequest.usuarios.email
-          )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
-          {},
-          {
-            headers: {
-              "content-type": "application/json",
-            },
-          }
-        );
-        showRequest2(REQUESTID);
-        showSueccesAlertAutorizar();
-      
+      console.log("Request Update Sucessfully", response);
+      const encabezado = "tu solicitud ha sido firmada por el jefe de sistemas";
+      const cuerpo = "inicia sesion para ver el estado de tu solicitud";
+      const response2 = await axios.post(
+        `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+          showRequest.usuarios.email
+        )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
+        {},
+        {
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
+      showRequest2(REQUESTID);
+      showSueccesAlertAutorizar();
     } catch (error) {
       console.error("Error updating the Request:", error);
       showErrorAlerAutorizar();
     } finally {
     }
   };
+
   const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
   const handleSubmitComentarios = async (e) => {
     e.preventDefault();
@@ -275,10 +272,8 @@ function RequestTable() {
         console.log("the request get sucessfully", response);
         setLoading(false);
 
-     
-          setRequests(response.data); // SuperAdmin sees all requests
-          setFilteredData(response.data);
-        
+        setRequests(response.data); // SuperAdmin sees all requests
+        setFilteredData(response.data);
       })
       .catch((error) => {
         console.log("error to get the request", error);
@@ -288,6 +283,24 @@ function RequestTable() {
   };
 
   useEffect(() => {
+    const fechOptions = async () => {
+      try {
+        const response = await axios.get(
+          `https://localhost:7145/api/direccionesICESS`
+        );
+
+        const formattedOptions = response.data.map((item) => ({
+          value: item.direccionICEESID,
+          label: `${item.descripcion}`,
+        }));
+        setOptions(formattedOptions);
+      } catch (error) {}
+    };
+
+    fechOptions();
+  }, [setOptions]);
+
+  useEffect(() => {
     // Filter data based on search term
     const filtered = requests.filter(
       (item) =>
@@ -295,10 +308,12 @@ function RequestTable() {
         item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.servicioSolicitado
           .toLowerCase()
-          
           .includes(searchTerm.toLowerCase()) ||
         item.fechaSolicitada.toString().includes(searchTerm.toLowerCase()) ||
-        item.status.toLowerCase().includes(searchTerm.toLowerCase())
+        item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.usuarios.nomEmpleados.direccionesICEES.descripcion
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
     );
     setFilteredData(filtered);
   }, [searchTerm, requests]);
@@ -340,11 +355,10 @@ function RequestTable() {
 
   return (
     <div className="container mt-4">
-      <h2>Lista de solicitudes {} </h2>
       <br />
       <UpdateForm></UpdateForm>
       <br></br>
-      <SearchBar setSearchTerm={setSearchTerm} /> <br />
+      <SearchBar setSearchTerm={setSearchTerm} options={options} /> <br />
       {loading && (
         <Spinner animation="border" role="status">
           <span className="sr-only">Cargando..</span>
@@ -378,85 +392,81 @@ function RequestTable() {
                 <th style={{ width: "100px" }}>Fecha</th>
                 <th style={{ width: "80px" }}>Estatus</th>
                 <th style={{ width: "80px" }}>Prioridad</th>
+                <th style={{ width: "150px" }}>Departamento</th>
                 <th style={{ width: "100px", textAlign: "center" }}>
                   Acciones
                 </th>
               </tr>
             </thead>
 
-         
-              <tbody>
-                {filteredData.map((request) =>
-                  request.firmaJefeDepartamento !== "0" ? (
-                    <tr key={request.id}>
-                      <td style={{ width: "150px" }}>
-                        {request.firmaEmpleado}
-                      </td>
-                      <td
+            <tbody>
+              {filteredData.map(
+                (request) => (
+                  //request.firmaJefeDepartamento !== "0" ? (
+                  <tr key={request.id}>
+                    <td style={{ width: "150px" }}>{request.firmaEmpleado}</td>
+                    <td
+                      style={{
+                        width: "300px",
+                        whiteSpace: "nowrap", // Evita que el texto haga wrap
+                        overflow: "hidden", // Oculta el texto que no cabe
+                        textOverflow: "ellipsis", // Añade puntos suspensivos
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {request.descripcion}
+                    </td>
+                    <td>
+                      {new Date(request.fechaSolicitada).toLocaleDateString(
+                        "es-ES",
+                        {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        }
+                      )}
+                    </td>
+                    <td>{request.status}</td>
+                    <td>
+                      <Button>{request.prioridad}</Button>
+                    </td>
+
+                    <td>
+                      {
+                        request.usuarios.nomEmpleados.direccionesICEES
+                          .descripcion
+                      }
+                    </td>
+                    <td
+                      style={{ textAlign: "center", verticalAlign: "middle" }}
+                    >
+                      <Button
+                        variant="primary"
+                        onClick={() =>
+                          handleShow(
+                            request.id,
+                            request.usuarios.nomEmpleados.nomEmpNombre,
+                            request.usuarios.nomEmpleados.nomEmpPaterno,
+                            request.usuarios.nomEmpleados.nomEmpMaterno
+                          )
+                        }
                         style={{
-                          width: "300px",
-                          whiteSpace: "nowrap", // Evita que el texto haga wrap
-                          overflow: "hidden", // Oculta el texto que no cabe
-                          textOverflow: "ellipsis", // Añade puntos suspensivos
-                          fontWeight: "normal",
+                          backgroundColor: "#217ABF",
                         }}
                       >
-                        {request.descripcion}
-                      </td>
-                      <td>
-                        {new Date(request.fechaSolicitada).toLocaleDateString(
-                          "es-ES",
-                          {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          }
-                        )}
-                      </td>
-                      <td>{request.status}</td>
-                      <td>
-                        <Button >
-                          {request.prioridad}
-                        </Button>
-                      </td>
-                      <td
-                        style={{ textAlign: "center", verticalAlign: "middle" }}
-                      >
-                        <Button
-                          variant="primary"
-                          onClick={() =>
-                            handleShow(
-                              request.id,
-                              request.usuarios.nomEmpleados.nomEmpNombre,
-                              request.usuarios.nomEmpleados.nomEmpPaterno,
-                              request.usuarios.nomEmpleados.nomEmpMaterno
-                            )
-                          }
-                          style={{
-                            backgroundColor: "#217ABF",
-                           
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faEye} style={{}} />
-                        </Button>
-                      </td>
-                    </tr>
-                  ) : null
-                )}
-              </tbody>
-            
-
-           
+                        <FontAwesomeIcon icon={faEye} style={{}} />
+                      </Button>
+                    </td>
+                  </tr>
+                )
+                // ) : null
+              )}
+            </tbody>
           </Table>
         )
       )}
       {loading2 && (
-        <Modal
-          show={show}
-          onHide={handleClose}
-          animation={false}
-          dialogClassName="modal-80"
-        >
+        <Modal show={show} onHide={handleClose} animation={false} size="xl">
           <Modal.Header closeButton>
             <Modal.Title>
               Solicitud del usuario:{" "}
@@ -495,30 +505,28 @@ function RequestTable() {
                 Autorizar{" "}
               </Button>
 
-                <Form.Select
-                  aria-label="Default select example"
-                  style={{ width: "120px", backgroundColor: "#DC7F37" }}
-                  onChange={handleChange}
-                  onClick={(e) => {
-                    handleUpdatePrioridad(e);
-                  }}
-                  name="prioridad"
-                  defaultValue={showRequest.prioridad}
-                >
-                  <option value="Prioridad">Prioridad</option>
-                  <option value="Baja">Baja</option>
-                  <option value="Media">Media</option>
-                  <option value="Alta">Alta</option>
-                </Form.Select>
-              
-              
-                <UpdateStatus
-                  handleChange={handleChange}
-                  UpdateTableRequest={UpdateTableRequest}
-                  showRequest={showRequest}
-                  formData={formData}
-                ></UpdateStatus>
-              
+              <Form.Select
+                aria-label="Default select example"
+                style={{ width: "120px", backgroundColor: "#DC7F37" }}
+                onChange={handleChange}
+                onClick={(e) => {
+                  handleUpdatePrioridad(e);
+                }}
+                name="prioridad"
+                defaultValue={showRequest.prioridad}
+              >
+                <option value="Prioridad">Prioridad</option>
+                <option value="Baja">Baja</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+              </Form.Select>
+
+              <UpdateStatus
+                handleChange={handleChange}
+                UpdateTableRequest={UpdateTableRequest}
+                showRequest={showRequest}
+                formData={formData}
+              ></UpdateStatus>
 
               <DownloadPdfAsp showRequest={showRequest}> </DownloadPdfAsp>
             </Modal.Footer>
@@ -529,7 +537,7 @@ function RequestTable() {
         show={showHistoryModal}
         onHide={handleClose2}
         animation={false}
-        dialogClassName="modal-80"
+        size="xl"
       >
         <Modal.Header closeButton>
           <Modal.Title>

@@ -163,8 +163,10 @@ function MisSolicitudes() {
       <Modal
         show={show}
         onHide={handleClose}
-        dialogClassName="modal-80w"
+        
         animation={false}
+        size="xl" // Use "lg" for large or "xl" for extra-large
+
       >
         <Modal.Header closeButton>
           <Modal.Title>Tu Solicitud</Modal.Title>
@@ -181,8 +183,9 @@ function MisSolicitudes() {
       <Modal
         show={showModalHistoryComments}
         onHide={handleClose}
-        dialogClassName="modal-80w"
         animation={false}
+        size="xl" // Use "lg" for large or "xl" for extra-large
+
       >
         <Modal.Header closeButton>
           <Modal.Title>Historial de comentarios</Modal.Title>
