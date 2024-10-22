@@ -1,5 +1,5 @@
 import Form from "react-bootstrap/Form";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
 import "./styles.css";
@@ -13,8 +13,12 @@ import {
   SendtFormFailed,
 } from "./AlertService";
 import { useNavigate } from "react-router-dom";
+import "./styles.css";
+import { FaCamera } from "react-icons/fa"; // Import camera icon
+import { DeviceContext } from "./DeviceContext";
 
 function TextControlsExample() {
+  const deviceType = useContext(DeviceContext);
   const [options, setOptions] = useState([]);
   const [options2, setOptions2] = useState([]);
   const Navigate = useNavigate();
@@ -189,10 +193,9 @@ function TextControlsExample() {
       reader.readAsDataURL(file);
     }
 
-    
-   if (file) {
-    setImageSelected(URL.createObjectURL(file));
-   }
+    if (file) {
+      setImageSelected(URL.createObjectURL(file));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -377,7 +380,9 @@ function TextControlsExample() {
             Puedes subir una imagen para la descripcion del servicio (opcional).
           </Form.Label>
           <Form.Group controlId="formFile" className="mb-3">
-            <Form.Label>Upload Image</Form.Label>
+            <Form.Label>
+              Subir Imagen desde su dirrecion de archivos local
+            </Form.Label>
             <Form.Control
               type="file"
               onChange={handlePhotoChange}
@@ -385,6 +390,27 @@ function TextControlsExample() {
               //capture="environment" // Use the phone's camera
             />
           </Form.Group>
+          <div>
+            {deviceType === "phone" && (
+               // Use a ternary operator here
+              <div className="image-upload-container">
+                Tomar Foto
+                <label htmlFor="file-input" className="image-upload-label">
+                  <FaCamera className="camera-icon" size={24} />
+                  <input
+                    id="file-input"
+                    type="file"
+                    accept="image/*"
+                    capture="environment" // Opens camera on mobile devices
+                    onChange={handlePhotoChange}
+                  />
+                </label>
+              </div>
+            ) }
+          </div>
+
+          <br></br>
+
           {file && (
             <div className="mt-3">
               <img
@@ -394,6 +420,7 @@ function TextControlsExample() {
               />
             </div>
           )}
+          <br></br>
 
           <Button
             type="submit"

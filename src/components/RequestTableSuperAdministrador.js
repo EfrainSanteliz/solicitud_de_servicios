@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  table,
   Spinner,
   Alert,
   Table,
@@ -11,10 +10,7 @@ import {
 } from "react-bootstrap";
 import FormSolicitudTable from "./FormSolicitudTable";
 import HistoryComments from "./HistoryComments";
-import { Toast } from "react-bootstrap";
-import { toast } from "react-toastify";
-import { DataTime, DateTime } from "luxon";
-import { useFetcher } from "react-router-dom";
+import {  DateTime } from "luxon";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SearchBar from "./SearchBar";
@@ -26,7 +22,6 @@ import {
   showErrorAlerAutorizar,
 } from "./AlertService";
 import UpdateForm from "./UpdateForm";
-import FilteringByTerm from "./FilteringByTerm";
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
@@ -44,6 +39,9 @@ function RequestTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [Loading3, setLoading3] = useState(false);
   const [options, setOptions] = useState([]);
+  const [selectedDepartamento,setselectedDepartamento] = useState('');
+  const [SelectedStatus,setSelectedStatus] = useState('');
+  const [SelectPrioridad,setSelectPrioridad] = useState('');
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -282,41 +280,28 @@ function RequestTable() {
       });
   };
 
-  useEffect(() => {
-    const fechOptions = async () => {
-      try {
-        const response = await axios.get(
-          `https://localhost:7145/api/direccionesICESS`
-        );
 
-        const formattedOptions = response.data.map((item) => ({
-          value: item.direccionICEESID,
-          label: `${item.descripcion}`,
-        }));
-        setOptions(formattedOptions);
-      } catch (error) {}
-    };
-
-    fechOptions();
-  }, [setOptions]);
 
   useEffect(() => {
     // Filter data based on search term
-    const filtered = requests.filter(
-      (item) =>
-        item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const filterData = () => {
+    const filtered = requests.filter(item =>
+        (selectedDepartamento === '' || item.usuarios.nomEmpleados.direccionesICEES.descripcion === selectedDepartamento) && // Filter by year
+        (SelectedStatus === '' || item.status === SelectedStatus) && // Filter by year
+        (SelectPrioridad === '' || item.prioridad === SelectPrioridad) && 
+        (item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.servicioSolicitado
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
+        item.servicioSolicitado.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.fechaSolicitada.toString().includes(searchTerm.toLowerCase()) ||
         item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.usuarios.nomEmpleados.direccionesICEES.descripcion
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-    );
-    setFilteredData(filtered);
-  }, [searchTerm, requests]);
+        item.prioridad.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.usuarios.nomEmpleados.direccionesICEES.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+        setFilteredData(filtered);
+
+      };
+      filterData();
+  }, [searchTerm, requests,selectedDepartamento,SelectedStatus,SelectPrioridad]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -355,10 +340,14 @@ function RequestTable() {
 
   return (
     <div className="container mt-4">
-      <br />
+      
       <UpdateForm></UpdateForm>
       <br></br>
-      <SearchBar setSearchTerm={setSearchTerm} options={options} /> <br />
+      <SearchBar setSearchTerm={setSearchTerm} options={options} setselectedDepartamento={setselectedDepartamento} selectedDepartamento={selectedDepartamento}
+      
+      setSelectedStatus={setSelectedStatus} SelectedStatus={SelectedStatus}
+      setSelectPrioridad={setSelectPrioridad}
+      /> <br />
       {loading && (
         <Spinner animation="border" role="status">
           <span className="sr-only">Cargando..</span>
@@ -378,6 +367,7 @@ function RequestTable() {
           >
             <thead>
               <tr>
+                <th style={{width:"30px"}}>id</th>
                 <th style={{ width: "150px" }}>Nombre del empleado</th>
                 <th
                   style={{
@@ -404,6 +394,7 @@ function RequestTable() {
                 (request) => (
                   //request.firmaJefeDepartamento !== "0" ? (
                   <tr key={request.id}>
+                    <td>{request.id}</td>
                     <td style={{ width: "150px" }}>{request.firmaEmpleado}</td>
                     <td
                       style={{
@@ -428,7 +419,8 @@ function RequestTable() {
                     </td>
                     <td>{request.status}</td>
                     <td>
-                      <Button>{request.prioridad}</Button>
+                      <Button                 style={{ width: "80px", backgroundColor: "#217ABF" }}
+                      >{request.prioridad}</Button>
                     </td>
 
                     <td>

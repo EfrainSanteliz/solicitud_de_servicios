@@ -4,6 +4,22 @@ import { Table, Button, Modal, Container, Row, Col } from "react-bootstrap";
 import { Input } from "react-select/animated";
 import axios from "axios";
 import { error } from "ajv/dist/vocabularies/applicator/dependencies";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+
+// SweetAlert setup
+const MySwal = withReactContent(Swal);
+
+// Alert functions
+export const showMessageDontDrop = (errorMessage) => {
+  MySwal.fire({
+    title: "Error!",
+    text: errorMessage,
+    icon: "error",
+    confirmButtonText: "ok",
+  });
+};
+
 
 function UpdateForm() {
   const values = [true, "sm=down", "lg-down", "xl-down", "xxl-down"];
@@ -16,6 +32,7 @@ function UpdateForm() {
   const [newRow, setNewRow] = useState({ descripcion: "", habilitado: "" });
   const [validacion, setValidacion] = useState(false);
   const [show2, setShow2] = useState(false);
+  const [ErrorMessage,setErrorMessage] = useState('');
 
   function handleShow(breakpoint) {
     setFullscreen(breakpoint);
@@ -28,16 +45,15 @@ function UpdateForm() {
     } else {
       setShow2(true);
     }
-  };
+  }
 
   function handleClose2() {
     setShow2(false);
-  };
+  }
 
   function handleClose3() {
     setShow2(false);
     setShow(false);
-
   }
 
   useEffect(() => {
@@ -138,7 +154,23 @@ function UpdateForm() {
     }
   };
 
-  const handleDrop = () => {};
+  const handleDrop = async (id) => {
+    try {
+      const response = await axios.delete(
+        `https://localhost:7145/api/Solicitud_de_servicio/${id}`
+        
+      );
+      getSolicitudesDeServicios();
+
+    } catch (error) {
+        // Extract the message from the response
+        const serverMessage = error.response?.data;
+        console.log(" ",serverMessage)
+        setErrorMessage(serverMessage); // Update error message state
+        showMessageDontDrop(serverMessage); // Show SweetAlert
+
+    }
+  }
 
   const [formData, setFormData] = useState({
     habilitado: null,
@@ -152,6 +184,26 @@ function UpdateForm() {
       [name]: value,
     }));
   };
+
+  const styles = {
+    button: {
+      display: "flex",
+      alignItems: "center",
+      backgroundColor: "#f44336",
+      color: "white",
+      border: "none",
+      borderRadius: "4px",
+      padding: "10px 15px",
+      cursor: "pointer",
+    },
+    icon: {
+      marginRight: "8px", // Space between icon and text
+    },
+  };
+
+  const handleDeleteServicio = async () => {};
+
+  
 
   return (
     <div>
@@ -179,6 +231,9 @@ function UpdateForm() {
                         <th>Solicitud de servicio a realizar</th>
                         <th style={{ width: "120px", textAlign: "center" }}>
                           Habilitado{" "}
+                        </th>
+                        <th style={{ width: "80px", textAlign: "center" }}>
+                          Eliminar
                         </th>
                       </tr>
                     </thead>
@@ -228,6 +283,22 @@ function UpdateForm() {
                               <option value={true}>Si</option>
                             </Form.Select>
                           </td>
+
+                          <td>
+                            <Button
+                              onClick={(e) => {
+                                handleDrop(row.solicitud_de_servicio_id);
+                              }}
+                              style={styles.button}
+                            >
+                              <i
+                                className="fa fa-trash"
+                                aria-hidden="true"
+                                style={styles.icon}
+                              ></i>{" "}
+                              {/* Use trash icon */}
+                            </Button>
+                          </td>
                         </tr>
                       ))}
 
@@ -271,24 +342,22 @@ function UpdateForm() {
             </Modal.Footer>
           </Modal.Body>
         </Modal>
-        <Modal show={show2}
-        
-        >
+        <Modal show={show2}>
           <Modal.Header>
             <b>Quieres salir sin guardar cambios? </b>
           </Modal.Header>
           <Modal.Body>
-
             <br></br>
             <br></br>
             <br></br>
-
           </Modal.Body>
           <Modal.Footer>
             <Button variant="primary" onClick={handleClose2}>
               Permanecer
             </Button>
-            <Button variant="danger" onClick={handleClose3}>Salir sin guardar</Button>
+            <Button variant="danger" onClick={handleClose3}>
+              Salir sin guardar
+            </Button>
           </Modal.Footer>
         </Modal>
       </Form>

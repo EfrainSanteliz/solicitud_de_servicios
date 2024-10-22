@@ -7,7 +7,7 @@ function WelcomeSuperAdministrador() {
 
     return (
       <div className="container mt-5">
-        <h2>Hola Super Administrador Tus Solicitudes</h2>
+        <h4>Hola Super Administrador Tus Solicitudes</h4>
         <RequestTableSuperAdministrador/>
       </div>
     );

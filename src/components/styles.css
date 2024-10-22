@@ -29,3 +29,22 @@
     margin: 20px auto; /* Center and add vertical margin */
     height: auto; /* Height can be adjusted */
 }
+
+.input-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .file-input {
+    padding-left: 40px; /* Adjust padding to make room for the icon */
+  }
+  
+  .input-icon {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    pointer-events: none; /* Prevents the icon from interfering with file input clicks */
+    font-size: 18px;
+    color: #999;
+  }

@@ -14,6 +14,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar2 from "./components/Navbar2";
 import ProtectedRoute from "./components/ProtectedRoute";
+import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
 
 function App() {
   return (

@@ -25,6 +25,15 @@ export const showSueccesAlertAutorizar = () => {
       });
 };
 
+export const showMessageDontDrop = (errorMessage) => {
+  MySwal.fire({
+    title: "Error!",
+    text: errorMessage,
+    icon: "error",
+    confirmButtonText: "No puedes Eliminar",
+  });
+};
+
 export const showErrorAlerAutorizar = () => {
     MySwal.fire({
         title: "Error!",

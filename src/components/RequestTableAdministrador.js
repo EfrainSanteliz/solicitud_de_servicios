@@ -293,6 +293,8 @@ function RequestTable() {
         item.servicioSolicitado
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
+          item.prioridad.toLowerCase().includes(searchTerm.toLowerCase()) ||
+
         item.fechaSolicitada.toString().includes(searchTerm.toLowerCase()) ||
         item.status.toLowerCase().includes(searchTerm.toLowerCase())
     );

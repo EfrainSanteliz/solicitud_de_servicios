@@ -1,123 +1,119 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// RequestTable.js
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Spinner, Alert, Table } from "react-bootstrap";
+import SearchBar from "./SearchBar"; // Import the SearchBar component
 
-const InteractiveTable = () => {
-  const [data, setData] = useState([]);
-  const [newRow, setNewRow] = useState({ name: '', email: '' });
-  const [modifiedData, setModifiedData] = useState([]);
+function RequestTable() {
+  const [requests, setRequests] = useState([]); // Holds all requests
+  const [filteredData, setFilteredData] = useState([]); // Holds filtered data
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // Search term state
+  const [options, setOptions] = useState([]); // Options for departments
+  const [selectedDepartamento, setselectedDepartamento] = useState(""); // Selected department
 
-  // Fetch data on component mount
   useEffect(() => {
-    axios.get('http://localhost:5000/api/users')
-      .then(response => {
-        setData(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+    // Fetch the requests on component mount
+    UpdateTableRequest();
   }, []);
 
-  // Handle value changes for editing the table
-  const handleEdit = (index, field, value) => {
-    const updatedData = [...data];
-    updatedData[index][field] = value;
-    setData(updatedData);
-
-    // Track modified rows
-    if (!modifiedData.includes(updatedData[index])) {
-      setModifiedData([...modifiedData, updatedData[index]]);
-    }
+  const UpdateTableRequest = () => {
+    axios
+      .get(`https://localhost:7145/api/Request/`)
+      .then((response) => {
+        setRequests(response.data); // SuperAdmin sees all requests
+        setFilteredData(response.data); // Initially set filtered data
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching requests:", error);
+        setError("El servidor no puede obtener las solicitudes");
+        setLoading(false);
+      });
   };
 
-  // Handle new row input (always the last row)
-  const handleNewRowChange = (field, value) => {
-    setNewRow({ ...newRow, [field]: value });
-  };
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const response = await axios.get(`https://localhost:7145/api/direccionesICESS`);
+        const formattedOptions = response.data.map((item) => ({
+          value: item.direccionICEESID,
+          label: item.descripcion,
+        }));
+        setOptions(formattedOptions);
+      } catch (error) {
+        console.error("Error fetching department options:", error);
+      }
+    };
 
-  // Save all changes (existing rows and new row if filled)
-  const handleSaveChanges = () => {
-    // Update modified rows
-    modifiedData.forEach(row => {
-      axios.put(`http://localhost:5000/api/users/${row.id}`, row)
-        .then(response => {
-          console.log('Data updated successfully:', response.data);
-        })
-        .catch(error => {
-          console.error('Error updating data:', error);
-        });
+    fetchOptions();
+  }, []);
+
+  useEffect(() => {
+    // Filter data based on search term and selected department
+    const filtered = requests.filter((item) => {
+      const matchesSearch =
+        item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.servicioSolicitado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.fechaSolicitada.toString().includes(searchTerm.toLowerCase()) ||
+        item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.prioridad.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.usuarios.nomEmpleados.direccionesICEES.descripcion.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesDepartamento = selectedDepartamento === '' || item.usuarios.nomEmpleados.direccionesICEES.descripcion === selectedDepartamento;
+
+      return matchesSearch && matchesDepartamento;
     });
+    setFilteredData(filtered);
+  }, [searchTerm, requests, selectedDepartamento]); // Runs when searchTerm, requests, or selectedDepartamento changes
 
-    // Add the new row if both fields are filled
-    if (newRow.name && newRow.email) {
-      axios.post('http://localhost:5000/api/users', newRow)
-        .then(response => {
-          setData([...data, response.data]);
-          setNewRow({ name: '', email: '' });  // Clear the new row
-        })
-        .catch(error => {
-          console.error('Error adding new row:', error);
-        });
-    }
+  if (loading) {
+    return <Spinner animation="border" />;
+  }
 
-    // Clear modified data tracking
-    setModifiedData([]);
-  };
+  if (error) {
+    return <Alert variant="danger">{error}</Alert>;
+  }
 
   return (
-    <div>
-      <h1>Interactive Table (Excel-like)</h1>
-      <table border="1" cellPadding="5">
+    <div className="container mt-4">
+      <SearchBar setSearchTerm={setSearchTerm} options={options} setselectedDepartamento={setselectedDepartamento} />
+      <br />
+      <Table striped bordered hover>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
+            <th>ID</th>
+            <th>Firma Empleado</th>
+            <th>Descripción</th>
+            <th>Servicio Solicitado</th>
+            <th>Fecha Solicitada</th>
+            <th>Status</th>
+            <th>Prioridad</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((row, index) => (
-            <tr key={row.id}>
-              <td>
-                <input
-                  type="text"
-                  value={row.name}
-                  onChange={(e) => handleEdit(index, 'name', e.target.value)}
-                />
-              </td>
-              <td>
-                <input
-                  type="email"
-                  value={row.email}
-                  onChange={(e) => handleEdit(index, 'email', e.target.value)}
-                />
-              </td>
+          {filteredData.map((request) => (
+            <tr key={request.id}>
+              <td>{request.id}</td>
+              <td>{request.firmaEmpleado}</td>
+              <td>{request.descripcion}</td>
+              <td>{request.servicioSolicitado}</td>
+              <td>{request.fechaSolicitada}</td>
+              <td>{request.status}</td>
+              <td>{request.prioridad}</td>
             </tr>
           ))}
-          {/* Always an empty row for adding new entries */}
-          <tr>
-            <td>
-              <input
-                type="text"
-                placeholder="Enter name"
-                value={newRow.name}
-                onChange={(e) => handleNewRowChange('name', e.target.value)}
-              />
-            </td>
-            <td>
-              <input
-                type="email"
-                placeholder="Enter email"
-                value={newRow.email}
-                onChange={(e) => handleNewRowChange('email', e.target.value)}
-              />
-            </td>
-          </tr>
+          {filteredData.length === 0 && (
+            <tr>
+              <td colSpan="7">No requests found.</td>
+            </tr>
+          )}
         </tbody>
-      </table>
-
-      {/* Save changes button */}
-      <button onClick={handleSaveChanges}>Save Changes</button>
+      </Table>
     </div>
   );
-};
+}
 
-export default InteractiveTable;
+export default RequestTable;
