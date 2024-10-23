@@ -113,11 +113,11 @@ function DownloadPdf({showRequest}) {
   return (
     <div>
       <Button
-        variant="primary"
+        variant=""
         onClick={(e) => {
           handleDowloadPdf(e);
         }}
-        style={{ backgroundColor: "#217ABF" }}
+        style={{ backgroundColor: "#C5126D", color:"white" }}
       >
         Descargar
       </Button>

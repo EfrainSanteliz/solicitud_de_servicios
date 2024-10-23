@@ -5,13 +5,18 @@
 }
 #NuevaSolicitud {
     margin-left: 0px ;
+    position: center;
    
 }
 
 #NuevaSolicitud {
-    margin-right: 5%; 
-    margin-left: 5%;
+    margin-right: 2%; 
+    margin-left: 2%;
     margin-top: 2%;
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;    /* Centers vertically */
+    
 
 }
 .modal-80 {
@@ -48,3 +53,11 @@
     font-size: 18px;
     color: #999;
   }
+
+  .fontSize {
+   
+    font-size: 25px;            /* Font size */
+    line-height: 1.4;           /* Line height */
+    font-family: 'Montserrat', sans-serif; /* Font family */
+  }
+  

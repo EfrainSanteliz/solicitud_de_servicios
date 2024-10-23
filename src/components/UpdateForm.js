@@ -27,6 +27,7 @@ function UpdateForm() {
   const [show, setShow] = useState(false);
   const [showFirst, setShowFirst] = useState(false);
   const [solicitudesDeServicios, setSolicitudesDeServicios] = useState([]);
+  const [servicioSolicitado,setServicioSolicitado] = useState([]);
   const [data, setData] = useState([]);
   const [modifiedData, setModifiedData] = useState([]);
   const [newRow, setNewRow] = useState({ descripcion: "", habilitado: "" });
@@ -58,6 +59,7 @@ function UpdateForm() {
 
   useEffect(() => {
     getSolicitudesDeServicios();
+    getServicioSolicitado();
   }, []);
 
   const handleUpdateHabilitar = async (id, habilitado) => {
@@ -93,14 +95,29 @@ function UpdateForm() {
     if (!modifiedData.includes(updatedData[index])) {
       setModifiedData([...modifiedData, updatedData[index]]);
     }
+    setsaveSolicitudDeServicioARealizar(true);
+  };
+  const handleEdit2 = (index,field,value) => {
+    const updatedData = [...servicioSolicitado];
+    updatedData[index][field] = value;
+    setData(updatedData);
+
+    if(!modifiedData.includes(updatedData[index])) {
+      setModifiedData([...modifiedData,updatedData[index]]);
+    }
   };
 
+  const [saveSolicitudDeServicioARealizar,setsaveSolicitudDeServicioARealizar] = useState(false);
   const handleNewRowChange = (field, value) => {
     setNewRow({ ...newRow, [field]: value });
     setValidacion(true);
+    setsaveSolicitudDeServicioARealizar(true);
+
   };
 
   const handleSaveChanges = () => {
+
+    if (saveSolicitudDeServicioARealizar){
     modifiedData.forEach((row) => {
       axios
         .put(
@@ -140,6 +157,54 @@ function UpdateForm() {
 
     getSolicitudesDeServicios();
     getSolicitudesDeServicios();
+    getSolicitudesDeServicios();
+    setsaveSolicitudDeServicioARealizar(false);
+    }
+    else if(!saveSolicitudDeServicioARealizar) {
+
+      modifiedData.forEach((row) => {
+        axios
+          .put(
+            `https://localhost:7145/api/ServicioSolicitado/${row.servicio_solicidato_Id}`,
+            row
+          )
+          .then((response) => {
+            console.log("Data Update Successfully2", response.data);
+          })
+          .catch((error) => {
+            console.log("Error updating data:", error);
+          });
+      });
+  
+      if (newRow.descripcion !== "") {
+        const formattedNewRow = {
+          ...newRow,
+          habilitado: newRow.habilitado === "true", // Convert habilitado to boolean
+        };
+  
+        axios
+          .post(
+            `https://localhost:7145/api/ServicioSolicitado/`,
+            formattedNewRow
+          )
+          .then((response) => {
+            setData([...solicitudesDeServicios, response.data]);
+            setNewRow({ habilitado: "", descripcion: "" });
+          })
+          .catch((error) => {
+            console.error("Error adding new row:", error);
+          });
+      }
+  
+      setModifiedData([]);
+      setValidacion(false);
+  
+      getSolicitudesDeServicios();
+      getSolicitudesDeServicios();
+
+    }
+
+
   };
 
   const getSolicitudesDeServicios = async () => {
@@ -147,12 +212,22 @@ function UpdateForm() {
       const response = await axios.get(
         `https://localhost:7145/api/Solicitud_de_servicio/`
       );
-      setData(response.data);
       setSolicitudesDeServicios(response.data);
     } catch (error) {
       console.error("Error fetching service requests:", error);
     }
   };
+  const getServicioSolicitado = async () => {
+    try {
+      const response = await axios.get(`https://localhost:7145/api/ServicioSolicitado/`);
+      setServicioSolicitado(response.data);
+    } catch (err) {
+      console.log("erro to get SolicitudesOfServices");
+    }
+
+  };
+
+
 
   const handleDrop = async (id) => {
     try {
@@ -189,7 +264,7 @@ function UpdateForm() {
     button: {
       display: "flex",
       alignItems: "center",
-      backgroundColor: "#f44336",
+      backgroundColor: "#9B2F3E ",
       color: "white",
       border: "none",
       borderRadius: "4px",
@@ -221,6 +296,119 @@ function UpdateForm() {
             <Modal.Title>Modificar Formulario</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+          <br></br>
+            <Row>
+              <Col xs={12}>
+                <div className="table-responsive">
+                  <Table striped bordered hover>
+                    <thead>
+                      <tr>
+                        <th>Servicio Solicitado</th>
+                        <th style={{ width: "120px", textAlign: "center" }}>
+                          Habilitado{" "}
+                        </th>
+                        <th style={{ width: "80px", textAlign: "center" }}>
+                          Eliminar
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {servicioSolicitado.map((row, index) => (
+                        <tr key={row.servicio_solicidato_Id}>
+                          <td>
+                            <Form.Control
+                              type="text"
+                              defaultValue={row.descripcionServicio_Solicitado}
+                              onChange={(e) =>
+                                handleEdit2(index, "descripcionServicio_Solicitado", e.target.value)
+                              }
+                            />
+                          </td>
+
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Form.Select
+                              aria-label="Default select example"
+                              style={{
+                                color:"white",
+                                width: "100px",
+                                textAlign: "center",
+                                backgroundColor:
+                                  row.habilitado === false
+                                    ? "#DC7F37"
+                                    : "#C5126D", // Apply color conditionally
+                              }}
+                              onChange={handleChange}
+                              onClick={(e) => {
+                                const habilitadoValue =
+                                  e.target.value === "true"; // Convert to boolean
+                                handleUpdateHabilitar(
+                                  row.solicitud_de_servicio_id,
+                                  habilitadoValue
+                                );
+                              }}
+                              name="prioridad"
+                              defaultValue={row.habilitado}
+                            >
+                              <option value={false}>No</option>
+                              <option value={true}>Si</option>
+                            </Form.Select>
+                          </td>
+
+                          <td>
+                            <Button
+                              onClick={(e) => {
+                                handleDrop(row.solicitud_de_servicio_id);
+                              }}
+                              style={styles.button}
+                            >
+                              <i
+                                className="fa fa-trash"
+                                aria-hidden="true"
+                                style={styles.icon}
+                              ></i>{" "}
+                              {/* Use trash icon */}
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+
+                      <tr>
+                        <td>
+                          <Form.Control
+                            type="text"
+                            placeholder=""
+                            value={newRow.descripcion}
+                            onChange={(e) =>
+                              handleNewRowChange("descripcion", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <Form.Select
+                            type="email"
+                            placeholder=""
+                            value={newRow.habilitado}
+                            onChange={(e) =>
+                              handleNewRowChange("habilitado", e.target.value)
+                            }
+                          >
+                            <option value="true">Seleccione</option>
+                            <option value="true">Habilitado</option>
+                            <option value="false">Deshabilitado</option>
+                          </Form.Select>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </div>
+              </Col>
+            </Row>
             <br></br>
             <Row>
               <Col xs={12}>
@@ -260,12 +448,13 @@ function UpdateForm() {
                             <Form.Select
                               aria-label="Default select example"
                               style={{
+                                color:"white",
                                 width: "100px",
                                 textAlign: "center",
                                 backgroundColor:
                                   row.habilitado === false
                                     ? "#DC7F37"
-                                    : "#217ABF", // Apply color conditionally
+                                    : "#C5126D", // Apply color conditionally
                               }}
                               onChange={handleChange}
                               onClick={(e) => {

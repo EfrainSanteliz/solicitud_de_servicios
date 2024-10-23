@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { setToken } from "./JwtHelper";
-
+import { Button } from "react-bootstrap";
 
 function Login() {
   // State variables for email and password
@@ -89,15 +89,15 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      <div className="mb-3">
+      {/*<div className="mb-3">
         <label className="form-label">
           No tienes una cuenta?{" "}
-          <a href="/NewUser" style={{label:"#217ABF"}}>Click aquí para registrarte </a>
+          <a href="/NewUser" style={{label:"#C5126D"}}>Click aquí para registrarte </a>
         </label>
-      </div>
-      <button className="btn btn-primary" onClick={handleLogin} style={{backgroundColor:"#217ABF"}}>
+      </div>*/}
+      <Button variant=""  onClick={handleLogin} style={{backgroundColor:"#C5126D",color:"white"}}>
         Login
-      </button>
+      </Button>
     </div>
   );
 }

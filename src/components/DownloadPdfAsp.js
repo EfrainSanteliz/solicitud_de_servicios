@@ -39,8 +39,8 @@ function DownloadPdfAsp({ showRequest }) {
 
     return (
         <div>
-            <Button variant="primary" onClick={handleDownloadPdf}
-                    style={{ backgroundColor: "#217ABF" }}
+            <Button variant="" onClick={handleDownloadPdf}
+                    style={{ backgroundColor: "#C5126D" ,color:"white" }}
 
             >
                 Descargar

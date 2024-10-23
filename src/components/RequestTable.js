@@ -474,7 +474,7 @@ function RequestTable() {
                         style={{ textAlign: "center", verticalAlign: "middle" }}
                       >
                         <Button
-                          variant="primary"
+                          variant=""
                           onClick={() =>
                             handleShow(
                               request.id,
@@ -484,7 +484,7 @@ function RequestTable() {
                             )
                           }
                           style={{
-                            backgroundColor: "#217ABF",
+                            backgroundColor: "#C5126D",
                            
                           }}
                         >
@@ -524,7 +524,7 @@ function RequestTable() {
                     </td>
                     <td>{request.status}</td>
                     <td>
-                      <Button style={{ backgroundColor: "#217ABF" }}>
+                      <Button style={{ backgroundColor: "#C5126D" }}>
                         {request.prioridad}
                       </Button>
                     </td>
@@ -532,7 +532,7 @@ function RequestTable() {
                       style={{ textAlign: "center", verticalAlign: "middle" }}
                     >
                       <Button
-                        variant="primary"
+                        variant=""
                         onClick={() =>
                           handleShow(
                             request.id,
@@ -542,7 +542,7 @@ function RequestTable() {
                           )
                         }
                         style={{
-                          backgroundColor: "#217ABF",
+                          backgroundColor: "#C5126D",
                           margin: "0 auto",
                         }}
                       >
@@ -576,18 +576,18 @@ function RequestTable() {
               <Button
                 variant="secondary"
                 onClick={handleClose}
-                style={{ backgroundColor: "#666666" }}
+                style={{ backgroundColor: "#666666",color:"white" }}
               >
                 {" "}
                 Close{" "}
               </Button>
 
               <Button
-                variant="primary"
+                variant=""
                 onClick={(e) => {
                   handleHistory(e);
                 }}
-                style={{ backgroundColor: "#217ABF" }}
+                style={{ backgroundColor: "#C5126D" }}
               >
                 Comentar
               </Button>
@@ -595,7 +595,7 @@ function RequestTable() {
               <Button
                 variant="success"
                 onClick={handleAutorizar}
-                style={{ backgroundColor: "#237469" }}
+                style={{ backgroundColor: "#237469",color:"white" }}
               >
                 {" "}
                 Autorizar{" "}
@@ -604,7 +604,7 @@ function RequestTable() {
               {UserRole === "Administrador" && (
                 <Form.Select
                   aria-label="Default select example"
-                  style={{ width: "120px", backgroundColor: "#DC7F37" }}
+                  style={{ width: "120px", backgroundColor: "#DC7F37" ,color:"white"}}
                   onChange={handleChange}
                   name="prioridad"
                   disabled={

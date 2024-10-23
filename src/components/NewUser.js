@@ -75,7 +75,7 @@ function NewUser() {
           />
         </div>
      
-        <button className="btn btn-primary" onClick={handleRegister} style={{label:"#217ABF"}}>
+        <button className="btn btn-primary" onClick={handleRegister} style={{label:"#C5126D"}}>
           Registrarse
         </button>
       </div>

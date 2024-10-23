@@ -93,7 +93,7 @@ function TextControlsExample() {
     axios
       .get(`https://localhost:7145/api/Solicitud_de_servicio/`)
       .then((response) => {
-        console.log("get successful", response.data);
+        console.log("get successful231", response.data);
 
         const formattedOptions = response.data
           .map((item) =>
@@ -222,6 +222,7 @@ function TextControlsExample() {
     data.append("firmaJefe", FirmaJefe);
     data.append("usuarioId", usuarioId);
     data.append("prioridad", Prioridad);
+    data.append("servicio_solicidato_Id",servicioSolicitado);
 
     // Add file only if it exists
     if (file) {
@@ -248,6 +249,9 @@ function TextControlsExample() {
     console.log("conActivosFijosId", ConActivosFijosId);
     console.log("file", file);
     console.log("solicitud_de_Servicio_id", Solicitud_de_Servicio_id);
+    console.log("servicio_solicidato_Id", servicioSolicitado);
+
+
 
     // Log FormData content (optional, since FormData can't be fully logged)
     for (let pair of data.entries()) {
@@ -279,6 +283,44 @@ function TextControlsExample() {
       setMessage("Hubo un error al enviar el formulario.");
     }
   };
+
+  
+  const [FirstResponse,setFirstResponse] = useState([]);
+  const [SecondResponse,setSecondResponse] = useState([]);
+  const [ThirdResponse,setThirdResponse] = useState([]);
+
+  const [loagding,setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Replace the URL with your actual endpoint
+        const response = await axios.get("https://localhost:7145/api/ServicioSolicitado/");
+
+        const list = response.data; // The whole array from the server
+
+       
+          setFirstResponse(list[0]);
+          setSecondResponse(list[1]);
+          setThirdResponse(list[2]);
+
+       
+
+        console.log("ServiceRequest get successful");
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if(loagding) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
   return (
     <Form onSubmit={handleSubmit}>
       {message && <Alert variant="info">{message}</Alert>}
@@ -295,13 +337,11 @@ function TextControlsExample() {
           <div className="mb-3">
             <Form.Check
               inline
-              label="Infraestructura voz/datos."
+              label={FirstResponse.descripcionServicio_Solicitado}
               name="servicioSolicitado" // Ensure this matches the state key
               type="radio"
-              value="Infraestructura voz/datos"
-              checked={
-                formData.servicioSolicitado === "Infraestructura voz/datos"
-              }
+              value={FirstResponse.servicio_solicidato_Id}
+        
               id="inline-radio-1"
               onChange={(e) => {
                 handleChange(e);
@@ -310,11 +350,11 @@ function TextControlsExample() {
             />
             <Form.Check
               inline
-              label="Sistema Tecnologico"
+              label={SecondResponse.descripcionServicio_Solicitado}
               name="servicioSolicitado" // Ensure this matches the state key
               type="radio"
-              value="Sistema Tecnologico"
-              checked={formData.servicioSolicitado === "Sistema Tecnologico"}
+              value={SecondResponse.servicio_solicidato_Id}
+              //checked={formData.servicioSolicitado === "Sistema Tecnologico"}
               id="inline-radio-2"
               onChange={(e) => {
                 handleChange(e);
@@ -323,11 +363,11 @@ function TextControlsExample() {
             />
             <Form.Check
               inline
-              label="Proyecto Nuevo"
+              label={ThirdResponse.descripcionServicio_Solicitado}
               name="servicioSolicitado" // Ensure this matches the state key
               type="radio"
-              value="Proyecto Nuevo"
-              checked={formData.servicioSolicitado === "Proyecto Nuevo"}
+              value={ThirdResponse.servicio_solicidato_Id}
+              //checked={formData.servicioSolicitado === "Proyecto Nuevo"}
               id="inline-radio-3"
               onChange={(e) => {
                 handleChange(e);

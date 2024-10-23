@@ -37,6 +37,10 @@ function RequestTable() {
   const [Historials, setHistorials] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [SelectedStatus,setSelectedStatus] = useState('');
+  const [SelectPrioridad,setSelectPrioridad] = useState('');
+  const [DateSystem, setDateSystem] = useState('');
+  const [RangeComparationDate,setRangeComparationDate] = useState('');
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -285,21 +289,46 @@ function RequestTable() {
   };
 
   useEffect(() => {
-    // Filter data based on search term
-    const filtered = requests.filter(
-      (item) =>
-        item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.servicioSolicitado
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
+    // Filter data based on search term and other filters
+    const filterData = () => {
+      const now = DateTime.now(); // Current date
+      console.log("Date",DateTime.now());
+  
+      const filtered = requests.filter((item) => {
+        // Parse the server date in ISO format (yyyy-MM-dd'T'HH:mm:ss)
+        const requestDate = DateTime.fromISO(item.fechaSolicitada);
+  
+        // Date filtering logic
+        let dateMatch = true;
+        if (RangeComparationDate === "Este año") {
+          dateMatch = requestDate.year === now.year;
+        } else if (RangeComparationDate === "Este mes") {
+          dateMatch = requestDate.year === now.year && requestDate.month === now.month;
+        } else if (RangeComparationDate === "Este dia") {
+          dateMatch = requestDate.day === now.day;
+         } else if (RangeComparationDate === "Esta semana") {
+          dateMatch = requestDate.hasSame(now, 'week');
+        } 
+  
+        // Other filters (departamento, status, prioridad, search term)
+        const statusMatch = SelectedStatus === '' || item.status === SelectedStatus;
+        const priorityMatch = SelectPrioridad === '' || item.prioridad === SelectPrioridad;
+        const searchTermMatch = item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.servicioSolicitado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.prioridad.toLowerCase().includes(searchTerm.toLowerCase()) ||
-
-        item.fechaSolicitada.toString().includes(searchTerm.toLowerCase()) ||
-        item.status.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredData(filtered);
-  }, [searchTerm, requests]);
+          item.usuarios.nomEmpleados.direccionesICEES.descripcion.toLowerCase().includes(searchTerm.toLowerCase());
+  
+        // Return true only if all conditions match
+        return dateMatch && statusMatch && priorityMatch && searchTermMatch;
+      });
+  
+      setFilteredData(filtered);
+    };
+  
+    filterData();
+  }, [searchTerm, requests, SelectedStatus, SelectPrioridad, RangeComparationDate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -318,8 +347,13 @@ function RequestTable() {
       <br />
       
 
-      <SearchBar setSearchTerm={setSearchTerm} /> <br />
-      {loading && (
+      <SearchBar setSearchTerm={setSearchTerm} 
+      
+      setSelectedStatus={setSelectedStatus} SelectedStatus={SelectedStatus}
+      setSelectPrioridad={setSelectPrioridad} setDateSystem={setDateSystem} DateSystem={DateSystem}
+      setRangeComparationDate={setRangeComparationDate} RangeComparationDate={RangeComparationDate}
+      />         <br />
+   {loading && (
         <Spinner animation="border" role="status">
           <span className="sr-only">Cargando..</span>
         </Spinner>
@@ -385,7 +419,7 @@ function RequestTable() {
                     </td>
                     <td>{request.status}</td>
                     <td>
-                      <Button style={{ backgroundColor: "#217ABF" }}>
+                      <Button style={{ backgroundColor: "#C5126D" }}>
                         {request.prioridad}
                       </Button>
                     </td>
@@ -393,7 +427,7 @@ function RequestTable() {
                       style={{ textAlign: "center", verticalAlign: "middle" }}
                     >
                       <Button
-                        variant="primary"
+                        variant=""
                         onClick={() =>
                           handleShow(
                             request.id,
@@ -403,7 +437,7 @@ function RequestTable() {
                           )
                         }
                         style={{
-                          backgroundColor: "#217ABF",
+                          backgroundColor: "#C5126D",
                           margin: "0 auto",
                         }}
                       >
@@ -437,18 +471,18 @@ function RequestTable() {
               <Button
                 variant="secondary"
                 onClick={handleClose}
-                style={{ backgroundColor: "#666666" }}
+                style={{ backgroundColor: "#666666",color:"white" }}
               >
                 {" "}
                 Close{" "}
               </Button>
 
               <Button
-                variant="primary"
+                variant=""
                 onClick={(e) => {
                   handleHistory(e);
                 }}
-                style={{ backgroundColor: "#217ABF" }}
+                style={{ backgroundColor: "#C5126D" }}
               >
                 Comentar
               </Button>
@@ -456,7 +490,7 @@ function RequestTable() {
               <Button
                 variant="success"
                 onClick={handleAutorizar}
-                style={{ backgroundColor: "#237469" }}
+                style={{ backgroundColor: "#237469" ,color:"white" }}
               >
                 {" "}
                 Autorizar{" "}
@@ -465,7 +499,7 @@ function RequestTable() {
               
                 <Form.Select
                   aria-label="Default select example"
-                  style={{ width: "120px", backgroundColor: "#DC7F37" }}
+                  style={{ width: "120px", backgroundColor: "#DC7F37",color:"white"}}
                   onChange={handleChange}
                   name="prioridad"
                   disabled={

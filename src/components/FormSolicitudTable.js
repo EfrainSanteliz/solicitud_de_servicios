@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Alert, Button, Table } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import "./styles.css";
-
+import axios from "axios";
 function FormSolicitudTable({ showRequest }) {
   const fullyName =
     showRequest.usuarios.nomEmpleados.nomEmpNombre +
@@ -21,6 +21,39 @@ function FormSolicitudTable({ showRequest }) {
     }
   }, [showRequest.file]);
 
+  const [FirstResponse,setFirstResponse] = useState([]);
+  const [SecondResponse,setSecondResponse] = useState([]);
+  const [loagding,setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [ThirdResponse,setThirdResponse] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Replace the URL with your actual endpoint
+        const response = await axios.get("https://localhost:7145/api/ServicioSolicitado/");
+
+        const list = response.data; // The whole array from the server
+
+          setFirstResponse(list[0]);
+          setSecondResponse(list[1]);
+          setThirdResponse(list[2]);
+
+        console.log("ServiceRequest get successful");
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if(loagding) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+
   return (
     <div>
       <div id="NuevaSolicitud">
@@ -36,37 +69,36 @@ function FormSolicitudTable({ showRequest }) {
           <div className="mb-3">
             <Form.Check
               inline
-              label="Infraestructura voz/datos."
+              label={FirstResponse.descripcionServicio_Solicitado}
               name="servicioSolicitado" // Ensure this matches the state key
               type="radio"
-              value="Infraestructura voz/datos"
+              value={FirstResponse.descripcionServicio_Solicitado}
               id="inline-radio-1"
               disabled
-              checked={
-                showRequest.servicioSolicitado === "Infraestructura voz/datos"
-              }
+              checked={showRequest.servicio_solicidato_Id === FirstResponse.servicio_solicidato_Id} // Compare strings, not objects
+
             />
 
             <Form.Check
               inline
-              label="Sistema Tecnologico"
+              label={SecondResponse.descripcionServicio_Solicitado}
               name="servicioSolicitado" // Ensure this matches the state key
               type="radio"
-              value="Sistema Tecnologico"
+              value={SecondResponse.descripcionServicio_Solicitado}
               id="inline-radio-2"
               disabled
-              checked={showRequest.servicioSolicitado === "Sistema Tecnologico"}
+              checked={showRequest.servicio_solicidato_Id === SecondResponse.servicio_solicidato_Id}
             />
 
             <Form.Check
               inline
-              label="Proyecto Nuevo"
+              label={ThirdResponse.descripcionServicio_Solicitado}
               name="servicioSolicitado" // Ensure this matches the state key
               type="radio"
-              value="Proyecto Nuevo"
+              value={ThirdResponse.descripcionServicio_Solicitado}
               id="inline-radio-3"
               disabled
-              checked={showRequest.servicioSolicitado === "Proyecto Nuevo"}
+              checked={showRequest.servicio_solicidato_Id === ThirdResponse.servicio_solicidato_Id}
             />
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -87,7 +119,7 @@ function FormSolicitudTable({ showRequest }) {
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
             <Form.Label>Solicitud de servicio a realizar</Form.Label>
-            {showRequest.servicioSolicitado === "Sistema Tecnologico" && (
+            {showRequest.solicitud_de_servicio_id && (
               <>
                 <Form.Control
                   as="select"
@@ -102,12 +134,12 @@ function FormSolicitudTable({ showRequest }) {
               </>
             )}
 
-            {showRequest.servicioSolicitado === "Mantenimiento" && (
+            {showRequest.servicio_solicitado && (
               <>
                 <Form.Control
                   as="select"
                   name="infraestructuraVozDatos" // React-friendly name without spaces
-                  value={showRequest.servicioSolicitado} // Dynamic value from showRequest
+                  value={showRequest.servicio_solicitado.descripcionServicio_Solicitado} // Dynamic value from showRequest
                   disabled // Keeps the field disabled since it's for "Mantenimiento"
                 >
                   <option value="Mantenimiento">Mantenimiento</option>{" "}

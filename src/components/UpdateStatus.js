@@ -32,7 +32,7 @@ function UpdateStatus({handleChange,showRequest,formData,UpdateTableRequest}) {
     <div>
       <Form.Select
         aria-label="Default select example"
-        style={{ width: "130px", backgroundColor: "#DC7F37" }}
+        style={{ width: "130px", backgroundColor: "#DC7F37" ,color:"white" }}
         onChange={handleChange}
         onClick={(e) => {
             handleUpdateStatus(e);

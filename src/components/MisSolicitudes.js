@@ -78,8 +78,8 @@ function MisSolicitudes() {
   };
 
 
-
   return (
+    <div className="fontSize" style={{ fontSize:"16px",fontFamily:"Roboto, sans-serif"}}>
     <div className="container mt-4">
       <h2>Tus Solicitudes</h2>
 
@@ -107,7 +107,7 @@ function MisSolicitudes() {
           <tbody>
             {Request.map((Reques, index) => (
               <tr key={Reques.id}>
-                <td width={"150px"}>{Reques.servicioSolicitado}</td>
+                <td width={"150px"}>{Reques.servicio_Solicitado.descripcionServicio_Solicitado}</td>
                 <td
                   style={{
                     width: "300px",
@@ -135,22 +135,22 @@ function MisSolicitudes() {
                       handleShow1(Reques.id);
                       setShow(true);
                     }}
-                    variant="primary"
-                    style={{ backgroundColor: "#217ABF" }}
+                    variant=""
+                    style={{ backgroundColor: "#C5126D" }}
                   >
-                    <FontAwesomeIcon icon={faEye} />
+                    <FontAwesomeIcon icon={faEye} style={{color:"white"}} />
                   </Button>{" "}
                 </td>
 
                 <td style={{ textAlign: "center" }}>
-                  <Button
+                  <Button variant=""
                     onClick={() => {
                       handleShow2(Reques.id);
                       setShowModalHistoryComments(true);
                     }}
-                    style={{ backgroundColor: "#217ABF" }}
+                    style={{ backgroundColor: "#C5126D" }}
                   >
-                    <FontAwesomeIcon icon={faEye} />
+                    <FontAwesomeIcon icon={faEye} style={{color:"white"}} />
                   </Button>
                 </td>
               </tr>
@@ -194,6 +194,7 @@ function MisSolicitudes() {
           <HistoryComments Historials={Historials} />
         </Modal.Body>
       </Modal>
+    </div>
     </div>
   );
 }
