@@ -1,13 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Spinner,
-  Alert,
-  Table,
-  Button,
-  Modal,
-  Form,
-} from "react-bootstrap";
+import { Spinner, Alert, Table, Button, Modal, Form } from "react-bootstrap";
 import FormSolicitudTable from "./FormSolicitudTable";
 import HistoryComments from "./HistoryComments";
 import { toast } from "react-toastify";
@@ -37,10 +30,10 @@ function RequestTable() {
   const [Historials, setHistorials] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [SelectedStatus,setSelectedStatus] = useState('');
-  const [SelectPrioridad,setSelectPrioridad] = useState('');
-  const [DateSystem, setDateSystem] = useState('');
-  const [RangeComparationDate,setRangeComparationDate] = useState('');
+  const [SelectedStatus, setSelectedStatus] = useState("");
+  const [SelectPrioridad, setSelectPrioridad] = useState("");
+  const [DateSystem, setDateSystem] = useState("");
+  const [RangeComparationDate, setRangeComparationDate] = useState("");
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -63,11 +56,9 @@ function RequestTable() {
   const handleClose2 = () => {
     setShowHistoryModal(false);
     setLoading2(false);
-
   };
 
-  useEffect(() => {
-  }, []); // Add dependencies to trigger only when these values change
+  useEffect(() => {}, []); // Add dependencies to trigger only when these values change
 
   const showRequest2 = async (requestID) => {
     try {
@@ -78,7 +69,7 @@ function RequestTable() {
       console.log("The show request get successfully");
       setShowRequest(response.data);
       setHistorials(response.data.historials);
-      setLoading2(true); 
+      setLoading2(true);
     } catch (error) {
       console.error("Error updating the Request:", error);
     }
@@ -121,9 +112,7 @@ function RequestTable() {
     try {
       if (showRequest.firmaJefeDepartamento === FirmaJefeDepartamento) {
         toast.error("Formulario ya firmado");
-      }
-
-      else if (prioridad === 0) {
+      } else if (prioridad === 0) {
         toast.error("Elija un nivel de prioridad antes de firmar");
       } else {
         showLoadingAlertAutorizar();
@@ -131,7 +120,6 @@ function RequestTable() {
         data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
         data.append("prioridad", prioridad);
 
-       
         const response = await axios.put(
           `https://localhost:7145/api/Request/${REQUESTID}`,
           data,
@@ -271,15 +259,13 @@ function RequestTable() {
         console.log("the request get sucessfully", response);
         setLoading(false);
 
-        
-          const filteredRequest = response.data.filter(
-            (request) =>
-              request.usuarios.nomEmpleados.direccionesICEES.descripcion ===
-              AreaAdministrativa
-          );
-          setRequests(filteredRequest);
-          setFilteredData(filteredRequest);
-      
+        const filteredRequest = response.data.filter(
+          (request) =>
+            request.usuarios.nomEmpleados.direccionesICEES.descripcion ===
+            AreaAdministrativa
+        );
+        setRequests(filteredRequest);
+        setFilteredData(filteredRequest);
       })
       .catch((error) => {
         //console.log("error to get the request", error);
@@ -292,43 +278,57 @@ function RequestTable() {
     // Filter data based on search term and other filters
     const filterData = () => {
       const now = DateTime.now(); // Current date
-      console.log("Date",DateTime.now());
-  
+      console.log("Date", DateTime.now());
+
       const filtered = requests.filter((item) => {
         // Parse the server date in ISO format (yyyy-MM-dd'T'HH:mm:ss)
         const requestDate = DateTime.fromISO(item.fechaSolicitada);
-  
+
         // Date filtering logic
         let dateMatch = true;
         if (RangeComparationDate === "Este año") {
           dateMatch = requestDate.year === now.year;
         } else if (RangeComparationDate === "Este mes") {
-          dateMatch = requestDate.year === now.year && requestDate.month === now.month;
+          dateMatch =
+            requestDate.year === now.year && requestDate.month === now.month;
         } else if (RangeComparationDate === "Este dia") {
           dateMatch = requestDate.day === now.day;
-         } else if (RangeComparationDate === "Esta semana") {
-          dateMatch = requestDate.hasSame(now, 'week');
-        } 
-  
+        } else if (RangeComparationDate === "Esta semana") {
+          dateMatch = requestDate.hasSame(now, "week");
+        }
+
         // Other filters (departamento, status, prioridad, search term)
-        const statusMatch = SelectedStatus === '' || item.status === SelectedStatus;
-        const priorityMatch = SelectPrioridad === '' || item.prioridad === SelectPrioridad;
-        const searchTermMatch = item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        const statusMatch =
+          SelectedStatus === "" || item.status === SelectedStatus;
+        const priorityMatch =
+          SelectPrioridad === "" || item.prioridad === SelectPrioridad;
+        const searchTermMatch =
+          item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.servicioSolicitado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.servicioSolicitado
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
           item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.prioridad.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.usuarios.nomEmpleados.direccionesICEES.descripcion.toLowerCase().includes(searchTerm.toLowerCase());
-  
+          item.usuarios.nomEmpleados.direccionesICEES.descripcion
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+
         // Return true only if all conditions match
         return dateMatch && statusMatch && priorityMatch && searchTermMatch;
       });
-  
+
       setFilteredData(filtered);
     };
-  
+
     filterData();
-  }, [searchTerm, requests, SelectedStatus, SelectPrioridad, RangeComparationDate]);
+  }, [
+    searchTerm,
+    requests,
+    SelectedStatus,
+    SelectPrioridad,
+    RangeComparationDate,
+  ]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -339,21 +339,22 @@ function RequestTable() {
     }));
   };
 
- 
-
   return (
     <div className="container mt-4">
       <h2>Lista de solicitudes {} </h2>
       <br />
-      
-
-      <SearchBar setSearchTerm={setSearchTerm} 
-      
-      setSelectedStatus={setSelectedStatus} SelectedStatus={SelectedStatus}
-      setSelectPrioridad={setSelectPrioridad} setDateSystem={setDateSystem} DateSystem={DateSystem}
-      setRangeComparationDate={setRangeComparationDate} RangeComparationDate={RangeComparationDate}
-      />         <br />
-   {loading && (
+      <SearchBar
+        setSearchTerm={setSearchTerm}
+        setSelectedStatus={setSelectedStatus}
+        SelectedStatus={SelectedStatus}
+        setSelectPrioridad={setSelectPrioridad}
+        setDateSystem={setDateSystem}
+        DateSystem={DateSystem}
+        setRangeComparationDate={setRangeComparationDate}
+        RangeComparationDate={RangeComparationDate}
+      />{" "}
+      <br />
+      {loading && (
         <Spinner animation="border" role="status">
           <span className="sr-only">Cargando..</span>
         </Spinner>
@@ -384,80 +385,109 @@ function RequestTable() {
                   Descripción
                 </th>
                 <th style={{ width: "100px" }}>Fecha</th>
-                <th style={{ width: "80px" }}>Estatus</th>
-                <th style={{ width: "80px" }}>Prioridad</th>
+                <th style={{ width: "120px" }}>Estatus</th>
+                <th style={{ width: "100px" }}>Prioridad</th>
                 <th style={{ width: "100px", textAlign: "center" }}>
                   Acciones
                 </th>
               </tr>
             </thead>
 
-          
-              <tbody>
-                {filteredData.map((request) => (
-                  <tr key={request.id}>
-                    <td>{request.firmaEmpleado}</td>
-                    <td
+            <tbody>
+              {filteredData.map((request) => (
+                <tr key={request.id}>
+                  <td>{request.firmaEmpleado}</td>
+                  <td
+                    style={{
+                      width: "250px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {request.descripcion}
+                  </td>
+                  <td>
+                    {new Date(request.fechaSolicitada).toLocaleDateString(
+                      "es-ES",
+                      {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      }
+                    )}
+                  </td>
+                  <td>
+                    {" "}
+                    <Button
+                      variant=""
                       style={{
-                        width: "250px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
+                        color: "white",
+                        width: "100px",
+                        backgroundColor:
+                          request.status === "Activo"
+                            ? "#3794DC"
+                            : request.status === "Cancelado"
+                            ? "#E49B62"
+                            : request.status === "Inactivo"
+                            ? "#999999"
+                            : "",
                       }}
                     >
-                      {request.descripcion}
-                    </td>
-                    <td>
-                      {new Date(request.fechaSolicitada).toLocaleDateString(
-                        "es-ES",
-                        {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        }
-                      )}
-                    </td>
-                    <td>{request.status}</td>
-                    <td>
-                      <Button style={{ backgroundColor: "#C5126D" }}>
-                        {request.prioridad}
-                      </Button>
-                    </td>
-                    <td
-                      style={{ textAlign: "center", verticalAlign: "middle" }}
+                      {request.status}
+                    </Button>
+                  </td>
+                  <td>
+                    <Button
+                      variant=""
+                      style={{
+                        color: "white",
+                        width: "80px",
+                        backgroundColor:
+                          request.prioridad === "Alta"
+                            ? "#C5126D" // If "Alta", set background to #C5126D
+                            : request.prioridad === "Media"
+                            ? "#E49B62"
+                            : request.prioridad === "Baja"
+                            ? "#3794DC"
+                            : request.prioridad === "sin asignar"
+                            ? "#999999" // If "Media", set background to #808080
+                            : "", // Default (empty) if not "Alta" or "Media"
+                      }}
                     >
-                      <Button
-                        variant=""
-                        onClick={() =>
-                          handleShow(
-                            request.id,
-                            request.usuarios.nomEmpleados.nomEmpNombre,
-                            request.usuarios.nomEmpleados.nomEmpPaterno,
-                            request.usuarios.nomEmpleados.nomEmpMaterno
-                          )
-                        }
-                        style={{
-                          backgroundColor: "#C5126D",
-                          margin: "0 auto",
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faEye} />
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-          
+                      {request.prioridad}
+                    </Button>
+                  </td>
+                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                    <Button
+                      variant=""
+                      onClick={() =>
+                        handleShow(
+                          request.id,
+                          request.usuarios.nomEmpleados.nomEmpNombre,
+                          request.usuarios.nomEmpleados.nomEmpPaterno,
+                          request.usuarios.nomEmpleados.nomEmpMaterno
+                        )
+                      }
+                      style={{
+                        backgroundColor: "#C5126D",
+                        margin: "0 auto",
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faEye}
+                        style={{ color: "white" }}
+                      />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </Table>
         )
       )}
       {loading2 && (
-        <Modal
-          show={show}
-          onHide={handleClose}
-          animation={false}
-          size="xl" 
-        >
+        <Modal show={show} onHide={handleClose} animation={false} size="xl">
           <Modal.Header closeButton>
             <Modal.Title>
               Solicitud del usuario:{" "}
@@ -471,7 +501,7 @@ function RequestTable() {
               <Button
                 variant="secondary"
                 onClick={handleClose}
-                style={{ backgroundColor: "#666666",color:"white" }}
+                style={{ backgroundColor: "#666666", color: "white" }}
               >
                 {" "}
                 Close{" "}
@@ -482,7 +512,7 @@ function RequestTable() {
                 onClick={(e) => {
                   handleHistory(e);
                 }}
-                style={{ backgroundColor: "#C5126D" }}
+                style={{ backgroundColor: "#C5126D", color: "white" }}
               >
                 Comentar
               </Button>
@@ -490,33 +520,33 @@ function RequestTable() {
               <Button
                 variant="success"
                 onClick={handleAutorizar}
-                style={{ backgroundColor: "#237469" ,color:"white" }}
+                style={{ backgroundColor: "#237469", color: "white" }}
               >
                 {" "}
                 Autorizar{" "}
               </Button>
 
-              
-                <Form.Select
-                  aria-label="Default select example"
-                  style={{ width: "120px", backgroundColor: "#DC7F37",color:"white"}}
-                  onChange={handleChange}
-                  name="prioridad"
-                  disabled={
-                    showRequest.prioridad === "Baja" ||
-                    showRequest.prioridad === "Alta" ||
-                    showRequest.prioridad === "Media"
-                  } // Disable if prioridad is 1, 2, or 3
-                  defaultValue={showRequest.prioridad}
-                >
-                  <option value="Prioridad">Prioridad</option>
-                  <option value="Baja">Baja</option>
-                  <option value="Media">Media</option>
-                  <option value="Alta">Alta</option>
-                </Form.Select>
-              
-
-          
+              <Form.Select
+                aria-label="Default select example"
+                style={{
+                  width: "120px",
+                  backgroundColor: "#DC7F37",
+                  color: "white",
+                }}
+                onChange={handleChange}
+                name="prioridad"
+                disabled={
+                  showRequest.prioridad === "Baja" ||
+                  showRequest.prioridad === "Alta" ||
+                  showRequest.prioridad === "Media"
+                } // Disable if prioridad is 1, 2, or 3
+                defaultValue={showRequest.prioridad}
+              >
+                <option value="Prioridad">Prioridad</option>
+                <option value="Baja">Baja</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+              </Form.Select>
 
               <DownloadPdfAsp showRequest={showRequest}> </DownloadPdfAsp>
             </Modal.Footer>
@@ -527,7 +557,7 @@ function RequestTable() {
         show={showHistoryModal}
         onHide={handleClose2}
         animation={false}
-        size="xl" 
+        size="xl"
       >
         <Modal.Header closeButton>
           <Modal.Title>

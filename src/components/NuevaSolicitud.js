@@ -222,7 +222,7 @@ function TextControlsExample() {
     data.append("firmaJefe", FirmaJefe);
     data.append("usuarioId", usuarioId);
     data.append("prioridad", Prioridad);
-    data.append("servicio_solicidato_Id",servicioSolicitado);
+    data.append("servicio_solicidato_Id", servicioSolicitado);
 
     // Add file only if it exists
     if (file) {
@@ -250,8 +250,6 @@ function TextControlsExample() {
     console.log("file", file);
     console.log("solicitud_de_Servicio_id", Solicitud_de_Servicio_id);
     console.log("servicio_solicidato_Id", servicioSolicitado);
-
-
 
     // Log FormData content (optional, since FormData can't be fully logged)
     for (let pair of data.entries()) {
@@ -284,28 +282,27 @@ function TextControlsExample() {
     }
   };
 
-  
-  const [FirstResponse,setFirstResponse] = useState([]);
-  const [SecondResponse,setSecondResponse] = useState([]);
-  const [ThirdResponse,setThirdResponse] = useState([]);
+  const [FirstResponse, setFirstResponse] = useState([]);
+  const [SecondResponse, setSecondResponse] = useState([]);
+  const [ThirdResponse, setThirdResponse] = useState([]);
 
-  const [loagding,setLoading] = useState(true);
+  const [loagding, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [list, setList] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Replace the URL with your actual endpoint
-        const response = await axios.get("https://localhost:7145/api/ServicioSolicitado/");
+        const response = await axios.get(
+          "https://localhost:7145/api/ServicioSolicitado/"
+        );
 
-        const list = response.data; // The whole array from the server
+        setList(response.data); // The whole array from the server
 
-       
-          setFirstResponse(list[0]);
-          setSecondResponse(list[1]);
-          setThirdResponse(list[2]);
-
-       
+        // setFirstResponse(list[0]);
+        //  setSecondResponse(list[1]);
+        //  setThirdResponse(list[2]);
 
         console.log("ServiceRequest get successful");
       } catch (err) {
@@ -319,7 +316,7 @@ function TextControlsExample() {
     fetchData();
   }, []);
 
-  if(loagding) return <p>Loading...</p>;
+  if (loagding) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   return (
     <Form onSubmit={handleSubmit}>
@@ -332,9 +329,30 @@ function TextControlsExample() {
           </Form.Label>
           <br />
           <br />
+          <Form.Label>Servicio Solicitado </Form.Label> <br></br>
+          {list.length > 0 ? (
+            list.map(
+              (item, index) =>
+                item.habilitadoServicio_Solicitado && (
+                  <Form.Check
+                    inline
+                    label={item.descripcionServicio_Solicitado}
+                    name="servicioSolicitado" // Ensure this matches the state key
+                    type="radio"
+                    value={item.servicio_solicidato_Id}
+                    id={`inline-radio-${index + 1}`}
+                    onChange={(e) => {
+                      handleChange(e);
 
-          <Form.Label>Servicio Solicitado </Form.Label>
-          <div className="mb-3">
+                      handleRadioChange(e);
+                    }}
+                  />
+                )
+            )
+          ) : (
+            <p></p>
+          )}
+          {/* <div className="mb-3">
             <Form.Check
               inline
               label={FirstResponse.descripcionServicio_Solicitado}
@@ -374,15 +392,15 @@ function TextControlsExample() {
                 handleRadioChange(e);
               }}
             />
-          </div>
-
+          </div> */}{" "}
+          <br></br>
           <Form.Label>Solicitud de servicio a realizar</Form.Label>
           {selectedService === "inline-radio-2" && (
             <>
               <option>Seleccione una opcion de servicio </option>
               <Select
                 options={options2}
-                placeholder="Selecciona el recurso que presenta problemas"
+                placeholder="Seleccione una opcion de servicio"
                 isSearchable={true} // Enables the search bar
                 className="basic-single"
                 classNamePrefix="select"
@@ -390,7 +408,6 @@ function TextControlsExample() {
               />
             </>
           )}
-
           {selectedService === "inline-radio-1" && (
             <>
               <option>Selecciona el recurso que presenta problemas </option>
@@ -405,7 +422,6 @@ function TextControlsExample() {
             </>
           )}
           <br />
-
           <Form.Label>DESCRIPCION DETALLADA SEL SERVICIO SOLICITADO</Form.Label>
           <Form.Control
             as="textarea"
@@ -432,7 +448,7 @@ function TextControlsExample() {
           </Form.Group>
           <div>
             {deviceType === "phone" && (
-               // Use a ternary operator here
+              // Use a ternary operator here
               <div className="image-upload-container">
                 Tomar Foto
                 <label htmlFor="file-input" className="image-upload-label">
@@ -446,11 +462,9 @@ function TextControlsExample() {
                   />
                 </label>
               </div>
-            ) }
+            )}
           </div>
-
           <br></br>
-
           {file && (
             <div className="mt-3">
               <img
@@ -461,7 +475,6 @@ function TextControlsExample() {
             </div>
           )}
           <br></br>
-
           <Button
             type="submit"
             variant="primary "

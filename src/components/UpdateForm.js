@@ -6,7 +6,7 @@ import axios from "axios";
 import { error } from "ajv/dist/vocabularies/applicator/dependencies";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
-
+import FormTable from "./FormTable";
 // SweetAlert setup
 const MySwal = withReactContent(Swal);
 
@@ -20,20 +20,26 @@ export const showMessageDontDrop = (errorMessage) => {
   });
 };
 
-
 function UpdateForm() {
   const values = [true, "sm=down", "lg-down", "xl-down", "xxl-down"];
   const [fullscreen, setFullscreen] = useState(true);
   const [show, setShow] = useState(false);
   const [showFirst, setShowFirst] = useState(false);
   const [solicitudesDeServicios, setSolicitudesDeServicios] = useState([]);
-  const [servicioSolicitado,setServicioSolicitado] = useState([]);
+  const [servicioSolicitado, setServicioSolicitado] = useState([]);
   const [data, setData] = useState([]);
   const [modifiedData, setModifiedData] = useState([]);
+  const [modifiedData2, setModifiedData2] = useState([]);
+
   const [newRow, setNewRow] = useState({ descripcion: "", habilitado: "" });
+  const [newRow2, setNewRow2] = useState({
+    descripcionServicio_Solicitado: "",
+    habilitadoServicio_Solicitado: "",
+  });
+
   const [validacion, setValidacion] = useState(false);
   const [show2, setShow2] = useState(false);
-  const [ErrorMessage,setErrorMessage] = useState('');
+  const [ErrorMessage, setErrorMessage] = useState("");
 
   function handleShow(breakpoint) {
     setFullscreen(breakpoint);
@@ -87,6 +93,31 @@ function UpdateForm() {
     }
   };
 
+  const handleUpdateHabilitar2 = async (id, habilitadoServicio_Solicitado) => {
+    const data = {
+      habilitadoServicio_Solicitado: habilitadoServicio_Solicitado,
+    };
+
+    console.log("habilitado:", habilitadoServicio_Solicitado);
+
+    try {
+      const response = await axios.put(
+        `https://localhost:7145/api/servicioSolicitado/${id}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      getServicioSolicitado();
+
+      console.log("Response:", response.data);
+    } catch (error) {
+      console.error("Error updating habilitar:", error);
+    }
+  };
+
   const handleEdit = (index, field, value) => {
     const updatedData = [...solicitudesDeServicios];
     updatedData[index][field] = value;
@@ -97,72 +128,81 @@ function UpdateForm() {
     }
     setsaveSolicitudDeServicioARealizar(true);
   };
-  const handleEdit2 = (index,field,value) => {
+
+  const handleEdit2 = (index, field, value) => {
     const updatedData = [...servicioSolicitado];
     updatedData[index][field] = value;
     setData(updatedData);
 
-    if(!modifiedData.includes(updatedData[index])) {
-      setModifiedData([...modifiedData,updatedData[index]]);
+    if (!modifiedData2.includes(updatedData[index])) {
+      setModifiedData2([...modifiedData2, updatedData[index]]);
     }
+    setSaveServicioSolicitado(true);
   };
 
-  const [saveSolicitudDeServicioARealizar,setsaveSolicitudDeServicioARealizar] = useState(false);
+  const [
+    saveSolicitudDeServicioARealizar,
+    setsaveSolicitudDeServicioARealizar,
+  ] = useState(false);
+  const [saveServicioSolicitado, setSaveServicioSolicitado] = useState(false);
+
   const handleNewRowChange = (field, value) => {
     setNewRow({ ...newRow, [field]: value });
     setValidacion(true);
     setsaveSolicitudDeServicioARealizar(true);
-
+  };
+  const handleNewRowChange2 = (field, value) => {
+    setNewRow2({ ...newRow2, [field]: value });
+    setValidacion(true);
+    setSaveServicioSolicitado(true);
   };
 
   const handleSaveChanges = () => {
-
-    if (saveSolicitudDeServicioARealizar){
-    modifiedData.forEach((row) => {
-      axios
-        .put(
-          `https://localhost:7145/api/Solicitud_de_servicio/${row.solicitud_de_servicio_id}`,
-          row
-        )
-        .then((response) => {
-          console.log("Data Update Successfully", response.data);
-        })
-        .catch((error) => {
-          console.log("Error updating data:", error);
-        });
-    });
-
-    if (newRow.descripcion !== "") {
-      const formattedNewRow = {
-        ...newRow,
-        habilitado: newRow.habilitado === "true", // Convert habilitado to boolean
-      };
-
-      axios
-        .post(
-          `https://localhost:7145/api/Solicitud_de_servicio/`,
-          formattedNewRow
-        )
-        .then((response) => {
-          setData([...solicitudesDeServicios, response.data]);
-          setNewRow({ habilitado: "", descripcion: "" });
-        })
-        .catch((error) => {
-          console.error("Error adding new row:", error);
-        });
-    }
-
-    setModifiedData([]);
-    setValidacion(false);
-
-    getSolicitudesDeServicios();
-    getSolicitudesDeServicios();
-    getSolicitudesDeServicios();
-    setsaveSolicitudDeServicioARealizar(false);
-    }
-    else if(!saveSolicitudDeServicioARealizar) {
-
+    if (saveSolicitudDeServicioARealizar) {
       modifiedData.forEach((row) => {
+        axios
+          .put(
+            `https://localhost:7145/api/Solicitud_de_servicio/${row.solicitud_de_servicio_id}`,
+            row
+          )
+          .then((response) => {
+            console.log("Data Update Successfully", response.data);
+          })
+          .catch((error) => {
+            console.log("Error updating data:", error);
+          });
+      });
+
+      if (newRow.descripcion !== "") {
+        const formattedNewRow = {
+          ...newRow,
+          habilitado: newRow.habilitado === "true", // Convert habilitado to boolean
+        };
+
+        axios
+          .post(
+            `https://localhost:7145/api/Solicitud_de_servicio/`,
+            formattedNewRow
+          )
+          .then((response) => {
+            setData([...solicitudesDeServicios, response.data]);
+            setNewRow({ habilitado: "", descripcion: "" });
+          })
+          .catch((error) => {
+            console.error("Error adding new row:", error);
+          });
+      }
+
+      setModifiedData([]);
+      setValidacion(false);
+
+      getSolicitudesDeServicios();
+      getSolicitudesDeServicios();
+      getSolicitudesDeServicios();
+      setsaveSolicitudDeServicioARealizar(false);
+    }
+    if (saveServicioSolicitado) {
+      modifiedData2.forEach((row) => {
         axios
           .put(
             `https://localhost:7145/api/ServicioSolicitado/${row.servicio_solicidato_Id}`,
@@ -175,13 +215,14 @@ function UpdateForm() {
             console.log("Error updating data:", error);
           });
       });
-  
-      if (newRow.descripcion !== "") {
+
+      if (newRow2.descripcionServicio_Solicitado !== "") {
         const formattedNewRow = {
-          ...newRow,
-          habilitado: newRow.habilitado === "true", // Convert habilitado to boolean
+          ...newRow2,
+          habilitadoServicio_Solicitado:
+            newRow2.habilitadoServicio_Solicitado === "true", // Convert habilitado to boolean
         };
-  
+
         axios
           .post(
             `https://localhost:7145/api/ServicioSolicitado/`,
@@ -189,63 +230,92 @@ function UpdateForm() {
           )
           .then((response) => {
             setData([...solicitudesDeServicios, response.data]);
-            setNewRow({ habilitado: "", descripcion: "" });
+            setNewRow2({
+              habilitadoServicio_Solicitado: "",
+              descripcionServicio_Solicitado: "",
+            });
           })
           .catch((error) => {
             console.error("Error adding new row:", error);
           });
       }
-  
-      setModifiedData([]);
+
+      setModifiedData2([]);
       setValidacion(false);
-  
-      getSolicitudesDeServicios();
-      getSolicitudesDeServicios();
 
+      getServicioSolicitado();
+      getServicioSolicitado();
+      getServicioSolicitado();
     }
-
-
   };
+  const [Options2, setOptions2] = useState([]);
 
   const getSolicitudesDeServicios = async () => {
     try {
       const response = await axios.get(
         `https://localhost:7145/api/Solicitud_de_servicio/`
       );
+
       setSolicitudesDeServicios(response.data);
+
+      const formattedOptions = response.data
+        .map((item) =>
+          item.habilitado === true
+            ? {
+                value: item.solicitud_de_servicio_id,
+                label: `${item.descripcion}`,
+              }
+            : null
+        )
+        .filter((option) => option !== null);
+      setOptions2(formattedOptions);
     } catch (error) {
       console.error("Error fetching service requests:", error);
     }
   };
+  const [loagding,setLoading] = useState(true);
+
   const getServicioSolicitado = async () => {
     try {
-      const response = await axios.get(`https://localhost:7145/api/ServicioSolicitado/`);
+      const response = await axios.get(
+        `https://localhost:7145/api/ServicioSolicitado/`
+      );
       setServicioSolicitado(response.data);
     } catch (err) {
       console.log("erro to get SolicitudesOfServices");
+    } finally {
+      setLoading(false);
     }
-
   };
-
-
 
   const handleDrop = async (id) => {
     try {
       const response = await axios.delete(
         `https://localhost:7145/api/Solicitud_de_servicio/${id}`
-        
       );
       getSolicitudesDeServicios();
-
     } catch (error) {
-        // Extract the message from the response
-        const serverMessage = error.response?.data;
-        console.log(" ",serverMessage)
-        setErrorMessage(serverMessage); // Update error message state
-        showMessageDontDrop(serverMessage); // Show SweetAlert
-
+      // Extract the message from the response
+      const serverMessage = error.response?.data;
+      console.log(" ", serverMessage);
+      setErrorMessage(serverMessage); // Update error message state
+      showMessageDontDrop(serverMessage); // Show SweetAlert
     }
-  }
+  };
+  const handleDrop2 = async (id) => {
+    try {
+      const response = await axios.delete(
+        `https://localhost:7145/api/ServicioSolicitado/${id}`
+      );
+      getServicioSolicitado();
+    } catch (error) {
+      // Extract the message from the response
+      const serverMessage = error.response?.data;
+      console.log(" ", serverMessage);
+      setErrorMessage(serverMessage); // Update error message state
+      showMessageDontDrop(serverMessage); // Show SweetAlert
+    }
+  };
 
   const [formData, setFormData] = useState({
     habilitado: null,
@@ -278,8 +348,6 @@ function UpdateForm() {
 
   const handleDeleteServicio = async () => {};
 
-  
-
   return (
     <div>
       <Form>
@@ -296,7 +364,7 @@ function UpdateForm() {
             <Modal.Title>Modificar Formulario</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-          <br></br>
+            <br></br>
             <Row>
               <Col xs={12}>
                 <div className="table-responsive">
@@ -320,7 +388,11 @@ function UpdateForm() {
                               type="text"
                               defaultValue={row.descripcionServicio_Solicitado}
                               onChange={(e) =>
-                                handleEdit2(index, "descripcionServicio_Solicitado", e.target.value)
+                                handleEdit2(
+                                  index,
+                                  "descripcionServicio_Solicitado",
+                                  e.target.value
+                                )
                               }
                             />
                           </td>
@@ -335,11 +407,11 @@ function UpdateForm() {
                             <Form.Select
                               aria-label="Default select example"
                               style={{
-                                color:"white",
+                                color: "white",
                                 width: "100px",
                                 textAlign: "center",
                                 backgroundColor:
-                                  row.habilitado === false
+                                  row.habilitadoServicio_Solicitado === false
                                     ? "#DC7F37"
                                     : "#C5126D", // Apply color conditionally
                               }}
@@ -347,13 +419,13 @@ function UpdateForm() {
                               onClick={(e) => {
                                 const habilitadoValue =
                                   e.target.value === "true"; // Convert to boolean
-                                handleUpdateHabilitar(
-                                  row.solicitud_de_servicio_id,
+                                handleUpdateHabilitar2(
+                                  row.servicio_solicidato_Id,
                                   habilitadoValue
                                 );
                               }}
                               name="prioridad"
-                              defaultValue={row.habilitado}
+                              defaultValue={row.habilitadoServicio_Solicitado}
                             >
                               <option value={false}>No</option>
                               <option value={true}>Si</option>
@@ -363,7 +435,7 @@ function UpdateForm() {
                           <td>
                             <Button
                               onClick={(e) => {
-                                handleDrop(row.solicitud_de_servicio_id);
+                                handleDrop2(row.servicio_solicidato_Id);
                               }}
                               style={styles.button}
                             >
@@ -383,9 +455,12 @@ function UpdateForm() {
                           <Form.Control
                             type="text"
                             placeholder=""
-                            value={newRow.descripcion}
+                            value={newRow.descripcionServicio_Solicitado}
                             onChange={(e) =>
-                              handleNewRowChange("descripcion", e.target.value)
+                              handleNewRowChange2(
+                                "descripcionServicio_Solicitado",
+                                e.target.value
+                              )
                             }
                           />
                         </td>
@@ -393,9 +468,12 @@ function UpdateForm() {
                           <Form.Select
                             type="email"
                             placeholder=""
-                            value={newRow.habilitado}
+                            value={newRow.habilitadoServicio_Solicitado}
                             onChange={(e) =>
-                              handleNewRowChange("habilitado", e.target.value)
+                              handleNewRowChange2(
+                                "habilitadoServicio_Solicitado",
+                                e.target.value
+                              )
                             }
                           >
                             <option value="true">Seleccione</option>
@@ -448,7 +526,7 @@ function UpdateForm() {
                             <Form.Select
                               aria-label="Default select example"
                               style={{
-                                color:"white",
+                                color: "white",
                                 width: "100px",
                                 textAlign: "center",
                                 backgroundColor:
@@ -519,6 +597,13 @@ function UpdateForm() {
                       </tr>
                     </tbody>
                   </Table>
+
+                  <FormTable
+                    options2={Options2}
+                    list={servicioSolicitado}
+                    loagding={loagding}
+                  ></FormTable>
+                  <br></br>
                 </div>
               </Col>
             </Row>

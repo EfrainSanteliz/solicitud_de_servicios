@@ -128,7 +128,7 @@ function RequestTable() {
         //console.log("firmaJefe", FirmaJefeDepartamento);
         // console.log("prioridad", showRequest.prioridad);
       } else {
-        data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
+        data.append("firmaJefe", FirmaJefeDepartamento);
         data.append("prioridad", prioridad);
 
         //console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
@@ -404,8 +404,8 @@ function RequestTable() {
                   Descripción
                 </th>
                 <th style={{ width: "100px" }}>Fecha</th>
-                <th style={{ width: "80px" }}>Estatus</th>
-                <th style={{ width: "80px" }}>Prioridad</th>
+                <th style={{ width: "120px" }}>Estatus</th>
+                <th style={{ width: "100px" }}>Prioridad</th>
                 <th style={{ width: "150px" }}>Departamento</th>
                 <th style={{ width: "100px", textAlign: "center" }}>
                   Acciones
@@ -441,10 +441,38 @@ function RequestTable() {
                         }
                       )}
                     </td>
-                    <td>{request.status}</td>
                     <td>
-                      <Button   variant=""              style={{ width: "80px", backgroundColor: "#C5126D" , color: "white"  }}
-                      >{request.prioridad}</Button>
+                      <Button variant="" style={{color:"white" , width:"100px", backgroundColor:
+                        request.status === "Activo" 
+                        ? "#3794DC" 
+                        : request.status === "Cancelado"
+                        ? "#E49B62"
+                        : request.status === "Inactivo"
+                        ? "#999999"
+                        : ""
+                      }} >{request.status}</Button>
+                      
+                      </td>
+                    <td style={{width:"100px"}}>
+                    <Button
+                      variant=""
+                      style={{
+                        color: "white",
+                        width: "80px",
+                        backgroundColor:
+                          request.prioridad === "Alta"
+                            ? "#C5126D" // If "Alta", set background to #C5126D
+                            : request.prioridad === "Media"
+                            ? "#E49B62"
+                            : request.prioridad === "Baja"
+                            ? "#3794DC"
+                            : request.prioridad === "sin asignar"
+                            ? "#999999" // If "Media", set background to #808080
+                            : "", // Default (empty) if not "Alta" or "Media"
+                      }}
+                    >
+                      {request.prioridad}
+                    </Button>
                     </td>
 
                     <td>
@@ -523,7 +551,7 @@ function RequestTable() {
 
               <Form.Select
                 aria-label="Default select example"
-                style={{ width: "120px", backgroundColor: "#DC7F37" ,color:"white"}}
+                style={{ width: "150px", backgroundColor: "#DC7F37" ,color:"white"}}
                 onChange={handleChange}
                 onClick={(e) => {
                   handleUpdatePrioridad(e);
@@ -531,7 +559,7 @@ function RequestTable() {
                 name="prioridad"
                 defaultValue={showRequest.prioridad}
               >
-                <option value="Prioridad">Prioridad</option>
+                <option value="sin asignar">Sin Asignar</option>
                 <option value="Baja">Baja</option>
                 <option value="Media">Media</option>
                 <option value="Alta">Alta</option>

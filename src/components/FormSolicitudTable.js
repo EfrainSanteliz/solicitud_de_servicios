@@ -21,23 +21,26 @@ function FormSolicitudTable({ showRequest }) {
     }
   }, [showRequest.file]);
 
-  const [FirstResponse,setFirstResponse] = useState([]);
-  const [SecondResponse,setSecondResponse] = useState([]);
-  const [loagding,setLoading] = useState(true);
+  const [FirstResponse, setFirstResponse] = useState([]);
+  const [SecondResponse, setSecondResponse] = useState([]);
+  const [loagding, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [ThirdResponse,setThirdResponse] = useState([]);
+  const [ThirdResponse, setThirdResponse] = useState([]);
+  const [list, setList] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Replace the URL with your actual endpoint
-        const response = await axios.get("https://localhost:7145/api/ServicioSolicitado/");
+        const response = await axios.get(
+          "https://localhost:7145/api/ServicioSolicitado/"
+        );
 
-        const list = response.data; // The whole array from the server
+        setList(response.data); // The whole array from the server
 
-          setFirstResponse(list[0]);
-          setSecondResponse(list[1]);
-          setThirdResponse(list[2]);
+        //setFirstResponse(list[0]);
+        //setSecondResponse(list[1]);
+        //setThirdResponse(list[2]);
 
         console.log("ServiceRequest get successful");
       } catch (err) {
@@ -51,7 +54,7 @@ function FormSolicitudTable({ showRequest }) {
     fetchData();
   }, []);
 
-  if(loagding) return <p>Loading...</p>;
+  if (loagding) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
@@ -64,9 +67,26 @@ function FormSolicitudTable({ showRequest }) {
           </Form.Label>
           <br />
           <br />
-
-          <Form.Label>Servicio Solicitado </Form.Label>
+          <Form.Label>Servicio Solicitado </Form.Label> <br></br>
           <div className="mb-3">
+            {list.map((item, index) => (
+              <Form.Check
+                inline
+                label={item.descripcionServicio_Solicitado}
+                name="servicioSolicitado" // Ensure this matches the state key
+                type="radio"
+                value={item.descripcionServicio_Solicitado}
+                id={`inline-radio-${index+1}`}
+                disabled
+                checked={
+                  showRequest.servicio_solicidato_Id ===
+                  item.servicio_solicidato_Id
+                } // Compare strings, not objects
+              />
+            ))}
+            {/*
+
+
             <Form.Check
               inline
               label={FirstResponse.descripcionServicio_Solicitado}
@@ -100,6 +120,7 @@ function FormSolicitudTable({ showRequest }) {
               disabled
               checked={showRequest.servicio_solicidato_Id === ThirdResponse.servicio_solicidato_Id}
             />
+            */}
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
             <Form.Label>Fecha:{""}</Form.Label>
@@ -139,7 +160,10 @@ function FormSolicitudTable({ showRequest }) {
                 <Form.Control
                   as="select"
                   name="infraestructuraVozDatos" // React-friendly name without spaces
-                  value={showRequest.servicio_solicitado.descripcionServicio_Solicitado} // Dynamic value from showRequest
+                  value={
+                    showRequest.servicio_solicitado
+                      .descripcionServicio_Solicitado
+                  } // Dynamic value from showRequest
                   disabled // Keeps the field disabled since it's for "Mantenimiento"
                 >
                   <option value="Mantenimiento">Mantenimiento</option>{" "}
@@ -148,7 +172,6 @@ function FormSolicitudTable({ showRequest }) {
               </>
             )}
           </div>
-
           <div style={{ display: "flex", alignItems: "center" }}>
             <Form.Label>Area Administrativa Requirente</Form.Label>
             <Form.Control
@@ -160,7 +183,6 @@ function FormSolicitudTable({ showRequest }) {
               disabled
             />
           </div>
-
           <div style={{ display: "flex", alignItems: "center" }}>
             <Form.Label>solicitante </Form.Label>
             <Form.Control
@@ -170,7 +192,6 @@ function FormSolicitudTable({ showRequest }) {
               disabled
             />
           </div>
-
           {showRequest.conActivosFijos && (
             <div style={{ display: "flex", alignItems: "center" }}>
               <Form.Label>Recurso que presenta el problema </Form.Label>
@@ -186,7 +207,6 @@ function FormSolicitudTable({ showRequest }) {
               />
             </div>
           )}
-
           <br />
           <Form.Label>DESCRIPCION DETALLADA SEL SERVICIO SOLICITADO</Form.Label>
           <Form.Control
@@ -196,7 +216,6 @@ function FormSolicitudTable({ showRequest }) {
             value={showRequest.descripcion}
             disabled
           />
-
           {showRequest.file && (
             <div className="mt-3">
               <img
@@ -206,7 +225,6 @@ function FormSolicitudTable({ showRequest }) {
               />
             </div>
           )}
-
           <Table id="firmas" striped bordered hover>
             <thead>
               <tr>
