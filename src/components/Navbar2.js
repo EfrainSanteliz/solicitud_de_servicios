@@ -15,13 +15,16 @@ function Navbar2() {
 
 
   const handleWelcome  = () => {
-    if (localStorage.getItem("UserRole") === "UsuarioNormal") {
+    if (localStorage.getItem("UserRole") === "1") {
       navigate("/welcome");
     }
-    if (localStorage.getItem("UserRole") === "Administrador") {
+    if (localStorage.getItem("UserRole") === "2") {
       navigate("/welcomeAdministrador");
     }
-    if (localStorage.getItem("UserRole") === "SuperAdministrador") {
+    if (localStorage.getItem("UserRole") === "3") {
+      navigate("/welcomeSubAdministrador");
+    }
+    if (localStorage.getItem("UserRole") === "4") {
       navigate("/welcomeSuperAdministrador");
     }
 

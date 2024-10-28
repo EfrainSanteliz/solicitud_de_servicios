@@ -15,10 +15,10 @@ import {
   showErrorAlerAutorizar,
 } from "./AlertService";
 import UpdateForm from "./UpdateForm";
+import RevisadoSub from "./RevisadoSub";
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
-  const [requestOptions, setRequestsOptions] = useState([]);
   const [showRequest, setShowRequest] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loading2, setLoading2] = useState(false);
@@ -34,11 +34,13 @@ function RequestTable() {
   const [Loading3, setLoading3] = useState(false);
   const [options, setOptions] = useState([]);
   const [selectedDepartamento, setselectedDepartamento] = useState("");
-  const [selectedService, setSelectedServicio] = useState("");
   const [SelectedStatus, setSelectedStatus] = useState("");
   const [SelectPrioridad, setSelectPrioridad] = useState("");
   const [DateSystem, setDateSystem] = useState("");
   const [RangeComparationDate, setRangeComparationDate] = useState("");
+  const [selectedService, setSelectedServicio] = useState("");
+  const [requestOptions,setRequestOptions] = useState([]);
+
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -73,6 +75,7 @@ function RequestTable() {
       console.log("The show request get successfully");
       setShowRequest(response.data);
       setHistorials(response.data.historials);
+
       setLoading2(true);
     } catch (error) {
       console.error("Error updating the Request:", error);
@@ -103,66 +106,8 @@ function RequestTable() {
     comentarios: "",
     prioridad: 0,
     status: "Activo",
-    revisadoSub: "revisadoSub",
+    revisadoSub: false,
   });
-
-  const handleAutorizar = async (e) => {
-    // const { prioridad } = formData;
-    e.preventDefault();
-
-    const data = new FormData();
-
-    const { prioridad } = formData;
-
-    try {
-      showLoadingAlertAutorizar();
-
-      if (prioridad === 0) {
-        data.append("firmaJefe", FirmaJefeDepartamento);
-        data.append("prioridad", showRequest.prioridad);
-
-        //console.log("firmaJefe", FirmaJefeDepartamento);
-        // console.log("prioridad", showRequest.prioridad);
-      } else {
-        data.append("firmaJefe", FirmaJefeDepartamento);
-        data.append("prioridad", prioridad);
-
-        //console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
-        //  console.log("prioridad", prioridad);
-      }
-
-      const response = await axios.put(
-        `https://localhost:7145/api/Request/${REQUESTID}`,
-        data,
-        {
-          headers: {
-            "content-type": "application/json",
-          },
-        }
-      ); //
-
-      console.log("Request Update Sucessfully", response);
-      const encabezado = "tu solicitud ha sido firmada por el jefe de sistemas";
-      const cuerpo = "inicia sesion para ver el estado de tu solicitud";
-      const response2 = await axios.post(
-        `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
-          showRequest.usuarios.email
-        )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
-        {},
-        {
-          headers: {
-            "content-type": "application/json",
-          },
-        }
-      );
-      showRequest2(REQUESTID);
-      showSueccesAlertAutorizar();
-    } catch (error) {
-      console.error("Error updating the Request:", error);
-      showErrorAlerAutorizar();
-    } finally {
-    }
-  };
 
   const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
   const handleSubmitComentarios = async (e) => {
@@ -236,24 +181,25 @@ function RequestTable() {
       console.error("Error al enviar el historial:", error);
     }
 
-    // Send email notification after submitting the comment
-    const encabezado = "Tienes Nuevos Comentarios en Tu solicitud";
-    const cuerpo =
-      "Inicia sesión en la página para ver tus comentarios: becas.com";
     try {
       const response = await axios.post(
-        `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+        `https://localhost:7145/api/email/send-test-emailSub/${encodeURIComponent(
           showRequest.usuarios.email
-        )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
-        {},
+        )}`,
+        {}, // Empty body
         {
           headers: {
-            "content-type": "application/json",
+            "Content-Type": "application/json",
           },
         }
       );
-    } catch (emailError) {
-      console.error("Error al enviar el correo electrónico:", emailError);
+
+      // Set the response message on success
+    } catch (error) {
+      // Set the error message if request fails
+      if (error.response) {
+      } else {
+      }
     }
   };
 
@@ -269,18 +215,18 @@ function RequestTable() {
         setLoading(false);
 
         setRequests(response.data); // SuperAdmin sees all requests
+        setFilteredData(response.data);
+
 
         const options = response.data.map((item) => ({
           value: item.servicio_Solicitado,
           label: item.servicio_Solicitado.descripcionServicio_Solicitado,
-        }));
-
-        setRequestsOptions([
-          { value: "", label: "Toda solicitud" },
-          ...options,
-        ]);
-
-        setFilteredData(response.data);
+       }));
+ 
+       setRequestOptions([
+         { value: "", label: "Toda solicitud" },
+         ...options,
+       ]);
       })
       .catch((error) => {
         console.log("error to get the request", error);
@@ -315,10 +261,16 @@ function RequestTable() {
         }
 
         // Other filters (departamento, status, prioridad, search term)
-        const departmentMatch = selectedDepartamento === "" || item.usuarios.nomEmpleados.direccionesICEES.descripcion === selectedDepartamento;
-        const serviceMatch = selectedService === "" || item.servicio_Solicitado.descripcionServicio_Solicitado === selectedService;
-        const statusMatch = SelectedStatus === "" || item.status === SelectedStatus;
-        const priorityMatch = SelectPrioridad === "" || item.prioridad === SelectPrioridad;
+        const departmentMatch =
+          selectedDepartamento === "" ||
+          item.usuarios.nomEmpleados.direccionesICEES.descripcion ===
+            selectedDepartamento;
+            const serviceMatch = selectedService === "" || item.servicio_Solicitado.descripcionServicio_Solicitado === selectedService;
+
+        const statusMatch =
+          SelectedStatus === "" || item.status === SelectedStatus;
+        const priorityMatch =
+          SelectPrioridad === "" || item.prioridad === SelectPrioridad;
         const searchTermMatch =
           item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -353,7 +305,7 @@ function RequestTable() {
     SelectedStatus,
     SelectPrioridad,
     RangeComparationDate,
-    selectedService
+    selectedService,
   ]);
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -364,32 +316,6 @@ function RequestTable() {
     }));
   };
 
-  const handleUpdatePrioridad = async (e) => {
-    e.preventDefault();
-
-    const { prioridad } = formData;
-
-    const data = new FormData();
-
-    data.append("prioridad", prioridad);
-
-    try {
-      const response = await axios.put(
-        `https://localhost:7145/api/Request/${REQUESTID}`,
-        data,
-        {
-          headers: {
-            "content-type": "application/json",
-          },
-        }
-      ); //
-
-      UpdateTableRequest();
-    } catch (error) {
-      console.log("0");
-    }
-  };
-
   return (
     <div className="container mt-4">
       <UpdateForm></UpdateForm>
@@ -397,16 +323,17 @@ function RequestTable() {
       <SearchBar
         setSearchTerm={setSearchTerm}
         setselectedDepartamento={setselectedDepartamento}
-        setSelectedServicio={setSelectedServicio}
         selectedDepartamento={selectedDepartamento}
         setSelectedStatus={setSelectedStatus}
         SelectedStatus={SelectedStatus}
         setSelectPrioridad={setSelectPrioridad}
+        setSelectedServicio={setSelectedServicio}
         setDateSystem={setDateSystem}
         DateSystem={DateSystem}
         setRangeComparationDate={setRangeComparationDate}
         RangeComparationDate={RangeComparationDate}
         requestOptions={requestOptions}
+
       />{" "}
       <br />
       {loading && (
@@ -430,8 +357,7 @@ function RequestTable() {
               <tr>
                 <th style={{ width: "30px" }}>id</th>
                 <th style={{ width: "150px" }}>Nombre del empleado</th>
-                <th style={{ width: "150px" }}>Servicio</th>
-
+                <th style={{ width: "200px" }}>Servicio</th>
                 <th
                   style={{
                     width: "200px",
@@ -443,7 +369,7 @@ function RequestTable() {
                   Descripción
                 </th>
                 <th style={{ width: "100px" }}>Fecha</th>
-                <th style={{ width: "80px" }}> Revisado sub</th>
+                <th style={{ width: "100px" }}>Revisado Sub</th>
                 <th style={{ width: "120px" }}>Estatus</th>
                 <th style={{ width: "100px" }}>Prioridad</th>
                 <th style={{ width: "150px" }}>Departamento</th>
@@ -466,7 +392,6 @@ function RequestTable() {
                           .descripcionServicio_Solicitado
                       }
                     </td>
-
                     <td
                       style={{
                         width: "300px",
@@ -489,25 +414,8 @@ function RequestTable() {
                       )}
                     </td>
                     <td>
-                      {request.revisadoSub ? (
-                        <Button
-                          variant=""
-                          style={{ backgroundColor: "#217ABF", color: "white" }}
-                        >
-                          {" "}
-                          Si{" "}
-                        </Button>
-                      ) : (
-                        <Button
-                          variant=""
-                          style={{ backgroundColor: "#DC7F37", color: "white" }}
-                        >
-                          {" "}
-                          No{" "}
-                        </Button>
-                      )}
+                      {request.revisadoSub ? (<Button variant="" style={{backgroundColor: "#217ABF",color:"white"}}> Si </Button>)  : ( <Button variant="" style={{backgroundColor: "#DC7F37", color: "white"} }> No </Button>)}
                     </td>
-
                     <td>
                       <Button
                         variant=""
@@ -523,7 +431,7 @@ function RequestTable() {
                               ? "#999999"
                               : request.status === "Finalizado"
                               ? "#2F9B8C"
-                              : request.status === "Revertido"
+                               : request.status === "Revertido"
                               ? "#DC7F37"
                               : "",
                         }}
@@ -545,9 +453,8 @@ function RequestTable() {
                               : request.prioridad === "Baja"
                               ? "#3794DC"
                               : request.prioridad === "sin asignar"
-                              ? "#999999"
-                              : // If "Media", set background to #808080
-                                "", // Default (empty) if not "Alta" or "Media"
+                              ? "#999999" // If "Media", set background to #808080
+                              : "", // Default (empty) if not "Alta" or "Media"
                         }}
                       >
                         {request.prioridad}
@@ -622,40 +529,21 @@ function RequestTable() {
                 Comentar
               </Button>
 
-              <Button
-                variant=""
-                onClick={handleAutorizar}
-                style={{ backgroundColor: "#237469", color: "white" }}
-              >
-                {" "}
-                Autorizar{" "}
-              </Button>
+              <RevisadoSub
+                handleChange={handleChange}
+                UpdateTableRequest={UpdateTableRequest}
+                showRequest={showRequest}
+                formData={formData}
+                showRequest2={showRequest2}
 
-              <Form.Select
-                aria-label="Default select example"
-                style={{
-                  width: "150px",
-                  backgroundColor: "#DC7F37",
-                  color: "white",
-                }}
-                onChange={handleChange}
-                onClick={(e) => {
-                  handleUpdatePrioridad(e);
-                }}
-                name="prioridad"
-                defaultValue={showRequest.prioridad}
-              >
-                <option value="sin asignar">Sin Asignar</option>
-                <option value="Baja">Baja</option>
-                <option value="Media">Media</option>
-                <option value="Alta">Alta</option>
-              </Form.Select>
+              ></RevisadoSub>
 
               <UpdateStatus
                 handleChange={handleChange}
                 UpdateTableRequest={UpdateTableRequest}
                 showRequest={showRequest}
                 formData={formData}
+                showRequest2={showRequest2}
               ></UpdateStatus>
 
               <DownloadPdfAsp showRequest={showRequest}> </DownloadPdfAsp>

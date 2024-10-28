@@ -15,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Navbar2 from "./components/Navbar2";
 import ProtectedRoute from "./components/ProtectedRoute";
 import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
+import WelcomeSubAdministrador from "./components/WelcomeSubAdministrador";
 
 function App() {
   return (
@@ -27,6 +28,8 @@ function App() {
             <Route path="/Welcome" element={<ProtectedRoute><Welcome/></ProtectedRoute>} />
             <Route path="/MisSolicitudes" element={<ProtectedRoute><MisSolicitudes /></ProtectedRoute>} />
             <Route path="/NuevaSolicitud" element={<ProtectedRoute><NuevaSolicitud /></ProtectedRoute>} />
+            <Route path="/WelcomeSubAdministrador" element={<ProtectedRoute><WelcomeSubAdministrador /></ProtectedRoute>} />
+
             <Route path="/NewUser" element={<NewUser />} />
             <Route
               path="/WelcomeAdministrador"

@@ -223,6 +223,8 @@ function TextControlsExample() {
     data.append("usuarioId", usuarioId);
     data.append("prioridad", Prioridad);
     data.append("servicio_solicidato_Id", servicioSolicitado);
+    data.append("revisadoSub", "");
+
 
     // Add file only if it exists
     if (file) {

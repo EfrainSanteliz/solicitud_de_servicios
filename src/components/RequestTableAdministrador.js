@@ -34,6 +34,9 @@ function RequestTable() {
   const [SelectPrioridad, setSelectPrioridad] = useState("");
   const [DateSystem, setDateSystem] = useState("");
   const [RangeComparationDate, setRangeComparationDate] = useState("");
+  const [requestOptions,setRequestOptions] = useState("");
+  const [selectedService, setSelectedServicio] = useState("");
+
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -266,6 +269,18 @@ function RequestTable() {
         );
         setRequests(filteredRequest);
         setFilteredData(filteredRequest);
+
+
+        const options = response.data.map((item) => ({
+           value: item.servicio_Solicitado,
+           label: item.servicio_Solicitado.descripcionServicio_Solicitado,
+        }));
+
+        setRequestOptions([
+          { value: "", label:"toda solicitud"},
+              ...options
+        ]);
+
       })
       .catch((error) => {
         //console.log("error to get the request", error);
@@ -302,6 +317,9 @@ function RequestTable() {
           SelectedStatus === "" || item.status === SelectedStatus;
         const priorityMatch =
           SelectPrioridad === "" || item.prioridad === SelectPrioridad;
+        const serviceMatch = selectedService === "" || item.servicio_Solicitado.descripcionServicio_Solicitado === selectedService;
+
+      
         const searchTermMatch =
           item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -315,7 +333,7 @@ function RequestTable() {
             .includes(searchTerm.toLowerCase());
 
         // Return true only if all conditions match
-        return dateMatch && statusMatch && priorityMatch && searchTermMatch;
+        return dateMatch && statusMatch && priorityMatch && searchTermMatch && serviceMatch;
       });
 
       setFilteredData(filtered);
@@ -328,6 +346,7 @@ function RequestTable() {
     SelectedStatus,
     SelectPrioridad,
     RangeComparationDate,
+    selectedService,
   ]);
 
   const handleChange = (e) => {
@@ -346,12 +365,15 @@ function RequestTable() {
       <SearchBar
         setSearchTerm={setSearchTerm}
         setSelectedStatus={setSelectedStatus}
+        setSelectedServicio={setSelectedServicio}
         SelectedStatus={SelectedStatus}
         setSelectPrioridad={setSelectPrioridad}
         setDateSystem={setDateSystem}
         DateSystem={DateSystem}
         setRangeComparationDate={setRangeComparationDate}
         RangeComparationDate={RangeComparationDate}
+        requestOptions={requestOptions}
+        set
       />{" "}
       <br />
       {loading && (
@@ -374,6 +396,7 @@ function RequestTable() {
             <thead>
               <tr>
                 <th style={{ width: "150px" }}>Nombre del empleado</th>
+                <th style={{ width: "120px" }}>Servicio</th>
                 <th
                   style={{
                     width: "200px",
@@ -397,6 +420,7 @@ function RequestTable() {
               {filteredData.map((request) => (
                 <tr key={request.id}>
                   <td>{request.firmaEmpleado}</td>
+                  <td>{request.servicio_Solicitado.descripcionServicio_Solicitado}</td>
                   <td
                     style={{
                       width: "250px",
@@ -420,22 +444,26 @@ function RequestTable() {
                   <td>
                     {" "}
                     <Button
-                      variant=""
-                      style={{
-                        color: "white",
-                        width: "100px",
-                        backgroundColor:
-                          request.status === "Activo"
-                            ? "#3794DC"
-                            : request.status === "Cancelado"
-                            ? "#E49B62"
-                            : request.status === "Inactivo"
-                            ? "#999999"
-                            : "",
-                      }}
-                    >
-                      {request.status}
-                    </Button>
+                        variant=""
+                        style={{
+                          color: "white",
+                          width: "100px",
+                          backgroundColor:
+                            request.status === "Activo"
+                              ? "#3794DC"
+                              : request.status === "Cancelado"
+                              ? "#E49B62"
+                              : request.status === "Inactivo"
+                              ? "#999999"
+                              : request.status === "Finalizado"
+                              ? "#2F9B8C"
+                               : request.status === "Revertido"
+                              ? "#DC7F37"
+                              : "",
+                        }}
+                      >
+                        {request.status}
+                      </Button>
                   </td>
                   <td>
                     <Button
