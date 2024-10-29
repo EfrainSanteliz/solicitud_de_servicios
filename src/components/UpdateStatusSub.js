@@ -3,13 +3,14 @@ import axios from "axios";
 import { waitFor } from "@testing-library/react";
 import { Form } from "react-bootstrap";
 
-function UpdateStatus({
+function UpdateStatusSub({
   handleChange,
   showRequest,
   formData,
   UpdateTableRequest,
   showRequest2,
 }) {
+  const UserRole = localStorage.getItem("UserRole");
 
   const handleUpdateStatus = async (newStatus) => {
     const { status } = formData;
@@ -62,11 +63,10 @@ function UpdateStatus({
         <option value="2">Inactivo</option>
         <option value="3">Revertido</option>
         <option value="4">Finalizado</option>
-        <option value="5">Cancelado</option>
 
       </Form.Select>
     </div>
   );
 }
 
-export default UpdateStatus;
+export default UpdateStatusSub;

@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SearchBar from "./SearchBar";
-import UpdateStatus from "./UpdateStatus";
+import UpdateStatusSub from "./UpdateStatusSub";
 import DownloadPdfAsp from "./DownloadPdfAsp";
 import {
   showLoadingAlertAutorizar,
@@ -316,6 +316,28 @@ function RequestTable() {
     }));
   };
 
+  const statusid = {
+    1: "Activo",
+    2: "Inactivo",
+    3: "Revertido",
+    4: "Finalizado",
+    5: "cancelado",
+  };
+
+  const prioridad = {
+    1: "Baja",
+    2: "Media",
+    3: "Alta",
+ 
+  };
+
+  
+  const ultimoStatus = {
+    3: "SubAdministrador",
+    4: "SuperAdministrador",
+  };
+
+
   return (
     <div className="container mt-4">
       <UpdateForm></UpdateForm>
@@ -371,6 +393,8 @@ function RequestTable() {
                 <th style={{ width: "100px" }}>Fecha</th>
                 <th style={{ width: "100px" }}>Revisado Sub</th>
                 <th style={{ width: "120px" }}>Estatus</th>
+                <th style={{ width: "200px" }}>Ultimo Estatus</th>
+
                 <th style={{ width: "100px" }}>Prioridad</th>
                 <th style={{ width: "150px" }}>Departamento</th>
                 <th style={{ width: "100px", textAlign: "center" }}>
@@ -417,27 +441,48 @@ function RequestTable() {
                       {request.revisadoSub ? (<Button variant="" style={{backgroundColor: "#217ABF",color:"white"}}> Si </Button>)  : ( <Button variant="" style={{backgroundColor: "#DC7F37", color: "white"} }> No </Button>)}
                     </td>
                     <td>
-                      <Button
+                    <Button
                         variant=""
                         style={{
                           color: "white",
                           width: "100px",
                           backgroundColor:
-                            request.status === "Activo"
+                            request.status === 1
                               ? "#3794DC"
-                              : request.status === "Cancelado"
+                              : request.status === 5
                               ? "#E49B62"
-                              : request.status === "Inactivo"
+                              : request.status === 2
                               ? "#999999"
-                              : request.status === "Finalizado"
+                              : request.status === 4
                               ? "#2F9B8C"
-                               : request.status === "Revertido"
+                               : request.status === 3
                               ? "#DC7F37"
                               : "",
                         }}
                       >
-                        {request.status}
-                      </Button>
+                        
+                        <td>{statusid[request.status] || "Unknown"}</td>
+                        </Button>
+                    </td>
+
+                    <td>
+                      {request.ultimoStatus && (
+                        <Button
+                          variant=""
+                          style={{
+                            color: "white",
+                            width: "180px",
+                            backgroundColor:
+                              request.ultimoStatus === 3
+                                ? "#3794DC"
+                                : request.ultimoStatus === 4
+                                ? "#2F9B8C"
+                                : "",
+                          }}
+                        >
+                          {ultimoStatus[request.ultimoStatus] || ""}
+                        </Button>
+                      )}
                     </td>
                     <td style={{ width: "100px" }}>
                       <Button
@@ -446,19 +491,19 @@ function RequestTable() {
                           color: "white",
                           width: "80px",
                           backgroundColor:
-                            request.prioridad === "Alta"
+                            request.prioridad === 3
                               ? "#C5126D" // If "Alta", set background to #C5126D
-                              : request.prioridad === "Media"
+                              : request.prioridad === 2
                               ? "#E49B62"
-                              : request.prioridad === "Baja"
+                              : request.prioridad === 1
                               ? "#3794DC"
-                              : request.prioridad === "sin asignar"
+                              : request.prioridad === 0
                               ? "#999999" // If "Media", set background to #808080
                               : "", // Default (empty) if not "Alta" or "Media"
                         }}
                       >
-                        {request.prioridad}
-                      </Button>
+                  <td>{prioridad[request.prioridad] || "Unknown"}</td>
+                  </Button>
                     </td>
 
                     <td>
@@ -538,13 +583,13 @@ function RequestTable() {
 
               ></RevisadoSub>
 
-              <UpdateStatus
+              <UpdateStatusSub
                 handleChange={handleChange}
                 UpdateTableRequest={UpdateTableRequest}
                 showRequest={showRequest}
                 formData={formData}
                 showRequest2={showRequest2}
-              ></UpdateStatus>
+              ></UpdateStatusSub>
 
               <DownloadPdfAsp showRequest={showRequest}> </DownloadPdfAsp>
             </Modal.Footer>

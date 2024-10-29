@@ -134,14 +134,10 @@ function RequestTable() {
         );
         //console.log("update Request Sucesfully", response);
 
-        const encabezado =
-          "tu solicitud ha sido firmada por tu jede de departamento";
-        const cuerpo =
-          "Inicia sesion para ver el estado de tu solicitud `becas.com`";
         const response2 = await axios.post(
-          `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+          `https://localhost:7145/api/email/EmailComentario/${encodeURIComponent(
             showRequest.usuarios.email
-          )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
+          )}/`,
           {},
           {
             headers: {
@@ -231,14 +227,12 @@ function RequestTable() {
     }
 
     // Send email notification after submitting the comment
-    const encabezado = "Tienes Nuevos Comentarios en Tu solicitud";
-    const cuerpo =
-      "Inicia sesión en la página para ver tus comentarios: becas.com";
+ 
     try {
       const response = await axios.post(
-        `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+        `https://localhost:7145/api/email/FirmaAdministradorEmail/${encodeURIComponent(
           showRequest.usuarios.email
-        )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
+        )}/`,
         {},
         {
           headers: {
@@ -358,6 +352,21 @@ function RequestTable() {
     }));
   };
 
+  const statusid = {
+    1: "Activo",
+    2: "Inactivo",
+    3: "Revertido",
+    4: "Finalizado",
+    5: "cancelado",
+  };
+
+  const prioridad = {
+    1: "Baja",
+    2: "Media",
+    3: "Alta",
+ 
+  };
+
   return (
     <div className="container mt-4">
       <h2>Lista de solicitudes {} </h2>
@@ -449,21 +458,21 @@ function RequestTable() {
                           color: "white",
                           width: "100px",
                           backgroundColor:
-                            request.status === "Activo"
+                            request.status === 1
                               ? "#3794DC"
-                              : request.status === "Cancelado"
+                              : request.status === 5
                               ? "#E49B62"
-                              : request.status === "Inactivo"
+                              : request.status === 2
                               ? "#999999"
-                              : request.status === "Finalizado"
+                              : request.status === 4
                               ? "#2F9B8C"
-                               : request.status === "Revertido"
+                               : request.status === 3
                               ? "#DC7F37"
                               : "",
                         }}
                       >
-                        {request.status}
-                      </Button>
+                  <td>{statusid[request.status] || "Unknown"}</td>
+                  </Button>
                   </td>
                   <td>
                     <Button
@@ -472,19 +481,19 @@ function RequestTable() {
                         color: "white",
                         width: "80px",
                         backgroundColor:
-                          request.prioridad === "Alta"
+                          request.prioridad === 3
                             ? "#C5126D" // If "Alta", set background to #C5126D
-                            : request.prioridad === "Media"
+                            : request.prioridad === 2
                             ? "#E49B62"
-                            : request.prioridad === "Baja"
+                            : request.prioridad === 1
                             ? "#3794DC"
-                            : request.prioridad === "sin asignar"
+                            : request.prioridad === 0
                             ? "#999999" // If "Media", set background to #808080
                             : "", // Default (empty) if not "Alta" or "Media"
                       }}
                     >
-                      {request.prioridad}
-                    </Button>
+                  <td>{prioridad[request.prioridad] || "Unknown"}</td>
+                  </Button>
                   </td>
                   <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                     <Button
@@ -564,16 +573,16 @@ function RequestTable() {
                 onChange={handleChange}
                 name="prioridad"
                 disabled={
-                  showRequest.prioridad === "Baja" ||
-                  showRequest.prioridad === "Alta" ||
-                  showRequest.prioridad === "Media"
+                  showRequest.prioridad === 1 ||
+                  showRequest.prioridad === 2 ||
+                  showRequest.prioridad === 3
                 } // Disable if prioridad is 1, 2, or 3
                 defaultValue={showRequest.prioridad}
               >
-                <option value="Prioridad">Prioridad</option>
-                <option value="Baja">Baja</option>
-                <option value="Media">Media</option>
-                <option value="Alta">Alta</option>
+                <option value="0">Prioridad</option>
+                <option value="1">Baja</option>
+                <option value="2">Media</option>
+                <option value="3">Alta</option>
               </Form.Select>
 
               <DownloadPdfAsp showRequest={showRequest}> </DownloadPdfAsp>

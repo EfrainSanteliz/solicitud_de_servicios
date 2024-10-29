@@ -71,6 +71,8 @@ function FormSolicitudTable({ showRequest }) {
           <div className="mb-3">
             {list.map((item, index) => (
               <Form.Check
+              key={item.servicio_solicidato_Id} // Unique key prop using the item's unique ID
+
                 inline
                 label={item.descripcionServicio_Solicitado}
                 name="servicioSolicitado" // Ensure this matches the state key
@@ -84,43 +86,7 @@ function FormSolicitudTable({ showRequest }) {
                 } // Compare strings, not objects
               />
             ))}
-            {/*
-
-
-            <Form.Check
-              inline
-              label={FirstResponse.descripcionServicio_Solicitado}
-              name="servicioSolicitado" // Ensure this matches the state key
-              type="radio"
-              value={FirstResponse.descripcionServicio_Solicitado}
-              id="inline-radio-1"
-              disabled
-              checked={showRequest.servicio_solicidato_Id === FirstResponse.servicio_solicidato_Id} // Compare strings, not objects
-
-            />
-
-            <Form.Check
-              inline
-              label={SecondResponse.descripcionServicio_Solicitado}
-              name="servicioSolicitado" // Ensure this matches the state key
-              type="radio"
-              value={SecondResponse.descripcionServicio_Solicitado}
-              id="inline-radio-2"
-              disabled
-              checked={showRequest.servicio_solicidato_Id === SecondResponse.servicio_solicidato_Id}
-            />
-
-            <Form.Check
-              inline
-              label={ThirdResponse.descripcionServicio_Solicitado}
-              name="servicioSolicitado" // Ensure this matches the state key
-              type="radio"
-              value={ThirdResponse.descripcionServicio_Solicitado}
-              id="inline-radio-3"
-              disabled
-              checked={showRequest.servicio_solicidato_Id === ThirdResponse.servicio_solicidato_Id}
-            />
-            */}
+          
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
             <Form.Label>Fecha:{""}</Form.Label>

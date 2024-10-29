@@ -31,8 +31,6 @@ function RequestTable() {
   const [Historials, setHistorials] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [Loading3, setLoading3] = useState(false);
-  const [options, setOptions] = useState([]);
   const [selectedDepartamento, setselectedDepartamento] = useState("");
   const [selectedService, setSelectedServicio] = useState("");
   const [SelectedStatus, setSelectedStatus] = useState("");
@@ -60,11 +58,9 @@ function RequestTable() {
     setShowHistoryModal(false);
   };
 
-  useEffect(() => {
-    handleShow();
-  }, []); // Add dependencies to trigger only when these values change
-
+ 
   const showRequest2 = async (requestID) => {
+    console.log("holadddddfsdfsdfsdfgdsf")
     try {
       const response = await axios.get(
         `https://localhost:7145/api/Request/${requestID}`
@@ -141,26 +137,35 @@ function RequestTable() {
         }
       ); //
 
-      console.log("Request Update Sucessfully", response);
-      const encabezado = "tu solicitud ha sido firmada por el jefe de sistemas";
-      const cuerpo = "inicia sesion para ver el estado de tu solicitud";
+      if (!showRequest.usuarios.email) {
+        throw new Error("Email is not available for the user.");
+      }
+      console.log("correo", showRequest.usuarios.email);
+
       const response2 = await axios.post(
-        `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+        `https://localhost:7145/api/email/FirmaSuperAdministradorEmail/${encodeURIComponent(
           showRequest.usuarios.email
-        )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
+        )}`,
         {},
         {
           headers: {
-            "content-type": "application/json",
+            "Content-Type": "application/json",
           },
         }
       );
-      showRequest2(REQUESTID);
-      showSueccesAlertAutorizar();
+
+      // Ensure REQUESTID is defined and valid
+      if (!REQUESTID) {
+        throw new Error("REQUESTID is not defined.");
+      }
+
+      showRequest2(REQUESTID); // Update UI or state as necessary
+      showSueccesAlertAutorizar(); // Show success alert
     } catch (error) {
-      console.error("Error updating the Request:", error);
-      showErrorAlerAutorizar();
+      console.error("Error updating the request:", error);
+      showErrorAlerAutorizar(); // Show error alert to the user
     } finally {
+      // Optional: Any cleanup or final actions can be placed here
     }
   };
 
@@ -237,14 +242,12 @@ function RequestTable() {
     }
 
     // Send email notification after submitting the comment
-    const encabezado = "Tienes Nuevos Comentarios en Tu solicitud";
-    const cuerpo =
-      "Inicia sesión en la página para ver tus comentarios: becas.com";
+    
     try {
       const response = await axios.post(
-        `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+        `https://localhost:7145/api/email/EmailComentario/${encodeURIComponent(
           showRequest.usuarios.email
-        )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
+        )}/`,
         {},
         {
           headers: {
@@ -315,10 +318,18 @@ function RequestTable() {
         }
 
         // Other filters (departamento, status, prioridad, search term)
-        const departmentMatch = selectedDepartamento === "" || item.usuarios.nomEmpleados.direccionesICEES.descripcion === selectedDepartamento;
-        const serviceMatch = selectedService === "" || item.servicio_Solicitado.descripcionServicio_Solicitado === selectedService;
-        const statusMatch = SelectedStatus === "" || item.status === SelectedStatus;
-        const priorityMatch = SelectPrioridad === "" || item.prioridad === SelectPrioridad;
+        const departmentMatch =
+          selectedDepartamento === "" ||
+          item.usuarios.nomEmpleados.direccionesICEES.descripcion ===
+            selectedDepartamento;
+        const serviceMatch =
+          selectedService === "" ||
+          item.servicio_Solicitado.descripcionServicio_Solicitado ===
+            selectedService;
+        const statusMatch =
+          SelectedStatus === "" || item.status === SelectedStatus;
+        const priorityMatch =
+          SelectPrioridad === "" || item.prioridad === SelectPrioridad;
         const searchTermMatch =
           item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -353,7 +364,7 @@ function RequestTable() {
     SelectedStatus,
     SelectPrioridad,
     RangeComparationDate,
-    selectedService
+    selectedService,
   ]);
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -364,14 +375,16 @@ function RequestTable() {
     }));
   };
 
-  const handleUpdatePrioridad = async (e) => {
-    e.preventDefault();
+  const handleUpdatePrioridad = async (prioridad) => {
+    //const { prioridad } = formData;
 
-    const { prioridad } = formData;
+    //const data = new FormData();
 
-    const data = new FormData();
+    // data.append("prioridad", prioridad);
 
-    data.append("prioridad", prioridad);
+    const data = {
+      prioridad: prioridad,
+    };
 
     try {
       const response = await axios.put(
@@ -390,205 +403,256 @@ function RequestTable() {
     }
   };
 
+  const statusid = {
+    1: "Activo",
+    2: "Inactivo",
+    3: "Revertido",
+    4: "Finalizado",
+    5: "cancelado",
+  };
+
+  const prioridad = {
+    1: "Baja",
+    2: "Media",
+    3: "Alta",
+  };
+
+  const ultimoStatus = {
+    3: "SubAdministrador",
+    4: "SuperAdministrador",
+  };
+
   return (
     <div className="container mt-4">
-      <UpdateForm></UpdateForm>
-      <br></br>
-      <SearchBar
-        setSearchTerm={setSearchTerm}
-        setselectedDepartamento={setselectedDepartamento}
-        setSelectedServicio={setSelectedServicio}
-        selectedDepartamento={selectedDepartamento}
-        setSelectedStatus={setSelectedStatus}
-        SelectedStatus={SelectedStatus}
-        setSelectPrioridad={setSelectPrioridad}
-        setDateSystem={setDateSystem}
-        DateSystem={DateSystem}
-        setRangeComparationDate={setRangeComparationDate}
-        RangeComparationDate={RangeComparationDate}
-        requestOptions={requestOptions}
-      />{" "}
-      <br />
       {loading && (
         <Spinner animation="border" role="status">
           <span className="sr-only">Cargando..</span>
         </Spinner>
       )}
+
       {error && <Alert variant="danger">{error}</Alert>}
       {requests.length === 0 ? (
         <p>Aún no tienes Solicitudes </p>
       ) : (
         !loading &&
         !error && (
-          <Table
-            striped
-            bordered
-            hover
-            style={{ tableLayout: "fixed", width: "100%" }}
-          >
-            <thead>
-              <tr>
-                <th style={{ width: "30px" }}>id</th>
-                <th style={{ width: "150px" }}>Nombre del empleado</th>
-                <th style={{ width: "150px" }}>Servicio</th>
+          <div>
+            <UpdateForm></UpdateForm>
+            <br></br>
+            <SearchBar
+              setSearchTerm={setSearchTerm}
+              setselectedDepartamento={setselectedDepartamento}
+              setSelectedServicio={setSelectedServicio}
+              selectedDepartamento={selectedDepartamento}
+              setSelectedStatus={setSelectedStatus}
+              SelectedStatus={SelectedStatus}
+              setSelectPrioridad={setSelectPrioridad}
+              setDateSystem={setDateSystem}
+              DateSystem={DateSystem}
+              setRangeComparationDate={setRangeComparationDate}
+              RangeComparationDate={RangeComparationDate}
+              requestOptions={requestOptions}
+            />{" "}
+            <br />
+            <Table
+              striped
+              bordered
+              hover
+              style={{ tableLayout: "fixed", width: "100%" }}
+            >
+              <thead>
+                <tr>
+                  <th style={{ width: "30px" }}>id</th>
+                  <th style={{ width: "150px" }}>Nombre del empleado</th>
+                  <th style={{ width: "150px" }}>Servicio</th>
 
-                <th
-                  style={{
-                    width: "200px",
-                    whiteSpace: "nowrap", // Evita que el texto haga wrap a otra línea
-                    overflow: "hidden", // Oculta el texto que no cabe
-                    textOverflow: "ellipsis", // Añade los puntos suspensivos (...)
-                  }}
-                >
-                  Descripción
-                </th>
-                <th style={{ width: "100px" }}>Fecha</th>
-                <th style={{ width: "80px" }}> Revisado sub</th>
-                <th style={{ width: "120px" }}>Estatus</th>
-                <th style={{ width: "100px" }}>Prioridad</th>
-                <th style={{ width: "150px" }}>Departamento</th>
-                <th style={{ width: "100px", textAlign: "center" }}>
-                  Acciones
-                </th>
-              </tr>
-            </thead>
+                  <th
+                    style={{
+                      width: "200px",
+                      whiteSpace: "nowrap", // Evita que el texto haga wrap a otra línea
+                      overflow: "hidden", // Oculta el texto que no cabe
+                      textOverflow: "ellipsis", // Añade los puntos suspensivos (...)
+                    }}
+                  >
+                    Descripción
+                  </th>
+                  <th style={{ width: "100px" }}>Fecha</th>
+                  <th style={{ width: "80px" }}> Revisado sub</th>
+                  <th style={{ width: "120px" }}>Estatus</th>
+                  <th style={{ width: "200px" }}>Ultimo Estatus</th>
 
-            <tbody>
-              {filteredData.map(
-                (request) => (
-                  //request.firmaJefeDepartamento !== "0" ? (
-                  <tr key={request.id}>
-                    <td>{request.id}</td>
-                    <td style={{ width: "150px" }}>{request.firmaEmpleado}</td>
-                    <td>
-                      {
-                        request.servicio_Solicitado
-                          .descripcionServicio_Solicitado
-                      }
-                    </td>
+                  <th style={{ width: "100px" }}>Prioridad</th>
+                  <th style={{ width: "150px" }}>Departamento</th>
+                  <th style={{ width: "100px", textAlign: "center" }}>
+                    Acciones
+                  </th>
+                </tr>
+              </thead>
 
-                    <td
-                      style={{
-                        width: "300px",
-                        whiteSpace: "nowrap", // Evita que el texto haga wrap
-                        overflow: "hidden", // Oculta el texto que no cabe
-                        textOverflow: "ellipsis", // Añade puntos suspensivos
-                        fontWeight: "normal",
-                      }}
-                    >
-                      {request.descripcion}
-                    </td>
-                    <td>
-                      {new Date(request.fechaSolicitada).toLocaleDateString(
-                        "es-ES",
+              <tbody>
+                {filteredData.map(
+                  (request) => (
+                    //request.firmaJefeDepartamento !== "0" ? (
+                    <tr key={request.id}>
+                      <td>{request.id}</td>
+                      <td style={{ width: "150px" }}>
+                        {request.firmaEmpleado}
+                      </td>
+                      <td>
                         {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
+                          request.servicio_Solicitado
+                            .descripcionServicio_Solicitado
                         }
-                      )}
-                    </td>
-                    <td>
-                      {request.revisadoSub ? (
+                      </td>
+
+                      <td
+                        style={{
+                          width: "300px",
+                          whiteSpace: "nowrap", // Evita que el texto haga wrap
+                          overflow: "hidden", // Oculta el texto que no cabe
+                          textOverflow: "ellipsis", // Añade puntos suspensivos
+                          fontWeight: "normal",
+                        }}
+                      >
+                        {request.descripcion}
+                      </td>
+                      <td>
+                        {new Date(request.fechaSolicitada).toLocaleDateString(
+                          "es-ES",
+                          {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          }
+                        )}
+                      </td>
+                      <td>
+                        {request.revisadoSub ? (
+                          <Button
+                            variant=""
+                            style={{
+                              backgroundColor: "#217ABF",
+                              color: "white",
+                            }}
+                          >
+                            {" "}
+                            Si{" "}
+                          </Button>
+                        ) : (
+                          <Button
+                            variant=""
+                            style={{
+                              backgroundColor: "#DC7F37",
+                              color: "white",
+                            }}
+                          >
+                            {" "}
+                            No{" "}
+                          </Button>
+                        )}
+                      </td>
+
+                      <td>
                         <Button
                           variant=""
-                          style={{ backgroundColor: "#217ABF", color: "white" }}
+                          style={{
+                            color: "white",
+                            width: "100px",
+                            backgroundColor:
+                              request.status === 1
+                                ? "#3794DC"
+                                : request.status === 5
+                                ? "#E49B62"
+                                : request.status === 2
+                                ? "#999999"
+                                : request.status === 4
+                                ? "#2F9B8C"
+                                : request.status === 3
+                                ? "#DC7F37"
+                                : "",
+                          }}
                         >
-                          {" "}
-                          Si{" "}
+                          <td>{statusid[request.status] || "Unknown"}</td>
                         </Button>
-                      ) : (
+                      </td>
+                      <td>
+                        {request.ultimoStatus && (
+                          <Button
+                            variant=""
+                            style={{
+                              color: "white",
+                              width: "180px",
+                              backgroundColor:
+                                request.ultimoStatus === 3
+                                  ? "#3794DC"
+                                  : request.ultimoStatus === 4
+                                  ? "#2F9B8C"
+                                  : "",
+                            }}
+                          >
+                            {ultimoStatus[request.ultimoStatus] || ""}
+                          </Button>
+                        )}
+                      </td>
+                      <td style={{ width: "100px" }}>
                         <Button
                           variant=""
-                          style={{ backgroundColor: "#DC7F37", color: "white" }}
+                          style={{
+                            color: "white",
+                            width: "80px",
+                            backgroundColor:
+                              request.prioridad === 3
+                                ? "#C5126D" // If "Alta", set background to #C5126D
+                                : request.prioridad === 2
+                                ? "#E49B62"
+                                : request.prioridad === 1
+                                ? "#3794DC"
+                                : request.prioridad === 0
+                                ? "#999999"
+                                : // If "Media", set background to #808080
+                                  "", // Default (empty) if not "Alta" or "Media"
+                          }}
                         >
-                          {" "}
-                          No{" "}
+                          <td>{prioridad[request.prioridad] || "Unknown"}</td>
                         </Button>
-                      )}
-                    </td>
+                      </td>
 
-                    <td>
-                      <Button
-                        variant=""
-                        style={{
-                          color: "white",
-                          width: "100px",
-                          backgroundColor:
-                            request.status === "Activo"
-                              ? "#3794DC"
-                              : request.status === "Cancelado"
-                              ? "#E49B62"
-                              : request.status === "Inactivo"
-                              ? "#999999"
-                              : request.status === "Finalizado"
-                              ? "#2F9B8C"
-                              : request.status === "Revertido"
-                              ? "#DC7F37"
-                              : "",
-                        }}
-                      >
-                        {request.status}
-                      </Button>
-                    </td>
-                    <td style={{ width: "100px" }}>
-                      <Button
-                        variant=""
-                        style={{
-                          color: "white",
-                          width: "80px",
-                          backgroundColor:
-                            request.prioridad === "Alta"
-                              ? "#C5126D" // If "Alta", set background to #C5126D
-                              : request.prioridad === "Media"
-                              ? "#E49B62"
-                              : request.prioridad === "Baja"
-                              ? "#3794DC"
-                              : request.prioridad === "sin asignar"
-                              ? "#999999"
-                              : // If "Media", set background to #808080
-                                "", // Default (empty) if not "Alta" or "Media"
-                        }}
-                      >
-                        {request.prioridad}
-                      </Button>
-                    </td>
-
-                    <td>
-                      {
-                        request.usuarios.nomEmpleados.direccionesICEES
-                          .descripcion
-                      }
-                    </td>
-                    <td
-                      style={{ textAlign: "center", verticalAlign: "middle" }}
-                    >
-                      <Button
-                        variant=""
-                        onClick={() =>
-                          handleShow(
-                            request.id,
-                            request.usuarios.nomEmpleados.nomEmpNombre,
-                            request.usuarios.nomEmpleados.nomEmpPaterno,
-                            request.usuarios.nomEmpleados.nomEmpMaterno
-                          )
+                      <td>
+                        {
+                          request.usuarios.nomEmpleados.direccionesICEES
+                            .descripcion
                         }
-                        style={{
-                          backgroundColor: "#C5126D",
-                        }}
+                      </td>
+                      <td
+                        style={{ textAlign: "center", verticalAlign: "middle" }}
                       >
-                        <FontAwesomeIcon
-                          icon={faEye}
-                          style={{ color: "white" }}
-                        />
-                      </Button>
-                    </td>
-                  </tr>
-                )
-                // ) : null
-              )}
-            </tbody>
-          </Table>
+                        <Button
+                          variant=""
+                          onClick={() =>
+                            handleShow(
+                              request.id,
+                              request.usuarios.nomEmpleados.nomEmpNombre,
+                              request.usuarios.nomEmpleados.nomEmpPaterno,
+                              request.usuarios.nomEmpleados.nomEmpMaterno
+                            )
+                          }
+                          style={{
+                            backgroundColor: "#C5126D",
+                          }}
+                        >
+                          <FontAwesomeIcon
+                            icon={faEye}
+                            style={{ color: "white" }}
+                          />
+                        </Button>
+                      </td>
+                    </tr>
+                  )
+                  // ) : null
+                )}
+              </tbody>
+            </Table>
+          </div>
         )
       )}
       {loading2 && (
@@ -624,7 +688,7 @@ function RequestTable() {
 
               <Button
                 variant=""
-                onClick={handleAutorizar}
+                onClick={(e) => {handleAutorizar(e);}}
                 style={{ backgroundColor: "#237469", color: "white" }}
               >
                 {" "}
@@ -640,15 +704,15 @@ function RequestTable() {
                 }}
                 onChange={handleChange}
                 onClick={(e) => {
-                  handleUpdatePrioridad(e);
+                  handleUpdatePrioridad(e.target.value);
                 }}
                 name="prioridad"
                 defaultValue={showRequest.prioridad}
               >
-                <option value="sin asignar">Sin Asignar</option>
-                <option value="Baja">Baja</option>
-                <option value="Media">Media</option>
-                <option value="Alta">Alta</option>
+                <option value="0">Sin Asignar</option>
+                <option value="1">Baja</option>
+                <option value="2">Media</option>
+                <option value="3">Alta</option>
               </Form.Select>
 
               <UpdateStatus
