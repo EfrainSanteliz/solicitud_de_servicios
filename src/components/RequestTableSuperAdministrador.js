@@ -16,7 +16,7 @@ import {
 } from "./AlertService";
 import UpdateForm from "./UpdateForm";
 
-function RequestTable() {
+function RequestTableSuperAdministrador() {
   const [requests, setRequests] = useState([]);
   const [requestOptions, setRequestsOptions] = useState([]);
   const [showRequest, setShowRequest] = useState([]);
@@ -424,6 +424,8 @@ function RequestTable() {
 
   return (
     <div className="container mt-4">
+                  <UpdateForm></UpdateForm>
+
       {loading && (
         <Spinner animation="border" role="status">
           <span className="sr-only">Cargando..</span>
@@ -437,7 +439,6 @@ function RequestTable() {
         !loading &&
         !error && (
           <div>
-            <UpdateForm></UpdateForm>
             <br></br>
             <SearchBar
               setSearchTerm={setSearchTerm}
@@ -539,7 +540,8 @@ function RequestTable() {
                             Si{" "}
                           </Button>
                         ) : (
-                          <Button
+                          <div></div>
+                         /* <Button
                             variant=""
                             style={{
                               backgroundColor: "#DC7F37",
@@ -548,7 +550,7 @@ function RequestTable() {
                           >
                             {" "}
                             No{" "}
-                          </Button>
+                          </Button>*/
                         )}
                       </td>
 
@@ -572,7 +574,7 @@ function RequestTable() {
                                 : "",
                           }}
                         >
-                          <td>{statusid[request.status] || "Unknown"}</td>
+                          {statusid[request.status] || "Sin Asignar"}
                         </Button>
                       </td>
                       <td>
@@ -613,7 +615,7 @@ function RequestTable() {
                                   "", // Default (empty) if not "Alta" or "Media"
                           }}
                         >
-                          <td>{prioridad[request.prioridad] || "Unknown"}</td>
+                          {prioridad[request.prioridad] || "Sin Asignar"}
                         </Button>
                       </td>
 
@@ -647,9 +649,7 @@ function RequestTable() {
                         </Button>
                       </td>
                     </tr>
-                  )
-                  // ) : null
-                )}
+                  ))}
               </tbody>
             </Table>
           </div>
@@ -772,4 +772,4 @@ function RequestTable() {
   );
 }
 
-export default RequestTable;
+export default RequestTableSuperAdministrador;

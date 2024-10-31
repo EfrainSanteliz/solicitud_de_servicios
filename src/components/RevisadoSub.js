@@ -36,7 +36,7 @@ function RevisadoSub({ showRequest,showRequest2, formData, UpdateTableRequest })
       <Form onSubmit={handleSubmit}>
         {!showRequest.revisadoSub || showRequest.revisadoSub === false ? (
           <Button
-            style={{ backgroundColor: "#DC7F37", color: "white" }}
+            style={{ backgroundColor: "#237469", color: "white" }}
             type="submit"
             value="true"
             variant=""

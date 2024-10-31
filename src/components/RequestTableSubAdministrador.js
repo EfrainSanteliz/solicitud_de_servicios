@@ -62,9 +62,9 @@ function RequestTable() {
     setShowHistoryModal(false);
   };
 
-  useEffect(() => {
-    handleShow();
-  }, []); // Add dependencies to trigger only when these values change
+  //useEffect(() => {
+   // handleShow();
+  //}, []); // Add dependencies to trigger only when these values change
 
   const showRequest2 = async (requestID) => {
     try {
@@ -340,7 +340,7 @@ function RequestTable() {
 
   return (
     <div className="container mt-4">
-      <UpdateForm></UpdateForm>
+      {/*<UpdateForm></UpdateForm>*/}
       <br></br>
       <SearchBar
         setSearchTerm={setSearchTerm}
@@ -438,7 +438,7 @@ function RequestTable() {
                       )}
                     </td>
                     <td>
-                      {request.revisadoSub ? (<Button variant="" style={{backgroundColor: "#217ABF",color:"white"}}> Si </Button>)  : ( <Button variant="" style={{backgroundColor: "#DC7F37", color: "white"} }> No </Button>)}
+                      {request.revisadoSub ? (<Button variant="" style={{backgroundColor: "#217ABF",color:"white"}}> Si </Button>)  : ( <div></div>/*<Button variant="" style={{backgroundColor: "#DC7F37", color: "white"} }> No </Button>*/)}
                     </td>
                     <td>
                     <Button
@@ -461,7 +461,7 @@ function RequestTable() {
                         }}
                       >
                         
-                        <td>{statusid[request.status] || "Unknown"}</td>
+                        {statusid[request.status] ||  "Sin asignar"}
                         </Button>
                     </td>
 
@@ -502,7 +502,7 @@ function RequestTable() {
                               : "", // Default (empty) if not "Alta" or "Media"
                         }}
                       >
-                  <td>{prioridad[request.prioridad] || "Unknown"}</td>
+                  {prioridad[request.prioridad] || "Sin Asignar"}
                   </Button>
                     </td>
 

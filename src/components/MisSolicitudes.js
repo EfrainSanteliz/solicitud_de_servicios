@@ -105,9 +105,17 @@ function MisSolicitudes() {
                   <td width="150px">
                     {Reques.servicio_Solicitado.descripcionServicio_Solicitado}
                   </td>
-                  <td style={{ width: "300px", overflow: "hidden", fontWeight: "normal" }}>
-                    {Reques.descripcion}
-                  </td>
+                  <td
+                      style={{
+                        width: "300px",
+                        whiteSpace: "nowrap", // Evita que el texto haga wrap
+                        overflow: "hidden", // Oculta el texto que no cabe
+                        textOverflow: "ellipsis", // Añade puntos suspensivos
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {Reques.descripcion}
+                    </td>
                   <td width="150px">
                     {new Date(Reques.fechaSolicitada).toLocaleDateString("es-ES", {
                       day: "2-digit",

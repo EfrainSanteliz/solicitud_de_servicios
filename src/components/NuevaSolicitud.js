@@ -38,7 +38,7 @@ function TextControlsExample() {
     FirmaEmpleado: "0",
     FirmaJefeDepartamento: "0",
     FirmaJefe: "0",
-    Prioridad: 1,
+    Prioridad: 0,
   });
 
   const [fechaSolicitada, setFechaSolicitada] = useState("");
@@ -81,6 +81,8 @@ function TextControlsExample() {
         const formattedOptions = response.data.map((item) => ({
           value: item.activoFijoID,
           label: `${item.afClave} - ${item.afNombre} - ${item.afDescripcion}`,
+          key: item.activoFijoID, // Adding key property
+
         }));
         setOptions(formattedOptions);
       })
@@ -101,6 +103,8 @@ function TextControlsExample() {
               ? {
                   value: item.solicitud_de_servicio_id,
                   label: `${item.descripcion}`,
+                  key: item.solicitud_de_servicio_id, // Adding key property
+
                 }
               : null
           )
@@ -338,6 +342,7 @@ function TextControlsExample() {
                 item.habilitadoServicio_Solicitado && (
                   <Form.Check
                     inline
+                    key={item.servicio_solicidato_Id}
                     label={item.descripcionServicio_Solicitado}
                     name="servicioSolicitado" // Ensure this matches the state key
                     type="radio"

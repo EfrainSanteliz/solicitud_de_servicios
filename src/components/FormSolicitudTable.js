@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Alert, Button, Table } from "react-bootstrap";
+import { Alert, Button, Table ,Row, Col} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import "./styles.css";
 import axios from "axios";
@@ -56,37 +56,30 @@ function FormSolicitudTable({ showRequest }) {
 
   if (loagding) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
-
   return (
-    <div>
+    <div className="container">
       <div id="NuevaSolicitud">
-        <Form.Group className="" controlId="">
-          <Form.Label>
-            SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS
-            DE LA INFORMACION
+        <Form.Group controlId="">
+          <Form.Label className="text-center">
+            SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS DE LA INFORMACION
           </Form.Label>
           <br />
           <br />
-          <Form.Label>Servicio Solicitado </Form.Label> <br></br>
+          <Form.Label>Servicio Solicitado </Form.Label>
           <div className="mb-3">
             {list.map((item, index) => (
               <Form.Check
-              key={item.servicio_solicidato_Id} // Unique key prop using the item's unique ID
-
+                key={item.servicio_solicidato_Id}
                 inline
                 label={item.descripcionServicio_Solicitado}
-                name="servicioSolicitado" // Ensure this matches the state key
+                name="servicioSolicitado"
                 type="radio"
                 value={item.descripcionServicio_Solicitado}
-                id={`inline-radio-${index+1}`}
+                id={`inline-radio-${index + 1}`}
                 disabled
-                checked={
-                  showRequest.servicio_solicidato_Id ===
-                  item.servicio_solicidato_Id
-                } // Compare strings, not objects
+                checked={showRequest.servicio_solicidato_Id === item.servicio_solicidato_Id}
               />
             ))}
-          
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
             <Form.Label>Fecha:{""}</Form.Label>
@@ -173,8 +166,7 @@ function FormSolicitudTable({ showRequest }) {
               />
             </div>
           )}
-          <br />
-          <Form.Label>DESCRIPCION DETALLADA SEL SERVICIO SOLICITADO</Form.Label>
+          <Form.Label>DESCRIPCION DETALLADA DEL SERVICIO SOLICITADO</Form.Label>
           <Form.Control
             as="textarea"
             rows={3}
@@ -187,51 +179,44 @@ function FormSolicitudTable({ showRequest }) {
               <img
                 src={imageURL}
                 alt="Uploaded"
-                style={{ maxWidth: "800px", maxHeight: "800px" }}
+                style={{ maxWidth: "100%", height: "auto" }} // Make image responsive
               />
             </div>
           )}
-          <Table id="firmas" striped bordered hover>
-            <thead>
-              <tr>
-                <th style={{ width: "33%" }}>Solicitante</th>
-                <th style={{ width: "33%" }}>
-                  Autorizo
-                  <br />
-                  UNIDAD ADMVA SOLICITANTE
-                </th>
-                <th style={{ width: "33%" }}>
-                  ACEPTA <br />
-                  INFRAESTRUCTURA Y <br /> TECNOLOGIAS DE LA INFORMACION
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr>
-                <td>{fullyName}</td>
-                <td>
-                  {showRequest.firmaJefeDepartamento !== 0 &&
-                    showRequest.firmaJefeDepartamento}
-                </td>
-                <td>{showRequest.firmaJefe !== 0 && showRequest.firmaJefe}</td>
-              </tr>
-            </tbody>
-
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Nombre</th>
-                <th>
-                  JOEL ADRIAN ACUÑA ALCARAZ <br />
-                </th>
-              </tr>
-            </thead>
-          </Table>
+          <Row>
+            <Col xs={12}>
+              <div className="table-responsive">
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th style={{ width: "33%" }}>Solicitante</th>
+                      <th style={{ width: "33%" }}>
+                        Autorizo
+                        <br />
+                        UNIDAD ADMVA SOLICITANTE
+                      </th>
+                      <th style={{ width: "33%" }}>
+                        ACEPTA <br />
+                        INFRAESTRUCTURA Y <br /> TECNOLOGIAS DE LA INFORMACION
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{fullyName}</td>
+                      <td>{showRequest.firmaJefeDepartamento !== 0 && showRequest.firmaJefeDepartamento}</td>
+                      <td>{showRequest.firmaJefe !== 0 && showRequest.firmaJefe}</td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
+            </Col>
+          </Row>
         </Form.Group>
       </div>
     </div>
   );
+  
 }
 
 export default FormSolicitudTable;

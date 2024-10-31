@@ -88,7 +88,7 @@ function Login() {
     <Container className="mt-5">
     <Row className="justify-content-md-center">
       <Col md={6} sm={12}>
-        <h2 className="text-center">Login with Email</h2>
+        <h2 className="text-center">Login</h2>
         {error && <Alert variant="danger">{error}</Alert>}
         <Form onSubmit={handleLogin}>
           <Form.Group controlId="formBasicEmail">
@@ -117,12 +117,13 @@ function Login() {
           </Form.Group>
 
           <Button
-            variant="primary"
+            variant=""
+            style={{backgroundColor: "#C5126D", color:"white "}}
             type="submit"
             className="mt-4 w-100"
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Login with Email"}
+            {loading ? "Logging in..." : "Login"}
           </Button>
         </Form>
       </Col>

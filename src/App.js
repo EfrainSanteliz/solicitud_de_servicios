@@ -25,7 +25,7 @@ function App() {
         <ToastContainer />
 
         <Routes>
-            <Route path="/Welcome" element={<ProtectedRoute><Welcome/></ProtectedRoute>} />
+            <Route path="/Welcome" element={<Welcome/>} />
             <Route path="/MisSolicitudes" element={<ProtectedRoute><MisSolicitudes /></ProtectedRoute>} />
             <Route path="/NuevaSolicitud" element={<ProtectedRoute><NuevaSolicitud /></ProtectedRoute>} />
             <Route path="/WelcomeSubAdministrador" element={<ProtectedRoute><WelcomeSubAdministrador /></ProtectedRoute>} />

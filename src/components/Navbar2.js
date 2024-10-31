@@ -8,32 +8,31 @@ import { useNavigate } from 'react-router-dom';
 function Navbar2() {
   const navigate = useNavigate();
 
+  // Handle logout action
   const handleLogout = () => {
-    removeToken();  // Remove token on logout
-    navigate("/");  // Redirect to home page
+    removeToken(); // Clear token
+    navigate("/"); // Redirect to home
   };
 
+  // Role-based navigation
+  const handleWelcome = () => {
+    const role = localStorage.getItem("UserRole");
+    const rolePaths = {
+      "1": "/welcome",
+      "2": "/welcomeAdministrador",
+      "3": "/welcomeSubAdministrador",
+      "4": "/welcomeSuperAdministrador"
+    };
 
-  const handleWelcome  = () => {
-    if (localStorage.getItem("UserRole") === "1") {
-      navigate("/welcome");
+    if (rolePaths[role]) {
+      navigate(rolePaths[role]);
     }
-    if (localStorage.getItem("UserRole") === "2") {
-      navigate("/welcomeAdministrador");
-    }
-    if (localStorage.getItem("UserRole") === "3") {
-      navigate("/welcomeSubAdministrador");
-    }
-    if (localStorage.getItem("UserRole") === "4") {
-      navigate("/welcomeSuperAdministrador");
-    }
-
   };
 
   return (
     <Navbar expand="lg" style={{ backgroundColor: '#960E53' }} variant="dark">
       <Container>
-        <Navbar.Brand onClick={handleWelcome}>
+        <Navbar.Brand onClick={handleWelcome} style={{ cursor: 'pointer' }}>
           <img
             src="/logo.png"  // Ensure logo is in public folder
             alt="Logo"
@@ -42,7 +41,8 @@ function Navbar2() {
             className="d-inline-block align-top"
           />
         </Navbar.Brand>
-        {/* Hamburger menu toggle for small screens */}
+        
+        {/* Toggle for small screens */}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">

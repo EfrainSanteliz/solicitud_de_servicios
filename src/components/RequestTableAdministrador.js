@@ -16,7 +16,7 @@ import {
 } from "./AlertService";
 import UpdateForm from "./UpdateForm";
 
-function RequestTable() {
+function RequestTableAdministrador() {
   const [requests, setRequests] = useState([]);
   const [showRequest, setShowRequest] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -135,7 +135,7 @@ function RequestTable() {
         //console.log("update Request Sucesfully", response);
 
         const response2 = await axios.post(
-          `https://localhost:7145/api/email/EmailComentario/${encodeURIComponent(
+          `https://localhost:7145/api/email/FirmaAdministradorEmail/${encodeURIComponent(
             showRequest.usuarios.email
           )}/`,
           {},
@@ -154,8 +154,10 @@ function RequestTable() {
     } finally {
     }
   };
+
   const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
   const handleSubmitComentarios = async (e) => {
+    
     e.preventDefault();
 
     // Get the current date in GMT-7
@@ -230,7 +232,7 @@ function RequestTable() {
  
     try {
       const response = await axios.post(
-        `https://localhost:7145/api/email/FirmaAdministradorEmail/${encodeURIComponent(
+        `https://localhost:7145/api/email/EmailComentario/${encodeURIComponent(
           showRequest.usuarios.email
         )}/`,
         {},
@@ -418,7 +420,7 @@ function RequestTable() {
                 </th>
                 <th style={{ width: "100px" }}>Fecha</th>
                 <th style={{ width: "120px" }}>Estatus</th>
-                <th style={{ width: "100px" }}>Prioridad</th>
+                <th style={{ width: "130px" }}>Prioridad</th>
                 <th style={{ width: "100px", textAlign: "center" }}>
                   Acciones
                 </th>
@@ -479,7 +481,7 @@ function RequestTable() {
                       variant=""
                       style={{
                         color: "white",
-                        width: "80px",
+                        width: "120px",
                         backgroundColor:
                           request.prioridad === 3
                             ? "#C5126D" // If "Alta", set background to #C5126D
@@ -492,7 +494,7 @@ function RequestTable() {
                             : "", // Default (empty) if not "Alta" or "Media"
                       }}
                     >
-                  <td>{prioridad[request.prioridad] || "Unknown"}</td>
+                  <td>{prioridad[request.prioridad] || "Sin prioridad"}</td>
                   </Button>
                   </td>
                   <td style={{ textAlign: "center", verticalAlign: "middle" }}>
@@ -579,7 +581,7 @@ function RequestTable() {
                 } // Disable if prioridad is 1, 2, or 3
                 defaultValue={showRequest.prioridad}
               >
-                <option value="0">Prioridad</option>
+                <option value="0">Sin Prioridad</option>
                 <option value="1">Baja</option>
                 <option value="2">Media</option>
                 <option value="3">Alta</option>
@@ -635,4 +637,4 @@ function RequestTable() {
   );
 }
 
-export default RequestTable;
+export default RequestTableAdministrador;
