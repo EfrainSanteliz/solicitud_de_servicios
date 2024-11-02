@@ -37,7 +37,7 @@ function App() {
             />
             <Route
               path="/WelcomeSuperAdministrador"
-              element={<ProtectedRoute><WelcomeSuperAdministrador /></ProtectedRoute>}
+              element={<WelcomeSuperAdministrador />}
             />
 
             <Route path="/" element={<Login />} />

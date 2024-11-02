@@ -78,16 +78,14 @@ function RequestTableAdministrador() {
     }
   };
 
+  const [firmaEmpleado,setFirmaEmpleado] = useState('');
+
   const handleShow = async (
     requestID,
-    nomEmpNombre,
-    nomEmpPaterno,
-    nomEmpMaterno
+    firmaEmpleado,
   ) => {
     setShow(true);
-    setNomEmpNombre(nomEmpNombre);
-    setNomEmpPaterno(nomEmpPaterno);
-    setNomEmpMaterno(nomEmpMaterno);
+    setFirmaEmpleado(firmaEmpleado);
     SETREQUESTID(requestID);
 
     showRequest2(requestID);
@@ -130,13 +128,25 @@ function RequestTableAdministrador() {
             headers: {
               "content-type": "application/json",
             },
+
           }
+          
+          
         );
+        UpdateTableRequest();
+
+
+        
         //console.log("update Request Sucesfully", response);
+
+        const email = showRequest?.nomEmpleados?.usuario?.email;
+        if (!email) {
+            throw new Error("Email is not available for the user.");
+        }
 
         const response2 = await axios.post(
           `https://localhost:7145/api/email/FirmaAdministradorEmail/${encodeURIComponent(
-            showRequest.usuarios.email
+            email
           )}/`,
           {},
           {
@@ -233,7 +243,7 @@ function RequestTableAdministrador() {
     try {
       const response = await axios.post(
         `https://localhost:7145/api/email/EmailComentario/${encodeURIComponent(
-          showRequest.usuarios.email
+          showRequest.nomEmpleados.usuario.email
         )}/`,
         {},
         {
@@ -260,10 +270,38 @@ function RequestTableAdministrador() {
 
         const filteredRequest = response.data.filter(
           (request) =>
-            request.usuarios.nomEmpleados.direccionesICEES.descripcion ===
+            request.nomEmpleados.direccionesICEES.descripcion ===
             AreaAdministrativa
         );
-        setRequests(filteredRequest);
+        const data = (response.data);
+
+        const statusid = {
+          1: "Activo",
+          2: "Inactivo",
+          3: "Revertido",
+          4: "Finalizado",
+          5: "cancelado",
+        };
+      
+        const prioridad = {
+          1: "Baja",
+          2: "Media",
+          3: "Alta",
+          0: "Sin prioridad",
+        };
+      
+
+        const mappedItems = data.map(item => ({
+          id: item.id,
+          name: item.firmaEmpleado,
+          servicioSolicitado: item.servicio_Solicitado.descripcionServicio_Solicitado,
+          descripcion: item.descripcion,
+          fechaSolicitada: item.fechaSolicitada,
+          status: statusid[item.status] || "Sin Estatus",// Handle unmapped values
+          prioridad: prioridad[item.prioridad] || "Sin Prioridad",
+        }));
+
+        setRequests(mappedItems);        
         setFilteredData(filteredRequest);
 
 
@@ -313,20 +351,15 @@ function RequestTableAdministrador() {
           SelectedStatus === "" || item.status === SelectedStatus;
         const priorityMatch =
           SelectPrioridad === "" || item.prioridad === SelectPrioridad;
-        const serviceMatch = selectedService === "" || item.servicio_Solicitado.descripcionServicio_Solicitado === selectedService;
+        const serviceMatch = selectedService === "" || item.servicioSolicitado === selectedService;
 
       
         const searchTermMatch =
-          item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.servicioSolicitado
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.prioridad.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.usuarios.nomEmpleados.direccionesICEES.descripcion
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.servicioSolicitado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.prioridad.toLowerCase().includes(searchTerm.toLowerCase());
 
         // Return true only if all conditions match
         return dateMatch && statusMatch && priorityMatch && searchTermMatch && serviceMatch;
@@ -354,7 +387,7 @@ function RequestTableAdministrador() {
     }));
   };
 
-  const statusid = {
+ /* const statusid = {
     1: "Activo",
     2: "Inactivo",
     3: "Revertido",
@@ -367,7 +400,7 @@ function RequestTableAdministrador() {
     2: "Media",
     3: "Alta",
  
-  };
+  };*/
 
   return (
     <div className="container mt-4">
@@ -430,8 +463,8 @@ function RequestTableAdministrador() {
             <tbody>
               {filteredData.map((request) => (
                 <tr key={request.id}>
-                  <td>{request.firmaEmpleado}</td>
-                  <td>{request.servicio_Solicitado.descripcionServicio_Solicitado}</td>
+                  <td>{request.name}</td>
+                  <td>{request.servicioSolicitado}</td>
                   <td
                     style={{
                       width: "250px",
@@ -454,26 +487,30 @@ function RequestTableAdministrador() {
                   </td>
                   <td>
                     {" "}
+
+     
                     <Button
                         variant=""
                         style={{
                           color: "white",
                           width: "100px",
                           backgroundColor:
-                            request.status === 1
-                              ? "#3794DC"
-                              : request.status === 5
-                              ? "#E49B62"
-                              : request.status === 2
+                            request.status === "Activo"
+                              ? "#217ABF"
+                              : request.status === "Inactivo"
+                              ? "#DC7F37"
+                              : request.status === "Revertido"
                               ? "#999999"
-                              : request.status === 4
-                              ? "#2F9B8C"
-                               : request.status === 3
+                              : request.status === "Finalizado"
+                              ? "#237469"
+                               : request.status === "cancelado"
                               ? "#DC7F37"
                               : "",
                         }}
                       >
-                  <td>{statusid[request.status] || "Unknown"}</td>
+
+
+                  {request.status}
                   </Button>
                   </td>
                   <td>
@@ -483,18 +520,18 @@ function RequestTableAdministrador() {
                         color: "white",
                         width: "120px",
                         backgroundColor:
-                          request.prioridad === 3
+                          request.prioridad === "Alta"
                             ? "#C5126D" // If "Alta", set background to #C5126D
-                            : request.prioridad === 2
-                            ? "#E49B62"
-                            : request.prioridad === 1
-                            ? "#3794DC"
-                            : request.prioridad === 0
+                            : request.prioridad === "Media"
+                            ? "#DC7F37"
+                            : request.prioridad === "Baja"
+                            ? "#217ABF"
+                            : request.prioridad === "Sin prioridad"
                             ? "#999999" // If "Media", set background to #808080
                             : "", // Default (empty) if not "Alta" or "Media"
                       }}
                     >
-                  <td>{prioridad[request.prioridad] || "Sin prioridad"}</td>
+                  {request.prioridad}
                   </Button>
                   </td>
                   <td style={{ textAlign: "center", verticalAlign: "middle" }}>
@@ -503,9 +540,7 @@ function RequestTableAdministrador() {
                       onClick={() =>
                         handleShow(
                           request.id,
-                          request.usuarios.nomEmpleados.nomEmpNombre,
-                          request.usuarios.nomEmpleados.nomEmpPaterno,
-                          request.usuarios.nomEmpleados.nomEmpMaterno
+                          request.name
                         )
                       }
                       style={{
@@ -530,7 +565,7 @@ function RequestTableAdministrador() {
           <Modal.Header closeButton>
             <Modal.Title>
               Solicitud del usuario:{" "}
-              {nomEmpNombre + " " + nomEmpPaterno + " " + nomEmpMaterno}
+              {firmaEmpleado}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -601,7 +636,7 @@ function RequestTableAdministrador() {
         <Modal.Header closeButton>
           <Modal.Title>
             Agregar comentarios a la solicitud de :{" "}
-            {nomEmpNombre + " " + nomEmpPaterno + " " + nomEmpMaterno}
+            {firmaEmpleado}
           </Modal.Title>
         </Modal.Header>
 
@@ -610,7 +645,7 @@ function RequestTableAdministrador() {
 
           <br />
           <br />
-          <Form onSubmit={handleSubmitComentarios}>
+          
             <Form.Label>AGREGA LOS COMENTARIOS AQUI</Form.Label>
             <Form.Control
               as="textarea"
@@ -620,7 +655,7 @@ function RequestTableAdministrador() {
               onChange={handleChange}
               required
             />
-          </Form>
+          
 
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose2}>

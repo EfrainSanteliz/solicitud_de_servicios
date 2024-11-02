@@ -82,16 +82,14 @@ function RequestTable() {
     }
   };
 
+  const [firmaEmpleado, setFirmaEmpleado] = useState('');
   const handleShow = async (
     requestID,
-    nomEmpNombre,
-    nomEmpPaterno,
-    nomEmpMaterno
+    firmaEmpleado,
+
   ) => {
     setShow(true);
-    setNomEmpNombre(nomEmpNombre);
-    setNomEmpPaterno(nomEmpPaterno);
-    setNomEmpMaterno(nomEmpMaterno);
+    setFirmaEmpleado(firmaEmpleado);
     SETREQUESTID(requestID);
 
     showRequest2(requestID);
@@ -184,7 +182,7 @@ function RequestTable() {
     try {
       const response = await axios.post(
         `https://localhost:7145/api/email/send-test-emailSub/${encodeURIComponent(
-          showRequest.usuarios.email
+          showRequest.nomEmpleados.usuario.email
         )}`,
         {}, // Empty body
         {
@@ -214,7 +212,42 @@ function RequestTable() {
         console.log("the request get sucessfully", response);
         setLoading(false);
 
-        setRequests(response.data); // SuperAdmin sees all requests
+        const data = (response.data);
+
+        const statusid = {
+          1: "Activo",
+          2: "Inactivo",
+          3: "Revertido",
+          4: "Finalizado",
+          5: "cancelado",
+        };
+      
+        const prioridad = {
+          1: "Baja",
+          2: "Media",
+          3: "Alta",
+          0: "Sin prioridad",
+        };
+      
+        const ultimoStatus = {
+          3: "SubAdministrador",
+          4: "SuperAdministrador",
+        };
+
+        const mappedItems = data.map(item => ({
+          id: item.id,
+          name: item.firmaEmpleado,
+          servicioSolicitado: item.servicio_Solicitado.descripcionServicio_Solicitado,
+          descripcion: item.descripcion,
+          fechaSolicitada: item.fechaSolicitada,
+          revisadoSub: item.revisadoSub,
+          status: statusid[item.status] || "Sin Estatus",// Handle unmapped values
+          prioridad: prioridad[item.prioridad] || "Sin Prioridad",
+          departamento: item.nomEmpleados.direccionesICEES.descripcion,
+          ultimoStatus: ultimoStatus[item.ultimoStatus] || "",
+        }));
+
+        setRequests(mappedItems);
         setFilteredData(response.data);
 
 
@@ -263,25 +296,22 @@ function RequestTable() {
         // Other filters (departamento, status, prioridad, search term)
         const departmentMatch =
           selectedDepartamento === "" ||
-          item.usuarios.nomEmpleados.direccionesICEES.descripcion ===
+          item.departamento ===
             selectedDepartamento;
-            const serviceMatch = selectedService === "" || item.servicio_Solicitado.descripcionServicio_Solicitado === selectedService;
+            const serviceMatch = selectedService === "" || item.servicioSolicitado=== selectedService;
 
         const statusMatch =
           SelectedStatus === "" || item.status === SelectedStatus;
         const priorityMatch =
           SelectPrioridad === "" || item.prioridad === SelectPrioridad;
         const searchTermMatch =
-          item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.servicioSolicitado
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.prioridad.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.usuarios.nomEmpleados.direccionesICEES.descripcion
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.servicioSolicitado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.prioridad.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.departamento.toLowerCase().includes(searchTerm.toLowerCase())||
+        item.ultimoStatus.toLowerCase().includes(searchTerm.toLowerCase());
 
         // Return true only if all conditions match
         return (
@@ -316,30 +346,10 @@ function RequestTable() {
     }));
   };
 
-  const statusid = {
-    1: "Activo",
-    2: "Inactivo",
-    3: "Revertido",
-    4: "Finalizado",
-    5: "cancelado",
-  };
-
-  const prioridad = {
-    1: "Baja",
-    2: "Media",
-    3: "Alta",
  
-  };
-
-  
-  const ultimoStatus = {
-    3: "SubAdministrador",
-    4: "SuperAdministrador",
-  };
-
 
   return (
-    <div className="container mt-4">
+    <div >
       {/*<UpdateForm></UpdateForm>*/}
       <br></br>
       <SearchBar
@@ -377,7 +387,7 @@ function RequestTable() {
           >
             <thead>
               <tr>
-                <th style={{ width: "30px" }}>id</th>
+                <th style={{ width: "50px" }}>id</th>
                 <th style={{ width: "150px" }}>Nombre del empleado</th>
                 <th style={{ width: "200px" }}>Servicio</th>
                 <th
@@ -395,7 +405,7 @@ function RequestTable() {
                 <th style={{ width: "120px" }}>Estatus</th>
                 <th style={{ width: "200px" }}>Ultimo Estatus</th>
 
-                <th style={{ width: "100px" }}>Prioridad</th>
+                <th style={{ width: "160px" }}>Prioridad</th>
                 <th style={{ width: "150px" }}>Departamento</th>
                 <th style={{ width: "100px", textAlign: "center" }}>
                   Acciones
@@ -409,11 +419,10 @@ function RequestTable() {
                   //request.firmaJefeDepartamento !== "0" ? (
                   <tr key={request.id}>
                     <td>{request.id}</td>
-                    <td style={{ width: "150px" }}>{request.firmaEmpleado}</td>
+                    <td style={{ width: "150px" }}>{request.name}</td>
                     <td>
                       {
-                        request.servicio_Solicitado
-                          .descripcionServicio_Solicitado
+                        request.servicioSolicitado
                       }
                     </td>
                     <td
@@ -440,29 +449,33 @@ function RequestTable() {
                     <td>
                       {request.revisadoSub ? (<Button variant="" style={{backgroundColor: "#217ABF",color:"white"}}> Si </Button>)  : ( <div></div>/*<Button variant="" style={{backgroundColor: "#DC7F37", color: "white"} }> No </Button>*/)}
                     </td>
+                    
                     <td>
-                    <Button
+
+                      
+                    <td>
+                      <Button
                         variant=""
                         style={{
                           color: "white",
                           width: "100px",
                           backgroundColor:
-                            request.status === 1
-                              ? "#3794DC"
-                              : request.status === 5
-                              ? "#E49B62"
-                              : request.status === 2
+                            request.status === "Activo"
+                              ? "#217ABF"
+                              : request.status === "Cancelado"
+                              ? "#DC7F37"
+                              : request.status === "Inactivo"
                               ? "#999999"
-                              : request.status === 4
-                              ? "#2F9B8C"
-                               : request.status === 3
+                              : request.status === "Finalizado"
+                              ? "#237469"
+                              : request.status === "Revertido"
                               ? "#DC7F37"
                               : "",
                         }}
                       >
-                        
-                        {statusid[request.status] ||  "Sin asignar"}
-                        </Button>
+                        {request.status}
+                      </Button>
+                    </td>
                     </td>
 
                     <td>
@@ -473,43 +486,44 @@ function RequestTable() {
                             color: "white",
                             width: "180px",
                             backgroundColor:
-                              request.ultimoStatus === 3
+                              request.ultimoStatus === "SubAdministrador"
                                 ? "#3794DC"
-                                : request.ultimoStatus === 4
+                                : request.ultimoStatus === "SuperAdministrador"
                                 ? "#2F9B8C"
                                 : "",
                           }}
                         >
-                          {ultimoStatus[request.ultimoStatus] || ""}
+                          {request.ultimoStatus}
                         </Button>
                       )}
                     </td>
+
+         
                     <td style={{ width: "100px" }}>
                       <Button
                         variant=""
                         style={{
                           color: "white",
-                          width: "80px",
+                          width: "120px",
                           backgroundColor:
-                            request.prioridad === 3
+                            request.prioridad === "Alta"
                               ? "#C5126D" // If "Alta", set background to #C5126D
-                              : request.prioridad === 2
-                              ? "#E49B62"
-                              : request.prioridad === 1
-                              ? "#3794DC"
-                              : request.prioridad === 0
+                              : request.prioridad === "Media"
+                              ? "#DC7F37"
+                              : request.prioridad === "Baja"
+                              ? "#217ABF"
+                              : request.prioridad === "Sin prioridad"
                               ? "#999999" // If "Media", set background to #808080
                               : "", // Default (empty) if not "Alta" or "Media"
                         }}
                       >
-                  {prioridad[request.prioridad] || "Sin Asignar"}
-                  </Button>
+                        {request.prioridad}
+                      </Button>
                     </td>
 
                     <td>
                       {
-                        request.usuarios.nomEmpleados.direccionesICEES
-                          .descripcion
+                        request.departamento
                       }
                     </td>
                     <td
@@ -520,9 +534,7 @@ function RequestTable() {
                         onClick={() =>
                           handleShow(
                             request.id,
-                            request.usuarios.nomEmpleados.nomEmpNombre,
-                            request.usuarios.nomEmpleados.nomEmpPaterno,
-                            request.usuarios.nomEmpleados.nomEmpMaterno
+                            request.name
                           )
                         }
                         style={{
@@ -548,7 +560,7 @@ function RequestTable() {
           <Modal.Header closeButton>
             <Modal.Title>
               Solicitud del usuario:{" "}
-              {nomEmpNombre + " " + nomEmpPaterno + " " + nomEmpMaterno}
+              {firmaEmpleado}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -605,7 +617,7 @@ function RequestTable() {
         <Modal.Header closeButton>
           <Modal.Title>
             Agregar comentarios a la solicitud de :{" "}
-            {nomEmpNombre + " " + nomEmpPaterno + " " + nomEmpMaterno}
+            {firmaEmpleado}
           </Modal.Title>
         </Modal.Header>
 

@@ -45,7 +45,7 @@ function FormTable({ options2, list, loagding }) {
   if (error) return <p>{error}</p>;
   return (
     <Form>
-      <div id="NuevaSolicitud">
+      <div id="NuevaSolicitud" style={{fontSize:"22PX"}}>
         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
           <Form.Label>
             SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS

@@ -58,9 +58,8 @@ function RequestTableSuperAdministrador() {
     setShowHistoryModal(false);
   };
 
- 
   const showRequest2 = async (requestID) => {
-    console.log("holadddddfsdfsdfsdfgdsf")
+    console.log("holadddddfsdfsdfsdfgdsf");
     try {
       const response = await axios.get(
         `https://localhost:7145/api/Request/${requestID}`
@@ -74,17 +73,13 @@ function RequestTableSuperAdministrador() {
       console.error("Error updating the Request:", error);
     }
   };
-
+   const [firmaEmpleado,setFirmaEmpleado] = useState('');
   const handleShow = async (
     requestID,
-    nomEmpNombre,
-    nomEmpPaterno,
-    nomEmpMaterno
+    firmaEmpleado
   ) => {
     setShow(true);
-    setNomEmpNombre(nomEmpNombre);
-    setNomEmpPaterno(nomEmpPaterno);
-    setNomEmpMaterno(nomEmpMaterno);
+    setFirmaEmpleado(firmaEmpleado)
     SETREQUESTID(requestID);
 
     showRequest2(requestID);
@@ -137,14 +132,15 @@ function RequestTableSuperAdministrador() {
         }
       ); //
 
-      if (!showRequest.usuarios.email) {
+      const email = showRequest?.nomEmpleados?.usuario?.email;
+      if (!email) {
         throw new Error("Email is not available for the user.");
       }
-      console.log("correo", showRequest.usuarios.email);
+      console.log("correo", email);
 
       const response2 = await axios.post(
         `https://localhost:7145/api/email/FirmaSuperAdministradorEmail/${encodeURIComponent(
-          showRequest.usuarios.email
+          email
         )}`,
         {},
         {
@@ -242,11 +238,11 @@ function RequestTableSuperAdministrador() {
     }
 
     // Send email notification after submitting the comment
-    
+
     try {
       const response = await axios.post(
         `https://localhost:7145/api/email/EmailComentario/${encodeURIComponent(
-          showRequest.usuarios.email
+          showRequest.nomEmpleados.usuario.email
         )}/`,
         {},
         {
@@ -271,7 +267,42 @@ function RequestTableSuperAdministrador() {
         console.log("the request get sucessfully", response);
         setLoading(false);
 
-        setRequests(response.data); // SuperAdmin sees all requests
+        const data = (response.data);
+
+        const statusid = {
+          1: "Activo",
+          2: "Inactivo",
+          3: "Revertido",
+          4: "Finalizado",
+          5: "cancelado",
+        };
+      
+        const prioridad = {
+          1: "Baja",
+          2: "Media",
+          3: "Alta",
+          0: "Sin prioridad",
+        };
+      
+        const ultimoStatus = {
+          3: "SubAdministrador",
+          4: "SuperAdministrador",
+        };
+
+        const mappedItems = data.map(item => ({
+          id: item.id,
+          name: item.firmaEmpleado,
+          servicioSolicitado: item.servicio_Solicitado.descripcionServicio_Solicitado,
+          descripcion: item.descripcion,
+          fechaSolicitada: item.fechaSolicitada,
+          revisadoSub: item.revisadoSub,
+          status: statusid[item.status] || "Sin Estatus",// Handle unmapped values
+          prioridad: prioridad[item.prioridad] || "Sin Prioridad",
+          departamento: item.nomEmpleados.direccionesICEES.descripcion,
+          ultimoStatus: ultimoStatus[item.ultimoStatus] || "",
+        }));
+
+        setRequests(mappedItems);
 
         const options = response.data.map((item) => ({
           value: item.servicio_Solicitado,
@@ -320,27 +351,25 @@ function RequestTableSuperAdministrador() {
         // Other filters (departamento, status, prioridad, search term)
         const departmentMatch =
           selectedDepartamento === "" ||
-          item.usuarios.nomEmpleados.direccionesICEES.descripcion ===
+          item.departamento ===
             selectedDepartamento;
         const serviceMatch =
           selectedService === "" ||
-          item.servicio_Solicitado.descripcionServicio_Solicitado ===
+          item.servicioSolicitado ===
             selectedService;
         const statusMatch =
           SelectedStatus === "" || item.status === SelectedStatus;
         const priorityMatch =
           SelectPrioridad === "" || item.prioridad === SelectPrioridad;
         const searchTermMatch =
-          item.firmaEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.servicioSolicitado
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
+          item.servicioSolicitado.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.prioridad.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.usuarios.nomEmpleados.direccionesICEES.descripcion
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
+          item.departamento.toLowerCase().includes(searchTerm.toLowerCase())||
+          item.ultimoStatus.toLowerCase().includes(searchTerm.toLowerCase());
+
 
         // Return true only if all conditions match
         return (
@@ -403,7 +432,7 @@ function RequestTableSuperAdministrador() {
     }
   };
 
-  const statusid = {
+ /* const statusid = {
     1: "Activo",
     2: "Inactivo",
     3: "Revertido",
@@ -420,11 +449,12 @@ function RequestTableSuperAdministrador() {
   const ultimoStatus = {
     3: "SubAdministrador",
     4: "SuperAdministrador",
-  };
+  };*/
 
   return (
-    <div className="container mt-4">
-                  <UpdateForm></UpdateForm>
+    
+    <div >
+      <UpdateForm></UpdateForm>
 
       {loading && (
         <Spinner animation="border" role="status">
@@ -463,7 +493,7 @@ function RequestTableSuperAdministrador() {
             >
               <thead>
                 <tr>
-                  <th style={{ width: "30px" }}>id</th>
+                  <th style={{ width: "50px" }}>id</th>
                   <th style={{ width: "150px" }}>Nombre del empleado</th>
                   <th style={{ width: "150px" }}>Servicio</th>
 
@@ -482,7 +512,7 @@ function RequestTableSuperAdministrador() {
                   <th style={{ width: "120px" }}>Estatus</th>
                   <th style={{ width: "200px" }}>Ultimo Estatus</th>
 
-                  <th style={{ width: "100px" }}>Prioridad</th>
+                  <th style={{ width: "160px" }}>Prioridad</th>
                   <th style={{ width: "150px" }}>Departamento</th>
                   <th style={{ width: "100px", textAlign: "center" }}>
                     Acciones
@@ -491,57 +521,54 @@ function RequestTableSuperAdministrador() {
               </thead>
 
               <tbody>
-                {filteredData.map(
-                  (request) => (
-                    //request.firmaJefeDepartamento !== "0" ? (
-                    <tr key={request.id}>
-                      <td>{request.id}</td>
-                      <td style={{ width: "150px" }}>
-                        {request.firmaEmpleado}
-                      </td>
-                      <td>
-                        {
-                          request.servicio_Solicitado
-                            .descripcionServicio_Solicitado
-                        }
-                      </td>
+                {filteredData.map((request) => (
+                  //request.firmaJefeDepartamento !== "0" ? (
+                  <tr key={request.id}>
+                    <td>{request.id}</td>
+                    <td style={{ width: "150px" }}>{request.name}</td>
+                    <td>
+                      {
+                        request.servicioSolicitado
+                          
+                      }
+                    </td>
 
-                      <td
-                        style={{
-                          width: "300px",
-                          whiteSpace: "nowrap", // Evita que el texto haga wrap
-                          overflow: "hidden", // Oculta el texto que no cabe
-                          textOverflow: "ellipsis", // Añade puntos suspensivos
-                          fontWeight: "normal",
-                        }}
-                      >
-                        {request.descripcion}
-                      </td>
-                      <td>
-                        {new Date(request.fechaSolicitada).toLocaleDateString(
-                          "es-ES",
-                          {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          }
-                        )}
-                      </td>
-                      <td>
-                        {request.revisadoSub ? (
-                          <Button
-                            variant=""
-                            style={{
-                              backgroundColor: "#217ABF",
-                              color: "white",
-                            }}
-                          >
-                            {" "}
-                            Si{" "}
-                          </Button>
-                        ) : (
-                          <div></div>
-                         /* <Button
+                    <td
+                      style={{
+                        width: "300px",
+                        whiteSpace: "nowrap", // Evita que el texto haga wrap
+                        overflow: "hidden", // Oculta el texto que no cabe
+                        textOverflow: "ellipsis", // Añade puntos suspensivos
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {request.descripcion}
+                    </td>
+                    <td>
+                      {new Date(request.fechaSolicitada).toLocaleDateString(
+                        "es-ES",
+                        {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        }
+                      )}
+                    </td>
+                    <td>
+                      {request.revisadoSub ? (
+                        <Button
+                          variant=""
+                          style={{
+                            backgroundColor: "#217ABF",
+                            color: "white",
+                          }}
+                        >
+                          {" "}
+                          Si{" "}
+                        </Button>
+                      ) : (
+                        <div></div>
+                        /* <Button
                             variant=""
                             style={{
                               backgroundColor: "#DC7F37",
@@ -551,105 +578,104 @@ function RequestTableSuperAdministrador() {
                             {" "}
                             No{" "}
                           </Button>*/
-                        )}
-                      </td>
+                      )}
+                    </td>
 
-                      <td>
+         
+
+                    <td>
+                      <Button
+                        variant=""
+                        style={{
+                          color: "white",
+                          width: "100px",
+                          backgroundColor:
+                            request.status === "Activo"
+                              ? "#217ABF"
+                              : request.status === "Cancelado"
+                              ? "#DC7F37"
+                              : request.status === "Inactivo"
+                              ? "#999999"
+                              : request.status === "Finalizado"
+                              ? "#237469"
+                              : request.status === "Revertido"
+                              ? "#DC7F37"
+                              : "",
+                        }}
+                      >
+                        {request.status}
+                      </Button>
+                    </td>
+
+
+         
+                    <td>
+                      {request.ultimoStatus && (
                         <Button
                           variant=""
                           style={{
                             color: "white",
-                            width: "100px",
+                            width: "180px",
                             backgroundColor:
-                              request.status === 1
+                              request.ultimoStatus === "SubAdministrador"
                                 ? "#3794DC"
-                                : request.status === 5
-                                ? "#E49B62"
-                                : request.status === 2
-                                ? "#999999"
-                                : request.status === 4
+                                : request.ultimoStatus === "SuperAdministrador"
                                 ? "#2F9B8C"
-                                : request.status === 3
-                                ? "#DC7F37"
                                 : "",
                           }}
                         >
-                          {statusid[request.status] || "Sin Asignar"}
+                          {request.ultimoStatus}
                         </Button>
-                      </td>
-                      <td>
-                        {request.ultimoStatus && (
-                          <Button
-                            variant=""
-                            style={{
-                              color: "white",
-                              width: "180px",
-                              backgroundColor:
-                                request.ultimoStatus === 3
-                                  ? "#3794DC"
-                                  : request.ultimoStatus === 4
-                                  ? "#2F9B8C"
-                                  : "",
-                            }}
-                          >
-                            {ultimoStatus[request.ultimoStatus] || ""}
-                          </Button>
-                        )}
-                      </td>
-                      <td style={{ width: "100px" }}>
-                        <Button
-                          variant=""
-                          style={{
-                            color: "white",
-                            width: "80px",
-                            backgroundColor:
-                              request.prioridad === 3
-                                ? "#C5126D" // If "Alta", set background to #C5126D
-                                : request.prioridad === 2
-                                ? "#E49B62"
-                                : request.prioridad === 1
-                                ? "#3794DC"
-                                : request.prioridad === 0
-                                ? "#999999"
-                                : // If "Media", set background to #808080
-                                  "", // Default (empty) if not "Alta" or "Media"
-                          }}
-                        >
-                          {prioridad[request.prioridad] || "Sin Asignar"}
-                        </Button>
-                      </td>
+                      )}
+                    </td>
 
-                      <td>
-                        {
-                          request.usuarios.nomEmpleados.direccionesICEES
-                            .descripcion
-                        }
-                      </td>
-                      <td
-                        style={{ textAlign: "center", verticalAlign: "middle" }}
+         
+                    <td style={{ width: "100px" }}>
+                      <Button
+                        variant=""
+                        style={{
+                          color: "white",
+                          width: "120px",
+                          backgroundColor:
+                            request.prioridad === "Alta"
+                              ? "#C5126D" // If "Alta", set background to #C5126D
+                              : request.prioridad === "Media"
+                              ? "#DC7F37"
+                              : request.prioridad === "Baja"
+                              ? "#217ABF"
+                              : request.prioridad === "Sin prioridad"
+                              ? "#999999" // If "Media", set background to #808080
+                              : "", // Default (empty) if not "Alta" or "Media"
+                        }}
                       >
-                        <Button
-                          variant=""
-                          onClick={() =>
-                            handleShow(
-                              request.id,
-                              request.usuarios.nomEmpleados.nomEmpNombre,
-                              request.usuarios.nomEmpleados.nomEmpPaterno,
-                              request.usuarios.nomEmpleados.nomEmpMaterno
-                            )
-                          }
-                          style={{
-                            backgroundColor: "#C5126D",
-                          }}
-                        >
-                          <FontAwesomeIcon
-                            icon={faEye}
-                            style={{ color: "white" }}
-                          />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                        {request.prioridad}
+                      </Button>
+                    </td>
+
+                    <td>{request.departamento}</td>
+                    <td
+                      style={{ textAlign: "center", verticalAlign: "middle" }}
+                    >
+                      <Button
+                        variant=""
+                        onClick={() =>
+                          handleShow(
+                            request.id,
+                            request.firmaEmpleado,
+                          )
+                        }
+                        style={{
+                          backgroundColor: "#C5126D",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          style={{ color: "white" }}
+                        />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </Table>
           </div>
@@ -688,7 +714,9 @@ function RequestTableSuperAdministrador() {
 
               <Button
                 variant=""
-                onClick={(e) => {handleAutorizar(e);}}
+                onClick={(e) => {
+                  handleAutorizar(e);
+                }}
                 style={{ backgroundColor: "#237469", color: "white" }}
               >
                 {" "}
@@ -736,7 +764,7 @@ function RequestTableSuperAdministrador() {
         <Modal.Header closeButton>
           <Modal.Title>
             Agregar comentarios a la solicitud de :{" "}
-            {nomEmpNombre + " " + nomEmpPaterno + " " + nomEmpMaterno}
+            {firmaEmpleado}
           </Modal.Title>
         </Modal.Header>
 

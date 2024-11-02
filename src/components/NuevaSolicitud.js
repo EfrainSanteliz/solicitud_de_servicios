@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import "./styles.css";
 import { FaCamera } from "react-icons/fa"; // Import camera icon
 import { DeviceContext } from "./DeviceContext";
+import "./Styleradio.css";
 
 function TextControlsExample() {
   const deviceType = useContext(DeviceContext);
@@ -224,7 +225,7 @@ function TextControlsExample() {
     data.append("firmaEmpleado", FirmaEmpleado);
     data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
     data.append("firmaJefe", FirmaJefe);
-    data.append("usuarioId", usuarioId);
+    data.append("empleadoID", usuarioId);
     data.append("prioridad", Prioridad);
     data.append("servicio_solicidato_Id", servicioSolicitado);
     data.append("revisadoSub", "");
@@ -327,7 +328,7 @@ function TextControlsExample() {
   return (
     <Form onSubmit={handleSubmit}>
       {message && <Alert variant="info">{message}</Alert>}
-      <div id="NuevaSolicitud">
+      <div id="NuevaSolicitud" style={{fontSize:"24px"}}>
         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
           <Form.Label>
             SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS
@@ -336,6 +337,8 @@ function TextControlsExample() {
           <br />
           <br />
           <Form.Label>Servicio Solicitado </Form.Label> <br></br>
+          <div className="radio-group">
+
           {list.length > 0 ? (
             list.map(
               (item, index) =>
@@ -346,6 +349,7 @@ function TextControlsExample() {
                     label={item.descripcionServicio_Solicitado}
                     name="servicioSolicitado" // Ensure this matches the state key
                     type="radio"
+                    className="custom-radio" // Apply the custom class here
                     value={item.servicio_solicidato_Id}
                     id={`inline-radio-${index + 1}`}
                     onChange={(e) => {
@@ -359,6 +363,9 @@ function TextControlsExample() {
           ) : (
             <p></p>
           )}
+          </div>
+
+
           {/* <div className="mb-3">
             <Form.Check
               inline

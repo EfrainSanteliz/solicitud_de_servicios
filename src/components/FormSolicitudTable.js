@@ -5,11 +5,11 @@ import "./styles.css";
 import axios from "axios";
 function FormSolicitudTable({ showRequest }) {
   const fullyName =
-    showRequest.usuarios.nomEmpleados.nomEmpNombre +
+    showRequest.nomEmpleados.nomEmpNombre +
     " " +
-    showRequest.usuarios.nomEmpleados.nomEmpPaterno +
+    showRequest.nomEmpleados.nomEmpPaterno +
     " " +
-    showRequest.usuarios.nomEmpleados.nomEmpMaterno;
+    showRequest.nomEmpleados.nomEmpMaterno;
 
   const [imageURL, setImageURL] = useState([]);
 
@@ -137,7 +137,7 @@ function FormSolicitudTable({ showRequest }) {
               type="text"
               name="AreaAdministrativaRequirente"
               value={
-                showRequest.usuarios.nomEmpleados.direccionesICEES.descripcion
+                showRequest.nomEmpleados.direccionesICEES.descripcion
               }
               disabled
             />

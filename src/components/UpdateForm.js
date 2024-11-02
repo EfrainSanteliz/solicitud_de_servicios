@@ -352,7 +352,7 @@ function UpdateForm() {
   const handleDeleteServicio = async () => {};
 
   return (
-    <div>
+    <div  >
       {Loaging2 && Loaging3 ? (
         <Spinner animation="border" role="status">
           <span className="sr-only">Cargando..</span>
@@ -370,13 +370,13 @@ function UpdateForm() {
               size="xl" // Use "lg" for large or "xl" for extra-large
             >
               <Modal.Header closeButton>
-                <Modal.Title>Modificar Formulario</Modal.Title>
+                <Modal.Title style={{fontSize:"24px"}} >Modificar Formulario</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <br></br>
                 <Row>
                   <Col xs={12}>
-                    <div className="table-responsive">
+                    <div className="table-responsive" style={{fontSize:"22px"}}>
                       <Table striped bordered hover>
                         <thead>
                           <tr>
@@ -394,6 +394,7 @@ function UpdateForm() {
                             <tr key={row.servicio_solicidato_Id}>
                               <td>
                                 <Form.Control
+                                style={{fontSize:"19px"}}
                                   type="text"
                                   defaultValue={
                                     row.descripcionServicio_Solicitado
@@ -504,7 +505,7 @@ function UpdateForm() {
                 <br></br>
                 <Row>
                   <Col xs={12}>
-                    <div className="table-responsive">
+                    <div className="table-responsive" style={{fontSize:"22px"}}>
                       <Table striped bordered hover>
                         <thead>
                           <tr>
@@ -523,6 +524,8 @@ function UpdateForm() {
                               <td>
                                 <Form.Control
                                   type="text"
+                                  style={{fontSize:"19px"}}
+
                                   defaultValue={row.descripcion}
                                   onChange={(e) =>
                                     handleEdit(

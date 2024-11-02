@@ -56,6 +56,8 @@ function Login() {
 
   
       console.log("UserRole:", response.data.user.userRole);
+      console.log("id2:", response.data.user.nomEmpleados.empleadoID);
+
       
       setLoading(false);
 

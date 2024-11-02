@@ -1,0 +1,38 @@
+.radio-group {
+    display: flex; /* Use flexbox for horizontal alignment */
+    align-items: center; /* Center items vertically */
+  }
+  
+  .custom-radio {
+    display: flex; /* Keep the current display */
+    align-items: center; /* Align label with the radio button */
+    margin-right: 15px; /* Add space between radio buttons */
+  }
+  
+  .custom-radio input[type="radio"] {
+    appearance: none; /* Remove default appearance */
+    width: 20px; /* Set the width of the radio button */
+    height: 20px; /* Set the height of the radio button */
+    border: 2px solid #007bff; /* Change border color */
+    border-radius: 50%; /* Make it circular */
+    outline: none; /* Remove outline */
+    margin-right: 8px; /* Space between radio and label */
+    cursor: pointer; /* Change cursor to pointer */
+    position: relative; /* Position for the pseudo-element */
+  }
+  
+  .custom-radio input[type="radio"]:checked {
+    background-color: #007bff; /* Change background color when checked */
+  }
+  
+  .custom-radio input[type="radio"]:checked::after {
+    content: ''; /* Create a pseudo-element for the inner circle */
+    width: 10px; /* Set size for the inner circle */
+    height: 10px; /* Set size for the inner circle */
+    background-color: white; /* Inner circle color */
+    border-radius: 50%; /* Make it circular */
+    position: absolute; /* Position absolutely */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Center the circle */
+  }

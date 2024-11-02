@@ -9,7 +9,7 @@ function HistoryComments({ Historials }) {
         {Historials.length === 0 ? (
         <p>Aún no tienes comentarios </p>
       ) : (
-      <Form onSubmit={''}>
+      
         <Table border="1">
           <thead>
             <tr>
@@ -41,7 +41,7 @@ function HistoryComments({ Historials }) {
 
 
 
-      </Form>
+      
       )}
     </div>
   );

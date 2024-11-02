@@ -6,7 +6,7 @@ function WelcomeSubAdministrador() {
     const [requests, setRequests] = useState([]);
 
     return (
-      <div className="container mt-5">
+      <div id="" style={{padding:"2%"}}>
         <h4>Hola Sub Administrador Tus Solicitudes</h4>
         <RequestTableSubAdministrador/>
       </div>

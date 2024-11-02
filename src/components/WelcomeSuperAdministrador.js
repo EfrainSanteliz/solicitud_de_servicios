@@ -6,7 +6,8 @@ function WelcomeSuperAdministrador() {
     const [requests, setRequests] = useState([]);
 
     return (
-      <div className="container mt-5">
+      
+      <div id="" style={{marginRight:"10%",marginLeft:"10%"}}>
         <h4>Hola Super Administrador Tus Solicitudes</h4>
         <RequestTableSuperAdministrador/>
       </div>
