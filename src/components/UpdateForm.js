@@ -75,11 +75,10 @@ function UpdateForm() {
       habilitado: habilitado,
     };
 
-    console.log("habilitado:", habilitado);
 
     try {
       const response = await axios.put(
-        `https://localhost:7145/api/Solicitud_de_servicio/${id}`,
+        process.env.REACT_APP_API_URL+`Solicitud_de_servicio/${id}`,
         data,
         {
           headers: {
@@ -89,7 +88,6 @@ function UpdateForm() {
       );
       getSolicitudesDeServicios();
 
-      console.log("Response:", response.data);
     } catch (error) {
       console.error("Error updating habilitar:", error);
     }
@@ -100,11 +98,10 @@ function UpdateForm() {
       habilitadoServicio_Solicitado: habilitadoServicio_Solicitado,
     };
 
-    console.log("habilitado:", habilitadoServicio_Solicitado);
 
     try {
       const response = await axios.put(
-        `https://localhost:7145/api/servicioSolicitado/${id}`,
+        process.env.REACT_APP_API_URL+`servicioSolicitado/${id}`,
         data,
         {
           headers: {
@@ -114,7 +111,6 @@ function UpdateForm() {
       );
       getServicioSolicitado();
 
-      console.log("Response:", response.data);
     } catch (error) {
       console.error("Error updating habilitar:", error);
     }
@@ -168,13 +164,11 @@ function UpdateForm() {
       try {
         for (let row of modifiedData) {
           const response = await axios.put(
-            `https://localhost:7145/api/Solicitud_de_servicio/${row.solicitud_de_servicio_id}`,
+            process.env.REACT_APP_API_URL+`Solicitud_de_servicio/${row.solicitud_de_servicio_id}`,
             row
           );
-          console.log("Data Update Successfully", response.data);
         }
       } catch (error) {
-        console.log("Error updating data:", error);
       }
   
       // Add new row if there is data
@@ -186,7 +180,7 @@ function UpdateForm() {
   
         try {
           const response = await axios.post(
-            `https://localhost:7145/api/Solicitud_de_servicio/`,
+            process.env.REACT_APP_API_URL+`Solicitud_de_servicio/`,
             formattedNewRow
           );
           setData((prevData) => [...prevData, response.data]);
@@ -210,13 +204,11 @@ function UpdateForm() {
       try {
         for (let row of modifiedData2) {
           const response = await axios.put(
-            `https://localhost:7145/api/ServicioSolicitado/${row.servicio_solicidato_Id}`,
+            process.env.REACT_APP_API_URL+`ServicioSolicitado/${row.servicio_solicidato_Id}`,
             row
           );
-          console.log("Data Update Successfully2", response.data);
         }
       } catch (error) {
-        console.log("Error updating data:", error);
       }
   
       // Add new row if there is data
@@ -229,7 +221,7 @@ function UpdateForm() {
   
         try {
           const response = await axios.post(
-            `https://localhost:7145/api/ServicioSolicitado/`,
+            process.env.REACT_APP_API_URL+`ServicioSolicitado/`,
             formattedNewRow2
           );
           setData((prevData) => [...prevData, response.data]);
@@ -254,7 +246,7 @@ function UpdateForm() {
   const getSolicitudesDeServicios = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:7145/api/Solicitud_de_servicio/`
+        process.env.REACT_APP_API_URL+`Solicitud_de_servicio/`
       );
 
       setSolicitudesDeServicios(response.data);
@@ -280,12 +272,11 @@ function UpdateForm() {
   const getServicioSolicitado = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:7145/api/ServicioSolicitado/`
+        process.env.REACT_APP_API_URL+`ServicioSolicitado/`
       );
       setServicioSolicitado(response.data);
       setLoading3(false);
     } catch (err) {
-      console.log("erro to get SolicitudesOfServices");
     } finally {
       setLoading(false);
     }
@@ -294,13 +285,12 @@ function UpdateForm() {
   const handleDrop = async (id) => {
     try {
       const response = await axios.delete(
-        `https://localhost:7145/api/Solicitud_de_servicio/${id}`
+        process.env.REACT_APP_API_URL+`Solicitud_de_servicio/${id}`
       );
       getSolicitudesDeServicios();
     } catch (error) {
       // Extract the message from the response
       const serverMessage = error.response?.data;
-      console.log(" ", serverMessage);
       setErrorMessage(serverMessage); // Update error message state
       showMessageDontDrop(serverMessage); // Show SweetAlert
     }
@@ -308,13 +298,12 @@ function UpdateForm() {
   const handleDrop2 = async (id) => {
     try {
       const response = await axios.delete(
-        `https://localhost:7145/api/ServicioSolicitado/${id}`
+        process.env.REACT_APP_API_URL+`ServicioSolicitado/${id}`
       );
       getServicioSolicitado();
     } catch (error) {
       // Extract the message from the response
       const serverMessage = error.response?.data;
-      console.log(" ", serverMessage);
       setErrorMessage(serverMessage); // Update error message state
       showMessageDontDrop(serverMessage); // Show SweetAlert
     }

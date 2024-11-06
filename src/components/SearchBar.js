@@ -33,7 +33,7 @@ const SearchBar = ({
     const fechOptions = async () => {
       try {
         const response = await axios.get(
-          `https://localhost:7145/api/direccionesICESS`
+          process.env.REACT_APP_API_URL+`direccionesICESS`
         );
 
         const formattedOptions = response.data.map((item) => ({

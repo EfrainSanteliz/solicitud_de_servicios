@@ -8,7 +8,6 @@ import FormSolicitudTable from "./FormSolicitudTable";
 import "./styles.css";
 import HistoryComments from "./HistoryComments";
 import jsPDF from "jspdf";
-import DownloadPdf from "./DownloadPdf";
 import DownloadPdfAsp from "./DownloadPdfAsp";
 
 function MisSolicitudes() {
@@ -33,11 +32,10 @@ function MisSolicitudes() {
   const listRequest = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:7145/api/Request/byNomEmpleadoId/${userId}`
+        process.env.REACT_APP_API_URL+ `Request/byNomEmpleadoId/${userId}`
       );
       setRequests(response.data);
       setLoadingRequest(true);
-      console.log("id", response.data);
     } catch (error) {
       console.error("get request failed", error);
     }
@@ -50,24 +48,22 @@ function MisSolicitudes() {
 
   const handleShow1 = (id) => {
     axios
-      .get(`https://localhost:7145/api/Request/${id}`, {
+      .get(process.env.REACT_APP_API_URL+ `Request/${id}`, {
         withCredentials: true,
       })
       .then((response) => {
         setShowRequests(response.data);
-        console.log("Show Request get sucessfully1", response.data);
         setLoading(true);
       })
       .catch((error) => {
-        console.log("dont show request", error);
       });
   };
 
   const handleShow2 = (id) => {
     axios
-      .get(`https://localhost:7145/api/Request/${id}`) // Replace with your actual API endpoint
+      .get(process.env.REACT_APP_API_URL+ `historial/${id}`) // Replace with your actual API endpoint
       .then((response) => {
-        setHistorials(response.data.historials); // Update state with the historials array
+        setHistorials(response.data); // Update state with the historials array
       })
       .catch((error) => {
         console.error("Error fetching historials:", error);

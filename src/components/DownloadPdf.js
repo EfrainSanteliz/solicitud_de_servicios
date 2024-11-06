@@ -3,6 +3,7 @@ import jsPDF from "jspdf";
 
 
 function DownloadPdf({showRequest}) {
+  /*
   const handleDowloadPdf = async () => {
     try {
       console.log("requestId", showRequest.id);
@@ -65,12 +66,12 @@ function DownloadPdf({showRequest}) {
       
       doc.text(`Area Administrativa requirente: ${descripcion2}`, 20, 70);
       doc.text(`Solicitante: ${firmaEmpleado}`, 20, 80);
-      const descriptionLines = doc.splitTextToSize(descripcion,170); // 170 is the max line width
+      const descriptionLines = doc.splitTextToSize(descripcion,170); 
       doc.text('Descripcion:',20,90)
-      doc.text(descriptionLines, 20, 95); // Start at position 20, 90
-      // Check if there is an image file
+      doc.text(descriptionLines, 20, 95); 
+      
       if (file) {
-        const baseURL = "https://localhost:7145"; // Replace this with your actual server URL
+        const baseURL = "https://localhost:7145"; 
         const fullImageUrl = `${baseURL}${file}`;
 
         const img = new Image();
@@ -79,7 +80,7 @@ function DownloadPdf({showRequest}) {
         await new Promise((resolve, reject) => {
           img.onload = function () {
             // Add the image to the PDF
-            doc.addImage(img, "JPEG", 20, 130, 120, 120); // Adjust the dimensions and position
+            doc.addImage(img, "JPEG", 20, 130, 120, 120); 
             resolve();
           };
 
@@ -123,6 +124,9 @@ function DownloadPdf({showRequest}) {
       </Button>
     </div>
   );
+
+  */
 }
+
 
 export default DownloadPdf;

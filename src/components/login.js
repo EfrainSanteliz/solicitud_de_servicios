@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { setToken } from "./JwtHelper";
 import { Button } from "react-bootstrap";
 import { Form, Container, Row, Col, Alert } from "react-bootstrap";
+import jwt_decode from "jwt-decode";
 
 
 function Login() {
@@ -32,12 +33,10 @@ function Login() {
       setLoading(false);
       return;
     }
-    console.log("login",loginData);
 
     axios
-    .post("https://localhost:7145/api/User/login/", loginData)
+    .post(process.env.REACT_APP_API_URL+ "User/login/", loginData)
     .then((response) => {
-      console.log("Login successful:", response.data);
       alert("Login successful!");
   
       localStorage.setItem("userid", response.data.user.nomEmpleados.empleadoID);
@@ -48,33 +47,27 @@ function Login() {
 
       
 
+      setToken("jwtToken",response.data.token);
+      localStorage.setItem("jwtToken2",response.data.token);
 
-      setToken("token",response.data.token);
 
 
       localStorage.setItem("AreaAdministrativa", response.data.user.nomEmpleados.direccionesICEES.descripcion);
 
   
-      console.log("UserRole:", response.data.user.userRole);
-      console.log("id2:", response.data.user.nomEmpleados.empleadoID);
 
       
       setLoading(false);
 
-      console.log("Navigating to the correct page...");
   
       if (response.data.user.userRole === 1) {
-        console.log("Navigating to /Welcome");
         navigate("/Welcome");
       } else if (response.data.user.userRole === 2) {
-        console.log("Navigating to /WelcomeAdministrador");
         navigate("/WelcomeAdministrador");
       } else if (response.data.user.userRole === 3) {
-        console.log("Navigating to /WelcomeSubAdministrador");
         navigate("/WelcomeSubAdministrador");
       
       } else if (response.data.user.userRole === 4) {
-        console.log("Navigating to /WelcomeSuperAdministrador");
         navigate("/WelcomeSuperAdministrador");
       }
     })

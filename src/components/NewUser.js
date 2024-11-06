@@ -3,6 +3,7 @@ import axios from "axios";
 import {useNavigate} from "react-router-dom";
 
 function NewUser() {
+  /*
 // State variables for email and password
    const [email,setEmail] = useState("");
    const [password,setPassword] = useState("");
@@ -80,6 +81,7 @@ function NewUser() {
         </button>
       </div>
     );
+    */
 }
 
 export default NewUser;

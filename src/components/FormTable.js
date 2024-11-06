@@ -14,10 +14,9 @@ function FormTable({ options2, list, loagding }) {
 
   useEffect(() => {
     axios
-      .get(`https://localhost:7145/api/ConActivosFijos/`)
+      .get( process.env.REACT_APP_API_URL+`ConActivosFijos/`)
       .then((response) => {
         //
-        console.log("get successful", response.data);
 
         const formattedOptions = response.data.map((item) => ({
           value: item.activoFijoID,

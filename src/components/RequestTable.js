@@ -49,7 +49,6 @@ function RequestTable() {
     localStorage.getItem("nomEmpMaterno");
   const FirmaJefe = FirmaJefeDepartamento;
   const UserRole = localStorage.getItem("UserRole");
-  console.log("userRole", UserRole);
 
   const [show, setShow] = useState(false);
 
@@ -70,10 +69,9 @@ function RequestTable() {
   const showRequest2 = async (requestID) => {
     try {
       const response = await axios.get(
-        `https://localhost:7145/api/Request/${requestID}`
+        process.env.REACT_APP_API_URL+ `Request/${requestID}`
       );
 
-      console.log("The show request get successfully");
       setShowRequest(response.data);
       setHistorials(response.data.historials);
       setLoading2(true); // Assuming setLoading2 is used to indicate loading state
@@ -117,7 +115,6 @@ function RequestTable() {
     const { prioridad } = formData;
 
     try {
-      console.log("FirmaJefe",showRequest.firmaJefeDepartamento)
       if (showRequest.firmaJefeDepartamento === FirmaJefeDepartamento) {
         toast.error("Formulario ya firmado");
       } else if (UserRole === "Administrador") {
@@ -129,11 +126,9 @@ function RequestTable() {
           data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
           data.append("prioridad", prioridad);
 
-          console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
-          console.log("prioridad", prioridad);
-
+   
           const response = await axios.put(
-            `https://localhost:7145/api/Request/${REQUESTID}`,
+            process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`,
             data,
             {
               headers: {
@@ -141,14 +136,13 @@ function RequestTable() {
               },
             }
           );
-          console.log("update Request Sucesfully", response);
 
           const encabezado =
             "tu solicitud ha sido firmada por tu jede de departamento";
           const cuerpo =
             "Inicia sesion para ver el estado de tu solicitud `becas.com`";
           const response2 = await axios.post(
-            `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+            process.env.REACT_APP_API_URL+ `email/send-test-email/${encodeURIComponent(
               showRequest.nomEmpleados.email
             )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
             {},
@@ -181,7 +175,7 @@ function RequestTable() {
         }
 
         const response = await axios.put(
-          `https://localhost:7145/api/Request/${REQUESTID}`,
+          process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`,
           data,
           {
             headers: {
@@ -190,12 +184,11 @@ function RequestTable() {
           }
         ); //
 
-        console.log("Request Update Sucessfully", response);
         const encabezado =
           "tu solicitud ha sido firmada por el jefe de sistemas";
         const cuerpo = "inicia sesion para ver el estado de tu solicitud";
         const response2 = await axios.post(
-          `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+          process.env.REACT_APP_API_URL+ `email/send-test-email/${encodeURIComponent(
             showRequest.nomEmpleados.email
           )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
           {},
@@ -260,7 +253,7 @@ function RequestTable() {
     try {
       // Send the POST request to save the historial
       const response = await axios.post(
-        "https://localhost:7145/api/Historial/",
+        process.env.REACT_APP_API_URL+ `Historial/`,
         data,
         {
           headers: {
@@ -269,12 +262,11 @@ function RequestTable() {
         }
       );
 
-      console.log("Historial enviado con éxito");
 
       // Refresh the request after successfully posting the comment
       try {
         const response = await axios.get(
-          `https://localhost:7145/api/Request/${REQUESTID}`
+          process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`
         );
         setShowRequest(response.data);
         setHistorials(response.data.historials);
@@ -292,7 +284,7 @@ function RequestTable() {
       "Inicia sesión en la página para ver tus comentarios: becas.com";
     try {
       const response = await axios.post(
-        `https://localhost:7145/api/email/send-test-email/${encodeURIComponent(
+        process.env.REACT_APP_API_URL+ `email/send-test-email/${encodeURIComponent(
           showRequest.nomEmpleados.email
         )}/${encodeURIComponent(encabezado)}/${encodeURIComponent(cuerpo)}`,
         {},
@@ -313,9 +305,8 @@ function RequestTable() {
 
   const UpdateTableRequest = () => {
     axios
-      .get(`https://localhost:7145/api/Request/`)
+      .get(process.env.REACT_APP_API_URL+ `Request/`)
       .then((response) => {
-        console.log("the request get sucessfully", response);
         setLoading(false);
 
         if (UserRole === "Administrador") {
@@ -332,7 +323,6 @@ function RequestTable() {
         }
       })
       .catch((error) => {
-        console.log("error to get the request", error);
         setError("El servidor no puede obtener las solicitudes");
         setLoading(false);
       });
@@ -376,7 +366,7 @@ function RequestTable() {
 
     try {
       const response = await axios.put(
-        `https://localhost:7145/api/Request/${REQUESTID}`,
+        process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`,
         data,
         {
           headers: {
@@ -387,7 +377,7 @@ function RequestTable() {
 
       UpdateTableRequest();
     } catch (error) {
-      console.log("0");
+      ("0");
     }
   };
 

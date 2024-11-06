@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
 import "./styles.css";
-import { Button, Alert, Row, Col } from "react-bootstrap";
+import { Button, Alert, Row, Col ,Container} from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { DataTime, DateTime } from "luxon";
 import { toast } from "react-toastify";
@@ -75,9 +75,8 @@ function TextControlsExample() {
 
   useEffect(() => {
     axios
-      .get(`https://localhost:7145/api/ConActivosFijos/`)
+      .get(process.env.REACT_APP_API_URL+ `ConActivosFijos/`)
       .then((response) => {
-        console.log("get successful", response.data);
 
         const formattedOptions = response.data.map((item) => ({
           value: item.activoFijoID,
@@ -94,9 +93,8 @@ function TextControlsExample() {
 
   useEffect(() => {
     axios
-      .get(`https://localhost:7145/api/Solicitud_de_servicio/`)
+      .get(process.env.REACT_APP_API_URL+ `Solicitud_de_servicio/`)
       .then((response) => {
-        console.log("get successful231", response.data);
 
         const formattedOptions = response.data
           .map((item) =>
@@ -132,15 +130,11 @@ function TextControlsExample() {
 
   const handleSelectChange = (selectedOption) => {
     setConActivosFijosId(selectedOption.value);
-    console.log("id de inventario seleccionado", ConActivosFijosId);
   };
 
   const handleSelectChangeselectedSolicitudDeServicio = (selectedOption) => {
     setSolicitud_de_Servicio_id(selectedOption.value);
-    console.log(
-      "id de solicitud de servicio a realizar",
-      Solicitud_de_Servicio_id
-    );
+    
   };
 
   const handlePhotoChange = (event) => {
@@ -242,31 +236,16 @@ function TextControlsExample() {
     if (Solicitud_de_Servicio_id) {
       data.append("solicitud_de_Servicio_id", Solicitud_de_Servicio_id);
     }
-    console.log("imagen", file);
-
-    console.log("servicioSolicitado", servicioSolicitado);
-    console.log("fechaSolicitada", fechaSolicitada);
-    console.log("descripcion", Descripcion);
-    console.log("status", Status);
-    console.log("firmaEmpleado", FirmaEmpleado);
-    console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
-    console.log("firmaJefe", FirmaJefe);
-    console.log("nomEmpleadosId", usuarioId);
-    console.log("prioridad", Prioridad);
-    console.log("conActivosFijosId", ConActivosFijosId);
-    console.log("file", file);
-    console.log("solicitud_de_Servicio_id", Solicitud_de_Servicio_id);
-    console.log("servicio_solicidato_Id", servicioSolicitado);
-
+    
     // Log FormData content (optional, since FormData can't be fully logged)
     for (let pair of data.entries()) {
-      console.log(pair[0] + ": " + pair[1]);
+     
     }
 
     // Send the form data as multipart/form-data
     try {
       const response = await axios.post(
-        "https://localhost:7145/api/Request/",
+        process.env.REACT_APP_API_URL+ `Request/`,
         data,
         {
           headers: {
@@ -302,7 +281,7 @@ function TextControlsExample() {
       try {
         // Replace the URL with your actual endpoint
         const response = await axios.get(
-          "https://localhost:7145/api/ServicioSolicitado/"
+          process.env.REACT_APP_API_URL+ `ServicioSolicitado/`
         );
 
         setList(response.data); // The whole array from the server
@@ -311,7 +290,6 @@ function TextControlsExample() {
         //  setSecondResponse(list[1]);
         //  setThirdResponse(list[2]);
 
-        console.log("ServiceRequest get successful");
       } catch (err) {
         console.error(err);
         setError("Failed to fetch data");
@@ -327,10 +305,16 @@ function TextControlsExample() {
   if (error) return <p>{error}</p>;
   return (
     <Form onSubmit={handleSubmit}>
+      <div >
+      <Container fluid className="d-flex justify-content-center  vh-100 p-3">
+      <Row className="w-100">
+      <Col xs={12} md={8} lg={6} className="mx-auto">
       {message && <Alert variant="info">{message}</Alert>}
-      <div id="NuevaSolicitud" style={{fontSize:"24px"}}>
+      <div  style={{fontSize:"24px"}}>
         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
           <Form.Label>
+          <br/>
+
             SOLICITUD DE SERVICIOS SUBDIRECCION DE INFRAESTRUCTURA Y TECNOLOGIAS
             DE LA INFORMACION
           </Form.Label>
@@ -497,6 +481,11 @@ function TextControlsExample() {
             Enviar
           </Button>
         </Form.Group>
+      </div>
+      </Col>
+      </Row>
+      </Container>
+
       </div>
     </Form>
   );

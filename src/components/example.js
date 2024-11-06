@@ -5,6 +5,7 @@ import { Spinner, Alert, Table } from "react-bootstrap";
 import SearchBar from "./SearchBar"; // Import the SearchBar component
 
 function RequestTable() {
+  /*
   const [requests, setRequests] = useState([]); // Holds all requests
   const [filteredData, setFilteredData] = useState([]); // Holds filtered data
   const [loading, setLoading] = useState(true);
@@ -114,6 +115,7 @@ function RequestTable() {
       </Table>
     </div>
   );
+  */
 }
 
 export default RequestTable;

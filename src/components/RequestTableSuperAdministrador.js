@@ -45,7 +45,6 @@ function RequestTableSuperAdministrador() {
     " " +
     localStorage.getItem("nomEmpMaterno");
   const UserRole = localStorage.getItem("UserRole");
-  console.log("userRole", UserRole);
 
   const [show, setShow] = useState(false);
 
@@ -59,10 +58,9 @@ function RequestTableSuperAdministrador() {
   };
 
   const showRequest2 = async (requestID) => {
-    console.log("holadddddfsdfsdfsdfgdsf");
     try {
       const response = await axios.get(
-        `https://localhost:7145/api/Request/${requestID}`
+        process.env.REACT_APP_API_URL+ `Request/${requestID}`
       );
 
       console.log("The show request get successfully");
@@ -123,7 +121,7 @@ function RequestTableSuperAdministrador() {
       }
 
       const response = await axios.put(
-        `https://localhost:7145/api/Request/${REQUESTID}`,
+        process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`,
         data,
         {
           headers: {
@@ -136,10 +134,9 @@ function RequestTableSuperAdministrador() {
       if (!email) {
         throw new Error("Email is not available for the user.");
       }
-      console.log("correo", email);
 
       const response2 = await axios.post(
-        `https://localhost:7145/api/email/FirmaSuperAdministradorEmail/${encodeURIComponent(
+        process.env.REACT_APP_API_URL+`email/FirmaSuperAdministradorEmail/${encodeURIComponent(
           email
         )}`,
         {},
@@ -211,7 +208,7 @@ function RequestTableSuperAdministrador() {
     try {
       // Send the POST request to save the historial
       const response = await axios.post(
-        "https://localhost:7145/api/Historial/",
+        process.env.REACT_APP_API_URL+ `Historial/`,
         data,
         {
           headers: {
@@ -220,12 +217,11 @@ function RequestTableSuperAdministrador() {
         }
       );
 
-      console.log("Historial enviado con éxito");
 
       // Refresh the request after successfully posting the comment
       try {
         const response = await axios.get(
-          `https://localhost:7145/api/Request/${REQUESTID}`
+          process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`
         );
         setShowRequest(response.data);
         setHistorials(response.data.historials);
@@ -241,7 +237,7 @@ function RequestTableSuperAdministrador() {
 
     try {
       const response = await axios.post(
-        `https://localhost:7145/api/email/EmailComentario/${encodeURIComponent(
+        process.env.REACT_APP_API_URL+ `email/EmailComentario/${encodeURIComponent(
           showRequest.nomEmpleados.usuario.email
         )}/`,
         {},
@@ -262,9 +258,8 @@ function RequestTableSuperAdministrador() {
 
   const UpdateTableRequest = () => {
     axios
-      .get(`https://localhost:7145/api/Request/`)
+      .get(process.env.REACT_APP_API_URL+ `Request/`)
       .then((response) => {
-        console.log("the request get sucessfully", response);
         setLoading(false);
 
         const data = (response.data);
@@ -317,7 +312,6 @@ function RequestTableSuperAdministrador() {
         setFilteredData(response.data);
       })
       .catch((error) => {
-        console.log("error to get the request", error);
         setError("El servidor no puede obtener las solicitudes");
         setLoading(false);
       });
@@ -329,7 +323,6 @@ function RequestTableSuperAdministrador() {
     // Filter data based on search term and other filters
     const filterData = () => {
       const now = DateTime.now(); // Current date
-      console.log("Date", DateTime.now());
 
       const filtered = requests.filter((item) => {
         // Parse the server date in ISO format (yyyy-MM-dd'T'HH:mm:ss)
@@ -417,7 +410,7 @@ function RequestTableSuperAdministrador() {
 
     try {
       const response = await axios.put(
-        `https://localhost:7145/api/Request/${REQUESTID}`,
+        process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`,
         data,
         {
           headers: {
@@ -428,7 +421,6 @@ function RequestTableSuperAdministrador() {
 
       UpdateTableRequest();
     } catch (error) {
-      console.log("0");
     }
   };
 

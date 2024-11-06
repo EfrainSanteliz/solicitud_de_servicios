@@ -1,0 +1,8 @@
+.centered-container {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    height: '100vh';
+    padding:'0 10px';
+    box-sizing: 'border-box';
+  }

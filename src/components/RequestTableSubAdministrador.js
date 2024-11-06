@@ -49,7 +49,6 @@ function RequestTable() {
     " " +
     localStorage.getItem("nomEmpMaterno");
   const UserRole = localStorage.getItem("UserRole");
-  console.log("userRole", UserRole);
 
   const [show, setShow] = useState(false);
 
@@ -69,10 +68,9 @@ function RequestTable() {
   const showRequest2 = async (requestID) => {
     try {
       const response = await axios.get(
-        `https://localhost:7145/api/Request/${requestID}`
+        process.env.REACT_APP_API_URL+ `Request/${requestID}`
       );
 
-      console.log("The show request get successfully");
       setShowRequest(response.data);
       setHistorials(response.data.historials);
 
@@ -153,7 +151,7 @@ function RequestTable() {
     try {
       // Send the POST request to save the historial
       const response = await axios.post(
-        "https://localhost:7145/api/Historial/",
+        process.env.REACT_APP_API_URL+ `Historial/`,
         data,
         {
           headers: {
@@ -162,12 +160,11 @@ function RequestTable() {
         }
       );
 
-      console.log("Historial enviado con éxito");
 
       // Refresh the request after successfully posting the comment
       try {
         const response = await axios.get(
-          `https://localhost:7145/api/Request/${REQUESTID}`
+          process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`
         );
         setShowRequest(response.data);
         setHistorials(response.data.historials);
@@ -181,7 +178,7 @@ function RequestTable() {
 
     try {
       const response = await axios.post(
-        `https://localhost:7145/api/email/send-test-emailSub/${encodeURIComponent(
+        process.env.REACT_APP_API_URL+ `email/send-test-emailSub/${encodeURIComponent(
           showRequest.nomEmpleados.usuario.email
         )}`,
         {}, // Empty body
@@ -207,9 +204,8 @@ function RequestTable() {
 
   const UpdateTableRequest = () => {
     axios
-      .get(`https://localhost:7145/api/Request/`)
+      .get(process.env.REACT_APP_API_URL+ `Request/`)
       .then((response) => {
-        console.log("the request get sucessfully", response);
         setLoading(false);
 
         const data = (response.data);
@@ -262,7 +258,6 @@ function RequestTable() {
        ]);
       })
       .catch((error) => {
-        console.log("error to get the request", error);
         setError("El servidor no puede obtener las solicitudes");
         setLoading(false);
       });
@@ -274,7 +269,6 @@ function RequestTable() {
     // Filter data based on search term and other filters
     const filterData = () => {
       const now = DateTime.now(); // Current date
-      console.log("Date", DateTime.now());
 
       const filtered = requests.filter((item) => {
         // Parse the server date in ISO format (yyyy-MM-dd'T'HH:mm:ss)

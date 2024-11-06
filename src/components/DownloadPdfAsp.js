@@ -8,15 +8,13 @@ function DownloadPdfAsp({ showRequest }) {
     
     const [isLoading, setIsLoading] = useState(false);
 
-    console.log("showRequest",showRequest.id);
 
 
     const handleDownloadPdf = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`https://localhost:7145/api/request/download-pdf/${showRequest.id}`, { responseType: 'blob' });
+            const response = await axios.get( process.env.REACT_APP_API_URL+`request/download-pdf/${showRequest.id}`, { responseType: 'blob' });
             
-            console.log("API response: ", response);
     
             if (response && response.data) {
                 const blob = new Blob([response.data], { type: 'application/pdf' });

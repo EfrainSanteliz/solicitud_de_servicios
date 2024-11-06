@@ -27,7 +27,7 @@ function UpdateStatusSub({
 
     try {
       const response = await axios.put(
-        `https://localhost:7145/api/Request/${showRequest.id}`,
+        process.env.REACT_APP_API_URL+`Request/${showRequest.id}`,
         data,
         {
           headers: {
@@ -39,7 +39,6 @@ function UpdateStatusSub({
       showRequest2(showRequest.id);
 
     } catch (error) {
-      console.log("no update status succesfully");
     }
   };
   const [forceUpdate, setForceUpdate] = useState(0);

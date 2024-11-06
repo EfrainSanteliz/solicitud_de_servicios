@@ -1,3 +1,4 @@
+
 export const setToken = (token) => {
   localStorage.setItem("jwtToken",token);
 };
@@ -13,8 +14,10 @@ export const removeToken = () => {
 };
 
 
-export const isAuthenticated = () => {
+export const isAuthenticated2 = () => {
   const token = getToken();
 
   return token !== null;
 };
+
+

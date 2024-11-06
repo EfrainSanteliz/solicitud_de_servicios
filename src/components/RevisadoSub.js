@@ -16,7 +16,7 @@ function RevisadoSub({ showRequest,showRequest2, formData, UpdateTableRequest })
 
     try {
       const response = await axios.put(
-        `https://localhost:7145/api/Request/${showRequest.id}`,
+        process.env.REACT_APP_API_URL+ `Request/${showRequest.id}`,
         data,
         {
           headers: {
@@ -27,7 +27,6 @@ function RevisadoSub({ showRequest,showRequest2, formData, UpdateTableRequest })
       UpdateTableRequest();
       showRequest2(showRequest.id);
     } catch (error) {
-      console.log("no update status succesfully");
     }
   };
 

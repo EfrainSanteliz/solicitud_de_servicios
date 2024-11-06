@@ -13,13 +13,17 @@ function FormSolicitudTable({ showRequest }) {
 
   const [imageURL, setImageURL] = useState([]);
 
-  console.log("image", showRequest.file);
+
+  const apiUrl2 = process.env.REACT_APP_API_URL2;
+
 
   useEffect(() => {
     if (showRequest.file) {
-      setImageURL(`https://localhost:7145${showRequest.file}`);
+      setImageURL(apiUrl2+`${showRequest.file}`);
     }
-  }, [showRequest.file]);
+  }, [showRequest.file,apiUrl2]);
+
+
 
   const [FirstResponse, setFirstResponse] = useState([]);
   const [SecondResponse, setSecondResponse] = useState([]);
@@ -33,7 +37,7 @@ function FormSolicitudTable({ showRequest }) {
       try {
         // Replace the URL with your actual endpoint
         const response = await axios.get(
-          "https://localhost:7145/api/ServicioSolicitado/"
+          process.env.REACT_APP_API_URL+"ServicioSolicitado/"
         );
 
         setList(response.data); // The whole array from the server
@@ -42,7 +46,6 @@ function FormSolicitudTable({ showRequest }) {
         //setSecondResponse(list[1]);
         //setThirdResponse(list[2]);
 
-        console.log("ServiceRequest get successful");
       } catch (err) {
         console.error(err);
         setError("Failed to fetch data");
