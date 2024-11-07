@@ -18,7 +18,6 @@ import UpdateForm from "./UpdateForm";
 
 function RequestTableSuperAdministrador() {
   const [requests, setRequests] = useState([]);
-  const [requestOptions, setRequestsOptions] = useState([]);
   const [showRequest, setShowRequest] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loading2, setLoading2] = useState(false);
@@ -299,15 +298,7 @@ function RequestTableSuperAdministrador() {
 
         setRequests(mappedItems);
 
-        const options = response.data.map((item) => ({
-          value: item.servicio_Solicitado,
-          label: item.servicio_Solicitado.descripcionServicio_Solicitado,
-        }));
-
-        setRequestsOptions([
-          { value: "", label: "Toda solicitud" },
-          ...options,
-        ]);
+    
 
         setFilteredData(response.data);
       })
@@ -474,7 +465,6 @@ function RequestTableSuperAdministrador() {
               DateSystem={DateSystem}
               setRangeComparationDate={setRangeComparationDate}
               RangeComparationDate={RangeComparationDate}
-              requestOptions={requestOptions}
             />{" "}
             <br />
             <Table
@@ -515,12 +505,12 @@ function RequestTableSuperAdministrador() {
               <tbody>
                 {filteredData.map((request) => (
                   //request.firmaJefeDepartamento !== "0" ? (
-                  <tr key={request.id}>
-                    <td>{request.id}</td>
+                  <tr key={request.sS_SolicitudId}>
+                    <td>{request.sS_SolicitudId}</td>
                     <td style={{ width: "150px" }}>{request.name}</td>
                     <td>
                       {
-                        request.servicioSolicitado
+                        request.sS_Servicio_Solicitados.descripcionServicio_Solicitado
                           
                       }
                     </td>

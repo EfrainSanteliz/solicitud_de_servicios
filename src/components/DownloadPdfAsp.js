@@ -13,7 +13,7 @@ function DownloadPdfAsp({ showRequest }) {
     const handleDownloadPdf = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get( process.env.REACT_APP_API_URL+`request/download-pdf/${showRequest.id}`, { responseType: 'blob' });
+            const response = await axios.get( process.env.REACT_APP_API_URL+`request/download-pdf/${showRequest.sS_SolicitudId}`, { responseType: 'blob' });
             
     
             if (response && response.data) {

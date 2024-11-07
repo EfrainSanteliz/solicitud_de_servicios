@@ -53,6 +53,8 @@ function RequestTableAdministrador() {
   const handleClose = () => {
     setShow(false);
     setLoading2(false);
+    setPrioridad(0);
+
   };
 
   const handleClose2 = () => {
@@ -96,7 +98,6 @@ function RequestTableAdministrador() {
   const [formData, setFormData] = useState({
     fecha: "",
     comentarios: "",
-    prioridad: 0,
     status: "Activo",
   });
 
@@ -106,7 +107,6 @@ function RequestTableAdministrador() {
 
     const data = new FormData();
 
-    const { prioridad } = formData;
 
     try {
       if (showRequest.firmaJefeDepartamento === FirmaJefeDepartamento) {
@@ -132,6 +132,7 @@ function RequestTableAdministrador() {
           
         );
         UpdateTableRequest();
+        setPrioridad(0);
 
 
         
@@ -380,6 +381,14 @@ function RequestTableAdministrador() {
       [name]: value,
     }));
   };
+ 
+  const [prioridad,setPrioridad] =useState(0);
+
+  const handleChange2 = (prioridad) => {
+
+    setPrioridad(prioridad);
+   
+  };
 
  /* const statusid = {
     1: "Activo",
@@ -601,7 +610,7 @@ function RequestTableAdministrador() {
                   backgroundColor: "#DC7F37",
                   color: "white",
                 }}
-                onChange={handleChange}
+                onChange={(e) => handleChange2(e.target.value)}
                 name="prioridad"
                 disabled={
                   showRequest.prioridad === 1 ||

@@ -100,9 +100,9 @@ function TextControlsExample() {
           .map((item) =>
             item.habilitado === true
               ? {
-                  value: item.solicitud_de_servicio_id,
+                  value: item.sS_Solicitud_de_servicio_id,
                   label: `${item.descripcion}`,
-                  key: item.solicitud_de_servicio_id, // Adding key property
+                  key: item.sS_Solicitud_de_servicio_id, // Adding key property
 
                 }
               : null
@@ -221,7 +221,7 @@ function TextControlsExample() {
     data.append("firmaJefe", FirmaJefe);
     data.append("empleadoID", usuarioId);
     data.append("prioridad", Prioridad);
-    data.append("servicio_solicidato_Id", servicioSolicitado);
+    data.append("sS_Servicio_solicitado_Id", servicioSolicitado);
     data.append("revisadoSub", "");
 
 
@@ -234,7 +234,7 @@ function TextControlsExample() {
     }
 
     if (Solicitud_de_Servicio_id) {
-      data.append("solicitud_de_Servicio_id", Solicitud_de_Servicio_id);
+      data.append("sS_Solicitud_de_servicio_id", Solicitud_de_Servicio_id);
     }
     
     // Log FormData content (optional, since FormData can't be fully logged)
@@ -329,12 +329,12 @@ function TextControlsExample() {
                 item.habilitadoServicio_Solicitado && (
                   <Form.Check
                     inline
-                    key={item.servicio_solicidato_Id}
+                    key={item.sS_Servicio_solicitado_Id}
                     label={item.descripcionServicio_Solicitado}
                     name="servicioSolicitado" // Ensure this matches the state key
                     type="radio"
                     className="custom-radio" // Apply the custom class here
-                    value={item.servicio_solicidato_Id}
+                    value={item.sS_Servicio_solicitado_Id}
                     id={`inline-radio-${index + 1}`}
                     onChange={(e) => {
                       handleChange(e);

@@ -204,7 +204,7 @@ function UpdateForm() {
       try {
         for (let row of modifiedData2) {
           const response = await axios.put(
-            process.env.REACT_APP_API_URL+`ServicioSolicitado/${row.servicio_solicidato_Id}`,
+            process.env.REACT_APP_API_URL+`ServicioSolicitado/${row.sS_servicio_solicidato_Id}`,
             row
           );
         }
@@ -255,7 +255,7 @@ function UpdateForm() {
         .map((item) =>
           item.habilitado === true
             ? {
-                value: item.solicitud_de_servicio_id,
+                value: item.sS_Solicitud_de_servicio_id,
                 label: `${item.descripcion}`,
               }
             : null
@@ -380,7 +380,7 @@ function UpdateForm() {
                         </thead>
                         <tbody>
                           {servicioSolicitado.map((row, index) => (
-                            <tr key={row.servicio_solicidato_Id}>
+                            <tr key={row.sS_Servicio_solicitado_Id}>
                               <td>
                                 <Form.Control
                                 style={{fontSize:"19px"}}
@@ -422,7 +422,7 @@ function UpdateForm() {
                                     const habilitadoValue =
                                       e.target.value === "true"; // Convert to boolean
                                     handleUpdateHabilitar2(
-                                      row.servicio_solicidato_Id,
+                                      row.sS_Servicio_solicitado_Id,
                                       habilitadoValue
                                     );
                                   }}
@@ -439,7 +439,7 @@ function UpdateForm() {
                               <td>
                                 <Button
                                   onClick={(e) => {
-                                    handleDrop2(row.servicio_solicidato_Id);
+                                    handleDrop2(row.sS_Servicio_solicitado_Id);
                                   }}
                                   style={styles.button}
                                 >
@@ -509,7 +509,7 @@ function UpdateForm() {
                         </thead>
                         <tbody>
                           {solicitudesDeServicios.map((row, index) => (
-                            <tr key={row.solicitud_de_servicio_id}>
+                            <tr key={row.sS_Solicitud_de_servicio_id}>
                               <td>
                                 <Form.Control
                                   type="text"
@@ -549,7 +549,7 @@ function UpdateForm() {
                                     const habilitadoValue =
                                       e.target.value === "true"; // Convert to boolean
                                     handleUpdateHabilitar(
-                                      row.solicitud_de_servicio_id,
+                                      row.sS_Solicitud_de_servicio_id,
                                       habilitadoValue
                                     );
                                   }}
@@ -564,7 +564,7 @@ function UpdateForm() {
                               <td>
                                 <Button
                                   onClick={(e) => {
-                                    handleDrop(row.solicitud_de_servicio_id);
+                                    handleDrop(row.sS_Solicitud_de_servicio_id);
                                   }}
                                   style={styles.button}
                                 >

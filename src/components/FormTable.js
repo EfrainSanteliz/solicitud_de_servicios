@@ -62,9 +62,9 @@ function FormTable({ options2, list, loagding }) {
                     label={item.descripcionServicio_Solicitado}
                     name="servicioSolicitado" // Ensure this matches the state key
                     type="radio"
-                    value={item.servicio_solicidato_Id}
+                    value={item.sS_Servicio_solicitado_Id}
                     id={`inline-radio-${index + 1}`}
-                    key={item.servicio_solicidato_Id} // Add the key prop here
+                    key={item.sS_Servicio_solicitado_Id} // Add the key prop here
                     onChange={(e) => {
                       handleRadioChange(e);
                     }}

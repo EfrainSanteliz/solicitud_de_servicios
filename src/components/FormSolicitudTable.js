@@ -72,7 +72,7 @@ function FormSolicitudTable({ showRequest }) {
           <div className="mb-3">
             {list.map((item, index) => (
               <Form.Check
-                key={item.servicio_solicidato_Id}
+                key={item.sS_Servicio_solicitado_Id}
                 inline
                 label={item.descripcionServicio_Solicitado}
                 name="servicioSolicitado"
@@ -80,7 +80,7 @@ function FormSolicitudTable({ showRequest }) {
                 value={item.descripcionServicio_Solicitado}
                 id={`inline-radio-${index + 1}`}
                 disabled
-                checked={showRequest.servicio_solicidato_Id === item.servicio_solicidato_Id}
+                checked={showRequest.sS_Servicio_solicitado_Id === item.sS_Servicio_solicitado_Id}
               />
             ))}
           </div>
@@ -102,28 +102,28 @@ function FormSolicitudTable({ showRequest }) {
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
             <Form.Label>Solicitud de servicio a realizar</Form.Label>
-            {showRequest.solicitud_de_servicio_id && (
+            {showRequest.sS_Solicitud_de_servicios && (
               <>
                 <Form.Control
                   as="select"
                   name="SolicitudDeServicioARealizar"
-                  value={showRequest.solicitud_de_servicio?.descripcion || ""}
+                  value={showRequest.sS_Solicitud_de_servicios?.descripcion || ""}
                   disabled
                 >
                   <option>
-                    {showRequest.solicitud_de_servicio?.descripcion}
+                    {showRequest.sS_Solicitud_de_servicios?.descripcion}
                   </option>
                 </Form.Control>
               </>
             )}
 
-            {showRequest.servicio_solicitado && (
+            {showRequest.sS_Servicio_Solicitados && (
               <>
                 <Form.Control
                   as="select"
                   name="infraestructuraVozDatos" // React-friendly name without spaces
                   value={
-                    showRequest.servicio_solicitado
+                    showRequest.sS_Servicio_Solicitados
                       .descripcionServicio_Solicitado
                   } // Dynamic value from showRequest
                   disabled // Keeps the field disabled since it's for "Mantenimiento"

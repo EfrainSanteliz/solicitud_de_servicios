@@ -19,14 +19,15 @@ import WelcomeSubAdministrador from "./components/WelcomeSubAdministrador";
 import { useNavigate } from "react-router-dom";
 function App() {
 
-  const navigate = useNavigate();
+ // const navigate = useNavigate();
 
-  useEffect(() => {
+ /* useEffect(() => {
     const token = getToken();
     if (!token) {
       navigate("/"); // Redirige al login si no hay token
     }
-  }, []);
+  }, []);*/
+  
   return (
     <> 
       <Router>

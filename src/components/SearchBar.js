@@ -12,7 +12,6 @@ const SearchBar = ({
   setSelectPrioridad,
   setDateSystem,
   setRangeComparationDate,
-  requestOptions,
   setSelectedServicio,
 }) => {
   const [term, setTerm] = useState("");
@@ -25,15 +24,14 @@ const SearchBar = ({
   const [selectedStatusOption, setSelectedStatusOption] = useState("");
   const [selectedPrioridadOption, setSelectPrioridadOption] = useState("");
   const [DateRangeSelected, setDateRangeSelected] = useState("");
-
+  const [requestOptions, setRequestOptions] = useState([]);
   const UserRole = localStorage.getItem("UserRole");
-
 
   useEffect(() => {
     const fechOptions = async () => {
       try {
         const response = await axios.get(
-          process.env.REACT_APP_API_URL+`direccionesICESS`
+          process.env.REACT_APP_API_URL + `direccionesICESS`
         );
 
         const formattedOptions = response.data.map((item) => ({
@@ -44,14 +42,32 @@ const SearchBar = ({
           { value: "", label: "Todo Departamento" },
           ...formattedOptions,
         ]);
-
       } catch (error) {}
     };
 
     fechOptions();
   }, [setOptions]);
 
+  
 
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const response = await axios.get(
+          process.env.REACT_APP_API_URL + "ServicioSolicitado"
+        );
+
+        const options = response.data.map((item) => ({
+          value: item.servicio_Solicitado,
+          label: item.descripcionServicio_Solicitado,
+        }));
+
+        setRequestOptions([{ value: "", label: "Toda solicitud" }, ...options]);
+      } catch (error) {}
+    };
+
+    fetchOptions();
+  }, [setRequestOptions]);
 
   const handleSearch = (e) => {
     setTerm(e.target.value);
@@ -70,11 +86,10 @@ const SearchBar = ({
   const handleSelectSolicitud = (option) => {
     setSelectedOption2(option);
     if (option.value === "") {
-      setSelectedServicio(option ? option.value: "");
+      setSelectedServicio(option ? option.value : "");
     } else {
-      setSelectedServicio(option ? option.label:"");
+      setSelectedServicio(option ? option.label : "");
     }
-
   };
 
   const handleSelectStatus = (event) => {
@@ -167,7 +182,6 @@ const SearchBar = ({
             }}
           />
 
-
           <select
             value={selectedStatusOption}
             className="form-select"
@@ -187,7 +201,7 @@ const SearchBar = ({
             style={{ width: "200px" }} // Adjust width
           >
             <option value="">Toda Prioridad</option>
-            <option value="sin asignar">sin asignar</option>
+            <option value="Sin prioridad">sin prioridad</option>
             <option value="Baja">Baja</option>
             <option value="Media">Media</option>
             <option value="Alta">Alta</option>

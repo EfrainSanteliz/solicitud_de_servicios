@@ -18,7 +18,6 @@ function UpdateStatus({
 
     const data = {
      status:newStatus,
-     revisadoSub:true,
      ultimoStatus:UserRole,
     };
 

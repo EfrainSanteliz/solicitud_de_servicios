@@ -59,17 +59,23 @@ function Login() {
       
       setLoading(false);
 
-  
-      if (response.data.user.userRole === 1) {
-        navigate("/Welcome");
-      } else if (response.data.user.userRole === 2) {
-        navigate("/WelcomeAdministrador");
-      } else if (response.data.user.userRole === 3) {
-        navigate("/WelcomeSubAdministrador");
-      
-      } else if (response.data.user.userRole === 4) {
-        navigate("/WelcomeSuperAdministrador");
-      }
+      const type = response.data.user.userRole;
+
+    switch(type) {
+      case 1:
+      navigate("/Welcome");
+      break;
+      case 2:
+      navigate("/WelcomeAdministrador");
+      break;
+      case 3:
+      navigate("/WelcomeSubAdministrador");
+      break;
+      case 4:
+      navigate("/WelcomeSuperAdministrador");
+      break;
+    }
+
     })
     .catch((error) => {
       console.error("Error logging in:", error);

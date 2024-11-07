@@ -97,9 +97,9 @@ function MisSolicitudes() {
             </thead>
             <tbody>
               {Request.map((Reques) => (
-                <tr key={Reques.id}>
+                <tr key={Reques.sS_SolicitudId}>
                   <td width="150px">
-                    {Reques.servicio_Solicitado.descripcionServicio_Solicitado}
+                    {Reques.sS_Servicio_Solicitados.descripcionServicio_Solicitado}
                   </td>
                   <td
                       style={{
@@ -124,7 +124,7 @@ function MisSolicitudes() {
                     <Button
                       variant=""
                       onClick={() => {
-                        handleShow1(Reques.id);
+                        handleShow1(Reques.sS_SolicitudId);
                         setShow(true);
                       }}
                       style={{ backgroundColor: "#C5126D" }}
