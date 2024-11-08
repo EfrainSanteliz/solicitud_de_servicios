@@ -21,7 +21,7 @@ function HistoryComments({ Historials }) {
           <tbody>
             {
               Historials.map((historial) => (
-                <tr key={historial.historialID}>
+                <tr key={historial.sS_HistorialComentariosID}>
                   <td>
                     {new Date(historial.fecha).toLocaleDateString('es-ES', {
                       day: '2-digit',

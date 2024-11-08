@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { waitFor } from "@testing-library/react";
 import { Form } from "react-bootstrap";
+import { DateTime } from "luxon";
+
 
 function UpdateStatus({
   handleChange,
@@ -15,17 +17,26 @@ function UpdateStatus({
     const { status } = formData;
     
     const UserRole = localStorage.getItem("UserRole");
+    const nombre = localStorage.getItem("name_secondname");
+
+    const fechaSatus = DateTime.now();
+
 
     const data = {
      status:newStatus,
      ultimoStatus:UserRole,
     };
 
-
+    const data2 = {
+      status:newStatus,
+      quien:nombre,
+      fechaSatus:fechaSatus,
+      SS_SolicitudId:showRequest.sS_SolicitudId,
+     };
 
     try {
       const response = await axios.put(
-        process.env.REACT_APP_API_URL+`Request/${showRequest.id}`,
+        process.env.REACT_APP_API_URL+`Request/${showRequest.sS_SolicitudId}`,
         data,
         {
           headers: {
@@ -34,7 +45,23 @@ function UpdateStatus({
         }
       );
       UpdateTableRequest();
-      showRequest2(showRequest.id);
+      showRequest2(showRequest.sS_SolicitudId);
+
+    } catch (error) {
+    }
+
+    try {
+      const response = await axios.post(
+        process.env.REACT_APP_API_URL+`HistorialStatus/`,
+        data2,
+        {
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
+      UpdateTableRequest();
+      showRequest2(showRequest.sS_SolicitudId);
 
     } catch (error) {
     }

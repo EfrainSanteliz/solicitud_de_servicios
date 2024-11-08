@@ -45,6 +45,9 @@ function Login() {
       localStorage.setItem("nomEmpMaterno",response.data.user.nomEmpleados.nomEmpMaterno);
       localStorage.setItem("UserRole",response.data.user.userRole);
 
+
+      localStorage.setItem("name_secondname",response.data.user.nomEmpleados.nomEmpNombre+" "+response.data.user.nomEmpleados.nomEmpPaterno+" "+response.data.user.nomEmpleados.nomEmpMaterno);
+
       
 
       setToken("jwtToken",response.data.token);

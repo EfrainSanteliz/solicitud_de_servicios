@@ -16,7 +16,7 @@ function RevisadoSub({ showRequest,showRequest2, formData, UpdateTableRequest })
 
     try {
       const response = await axios.put(
-        process.env.REACT_APP_API_URL+ `Request/${showRequest.id}`,
+        process.env.REACT_APP_API_URL+ `Request/${showRequest.sS_SolicitudId}`,
         data,
         {
           headers: {
@@ -25,7 +25,7 @@ function RevisadoSub({ showRequest,showRequest2, formData, UpdateTableRequest })
         }
       );
       UpdateTableRequest();
-      showRequest2(showRequest.id);
+      showRequest2(showRequest.sS_SolicitudId);
     } catch (error) {
     }
   };

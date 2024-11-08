@@ -192,6 +192,7 @@ const SearchBar = ({
             <option value="Activo">Activo</option>
             <option value="Inactivo">Inactivo</option>
             <option value="Cancelado">Cancelado</option>
+            <option value="Revertido">Revertido</option>
           </select>
 
           <select

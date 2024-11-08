@@ -15,6 +15,7 @@ import {
   showErrorAlerAutorizar,
 } from "./AlertService";
 import UpdateForm from "./UpdateForm";
+import HistorialStatus from "./HistorialStatusPrioridad";
 
 function RequestTableSuperAdministrador() {
   const [requests, setRequests] = useState([]);
@@ -59,24 +60,21 @@ function RequestTableSuperAdministrador() {
   const showRequest2 = async (requestID) => {
     try {
       const response = await axios.get(
-        process.env.REACT_APP_API_URL+ `Request/${requestID}`
+        process.env.REACT_APP_API_URL + `Request/${requestID}`
       );
 
       console.log("The show request get successfully");
       setShowRequest(response.data);
-      setHistorials(response.data.historials);
+      setHistorials(response.data.historialComentarios);
       setLoading2(true);
     } catch (error) {
       console.error("Error updating the Request:", error);
     }
   };
-   const [firmaEmpleado,setFirmaEmpleado] = useState('');
-  const handleShow = async (
-    requestID,
-    firmaEmpleado
-  ) => {
+  const [firmaEmpleado, setFirmaEmpleado] = useState("");
+  const handleShow = async (requestID, firmaEmpleado) => {
     setShow(true);
-    setFirmaEmpleado(firmaEmpleado)
+    setFirmaEmpleado(firmaEmpleado);
     SETREQUESTID(requestID);
 
     showRequest2(requestID);
@@ -120,7 +118,7 @@ function RequestTableSuperAdministrador() {
       }
 
       const response = await axios.put(
-        process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`,
+        process.env.REACT_APP_API_URL + `Request/${REQUESTID}`,
         data,
         {
           headers: {
@@ -135,9 +133,8 @@ function RequestTableSuperAdministrador() {
       }
 
       const response2 = await axios.post(
-        process.env.REACT_APP_API_URL+`email/FirmaSuperAdministradorEmail/${encodeURIComponent(
-          email
-        )}`,
+        process.env.REACT_APP_API_URL +
+          `email/FirmaSuperAdministradorEmail/${encodeURIComponent(email)}`,
         {},
         {
           headers: {
@@ -201,13 +198,13 @@ function RequestTableSuperAdministrador() {
       fecha: currentFecha,
       comentarios: comentarios.trim(),
       remitente: AreaAdministrativa,
-      RequestID: REQUESTID,
+      SS_SolicitudId: REQUESTID,
     };
 
     try {
       // Send the POST request to save the historial
       const response = await axios.post(
-        process.env.REACT_APP_API_URL+ `Historial/`,
+        process.env.REACT_APP_API_URL + `Historial/`,
         data,
         {
           headers: {
@@ -216,14 +213,13 @@ function RequestTableSuperAdministrador() {
         }
       );
 
-
       // Refresh the request after successfully posting the comment
       try {
         const response = await axios.get(
-          process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`
+          process.env.REACT_APP_API_URL + `Request/${REQUESTID}`
         );
         setShowRequest(response.data);
-        setHistorials(response.data.historials);
+        setHistorials(response.data.historialComentarios);
         setLoading2(true);
       } catch (error) {
         console.error("Error actualizando la solicitud:", error);
@@ -236,9 +232,10 @@ function RequestTableSuperAdministrador() {
 
     try {
       const response = await axios.post(
-        process.env.REACT_APP_API_URL+ `email/EmailComentario/${encodeURIComponent(
-          showRequest.nomEmpleados.usuario.email
-        )}/`,
+        process.env.REACT_APP_API_URL +
+          `email/EmailComentario/${encodeURIComponent(
+            showRequest.nomEmpleados.usuario.email
+          )}/`,
         {},
         {
           headers: {
@@ -257,11 +254,11 @@ function RequestTableSuperAdministrador() {
 
   const UpdateTableRequest = () => {
     axios
-      .get(process.env.REACT_APP_API_URL+ `Request/`)
+      .get(process.env.REACT_APP_API_URL + `Request/`)
       .then((response) => {
         setLoading(false);
 
-        const data = (response.data);
+        const data = response.data;
 
         const statusid = {
           1: "Activo",
@@ -270,35 +267,34 @@ function RequestTableSuperAdministrador() {
           4: "Finalizado",
           5: "cancelado",
         };
-      
+
         const prioridad = {
           1: "Baja",
           2: "Media",
           3: "Alta",
           0: "Sin prioridad",
         };
-      
+
         const ultimoStatus = {
           3: "SubAdministrador",
           4: "SuperAdministrador",
         };
 
-        const mappedItems = data.map(item => ({
-          id: item.id,
+        const mappedItems = data.map((item) => ({
+          id: item.sS_SolicitudId,
           name: item.firmaEmpleado,
-          servicioSolicitado: item.servicio_Solicitado.descripcionServicio_Solicitado,
+          servicioSolicitado:
+            item.sS_Servicio_Solicitados.descripcionServicio_Solicitado,
           descripcion: item.descripcion,
           fechaSolicitada: item.fechaSolicitada,
           revisadoSub: item.revisadoSub,
-          status: statusid[item.status] || "Sin Estatus",// Handle unmapped values
+          status: statusid[item.status] || "Sin Estatus", // Handle unmapped values
           prioridad: prioridad[item.prioridad] || "Sin Prioridad",
           departamento: item.nomEmpleados.direccionesICEES.descripcion,
           ultimoStatus: ultimoStatus[item.ultimoStatus] || "",
         }));
 
         setRequests(mappedItems);
-
-    
 
         setFilteredData(response.data);
       })
@@ -335,12 +331,9 @@ function RequestTableSuperAdministrador() {
         // Other filters (departamento, status, prioridad, search term)
         const departmentMatch =
           selectedDepartamento === "" ||
-          item.departamento ===
-            selectedDepartamento;
+          item.departamento === selectedDepartamento;
         const serviceMatch =
-          selectedService === "" ||
-          item.servicioSolicitado ===
-            selectedService;
+          selectedService === "" || item.servicioSolicitado === selectedService;
         const statusMatch =
           SelectedStatus === "" || item.status === SelectedStatus;
         const priorityMatch =
@@ -348,12 +341,13 @@ function RequestTableSuperAdministrador() {
         const searchTermMatch =
           item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.servicioSolicitado.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.servicioSolicitado
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
           item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.prioridad.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.departamento.toLowerCase().includes(searchTerm.toLowerCase())||
+          item.departamento.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.ultimoStatus.toLowerCase().includes(searchTerm.toLowerCase());
-
 
         // Return true only if all conditions match
         return (
@@ -401,7 +395,7 @@ function RequestTableSuperAdministrador() {
 
     try {
       const response = await axios.put(
-        process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`,
+        process.env.REACT_APP_API_URL + `Request/${REQUESTID}`,
         data,
         {
           headers: {
@@ -411,11 +405,33 @@ function RequestTableSuperAdministrador() {
       ); //
 
       UpdateTableRequest();
-    } catch (error) {
-    }
+    } catch (error) {}
+
+
+    const fechaPrioridad = DateTime.now();
+
+
+    const data2 = {
+      quien:FirmaJefeDepartamento,
+      prioridad:prioridad,
+      fechaPrioridad:fechaPrioridad,
+      sS_SolicitudId:REQUESTID,
+    };
+
+    try {
+      const response = await axios.post(
+        process.env.REACT_APP_API_URL + `HistorialPrioridad/`,
+        data2,
+        {
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
+    } catch (error) {}
   };
 
- /* const statusid = {
+  /* const statusid = {
     1: "Activo",
     2: "Inactivo",
     3: "Revertido",
@@ -434,9 +450,16 @@ function RequestTableSuperAdministrador() {
     4: "SuperAdministrador",
   };*/
 
+  const [showModal, setShowModal] = useState(false);
+  const [requestId, setRequestId] = useState(null);
+
+  const handleShowModal = (id) => {
+    setRequestId(id);
+    setShowModal(true);
+  };
+
   return (
-    
-    <div >
+    <div>
       <UpdateForm></UpdateForm>
 
       {loading && (
@@ -496,24 +519,19 @@ function RequestTableSuperAdministrador() {
 
                   <th style={{ width: "160px" }}>Prioridad</th>
                   <th style={{ width: "150px" }}>Departamento</th>
-                  <th style={{ width: "100px", textAlign: "center" }}>
+                  <th style={{ width: "150px", textAlign: "center" }}>
                     Acciones
                   </th>
                 </tr>
               </thead>
 
               <tbody>
-                {filteredData.map((request) => (
+                {filteredData.map((request, index) => (
                   //request.firmaJefeDepartamento !== "0" ? (
-                  <tr key={request.sS_SolicitudId}>
-                    <td>{request.sS_SolicitudId}</td>
+                  <tr key={index}>
+                    <td>{request.id}</td>
                     <td style={{ width: "150px" }}>{request.name}</td>
-                    <td>
-                      {
-                        request.sS_Servicio_Solicitados.descripcionServicio_Solicitado
-                          
-                      }
-                    </td>
+                    <td>{request.servicioSolicitado}</td>
 
                     <td
                       style={{
@@ -563,8 +581,6 @@ function RequestTableSuperAdministrador() {
                       )}
                     </td>
 
-         
-
                     <td>
                       <Button
                         variant=""
@@ -589,8 +605,6 @@ function RequestTableSuperAdministrador() {
                       </Button>
                     </td>
 
-
-         
                     <td>
                       {request.ultimoStatus && (
                         <Button
@@ -611,7 +625,6 @@ function RequestTableSuperAdministrador() {
                       )}
                     </td>
 
-         
                     <td style={{ width: "100px" }}>
                       <Button
                         variant=""
@@ -641,10 +654,7 @@ function RequestTableSuperAdministrador() {
                       <Button
                         variant=""
                         onClick={() =>
-                          handleShow(
-                            request.id,
-                            request.firmaEmpleado,
-                          )
+                          handleShow(request.id, request.firmaEmpleado)
                         }
                         style={{
                           backgroundColor: "#C5126D",
@@ -654,8 +664,30 @@ function RequestTableSuperAdministrador() {
                           icon={faEye}
                           style={{ color: "white" }}
                         />
+                      </Button> {" "}
+
+                      <Button
+                        variant=""
+                        onClick={() => handleShowModal(request.id)}
+                        style={{
+                          backgroundColor: "#C5126D",
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          style={{ color: "white" }}
+                        />
                       </Button>
+
+                      {showModal && (
+                        <HistorialStatus
+                          RequestID={requestId}
+                          show={showModal}
+                          onHide={() => setShowModal(false)}
+                        />
+                      )}
                     </td>
+                   
                   </tr>
                 ))}
               </tbody>
@@ -745,8 +777,7 @@ function RequestTableSuperAdministrador() {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            Agregar comentarios a la solicitud de :{" "}
-            {firmaEmpleado}
+            Agregar comentarios a la solicitud de : {firmaEmpleado}
           </Modal.Title>
         </Modal.Header>
 

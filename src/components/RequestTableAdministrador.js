@@ -34,9 +34,8 @@ function RequestTableAdministrador() {
   const [SelectPrioridad, setSelectPrioridad] = useState("");
   const [DateSystem, setDateSystem] = useState("");
   const [RangeComparationDate, setRangeComparationDate] = useState("");
-  const [requestOptions,setRequestOptions] = useState("");
+  const [requestOptions, setRequestOptions] = useState("");
   const [selectedService, setSelectedServicio] = useState("");
-
 
   const FirmaJefeDepartamento =
     localStorage.getItem("nomEmpNombre") +
@@ -54,7 +53,6 @@ function RequestTableAdministrador() {
     setShow(false);
     setLoading2(false);
     setPrioridad(0);
-
   };
 
   const handleClose2 = () => {
@@ -67,23 +65,20 @@ function RequestTableAdministrador() {
   const showRequest2 = async (requestID) => {
     try {
       const response = await axios.get(
-        process.env.REACT_APP_API_URL+ `Request/${requestID}`
+        process.env.REACT_APP_API_URL + `Request/${requestID}`
       );
 
       setShowRequest(response.data);
-      setHistorials(response.data.historials);
+      setHistorials(response.data.historialComentarios);
       setLoading2(true);
     } catch (error) {
       console.error("Error updating the Request:", error);
     }
   };
 
-  const [firmaEmpleado,setFirmaEmpleado] = useState('');
+  const [firmaEmpleado, setFirmaEmpleado] = useState("");
 
-  const handleShow = async (
-    requestID,
-    firmaEmpleado,
-  ) => {
+  const handleShow = async (requestID, firmaEmpleado) => {
     setShow(true);
     setFirmaEmpleado(firmaEmpleado);
     SETREQUESTID(requestID);
@@ -107,7 +102,6 @@ function RequestTableAdministrador() {
 
     const data = new FormData();
 
-
     try {
       if (showRequest.firmaJefeDepartamento === FirmaJefeDepartamento) {
         toast.error("Formulario ya firmado");
@@ -120,32 +114,50 @@ function RequestTableAdministrador() {
         data.append("prioridad", prioridad);
 
         const response = await axios.put(
-          process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`,
+          process.env.REACT_APP_API_URL + `Request/${REQUESTID}`,
           data,
           {
             headers: {
               "content-type": "application/json",
             },
-
           }
-          
-          
         );
-        UpdateTableRequest();
-        setPrioridad(0);
 
+        const fechaPrioridad = DateTime.now();
+
+
+        const data2 = {
+          quien:FirmaJefeDepartamento,
+          prioridad:prioridad,
+          fechaPrioridad:fechaPrioridad,
+          sS_SolicitudId:REQUESTID,
+        };
+
+        try {
+          const response = await axios.post(
+            process.env.REACT_APP_API_URL + `HistorialPrioridad/`,
+            data2,
+            {
+              headers: {
+                "content-type": "application/json",
+              },
+            }
+          );
+        } catch (error) {}
 
         
 
+        UpdateTableRequest();
+        setPrioridad(0);
+
         const email = showRequest?.nomEmpleados?.usuario?.email;
         if (!email) {
-            throw new Error("Email is not available for the user.");
+          throw new Error("Email is not available for the user.");
         }
 
         const response2 = await axios.post(
-          process.env.REACT_APP_API_URL+ `email/FirmaAdministradorEmail/${encodeURIComponent(
-            email
-          )}/`,
+          process.env.REACT_APP_API_URL +
+            `email/FirmaAdministradorEmail/${encodeURIComponent(email)}/`,
           {},
           {
             headers: {
@@ -165,7 +177,6 @@ function RequestTableAdministrador() {
 
   const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
   const handleSubmitComentarios = async (e) => {
-    
     e.preventDefault();
 
     // Get the current date in GMT-7
@@ -204,13 +215,13 @@ function RequestTableAdministrador() {
       fecha: currentFecha,
       comentarios: comentarios.trim(),
       remitente: AreaAdministrativa,
-      RequestID: REQUESTID,
+      SS_SolicitudId: REQUESTID,
     };
 
     try {
       // Send the POST request to save the historial
       const response = await axios.post(
-        process.env.REACT_APP_API_URL+ `Historial/`,
+        process.env.REACT_APP_API_URL + `Historial/`,
         data,
         {
           headers: {
@@ -219,14 +230,13 @@ function RequestTableAdministrador() {
         }
       );
 
-
       // Refresh the request after successfully posting the comment
       try {
         const response = await axios.get(
-          process.env.REACT_APP_API_URL+ `Request/${REQUESTID}`
+          process.env.REACT_APP_API_URL + `Request/${REQUESTID}`
         );
         setShowRequest(response.data);
-        setHistorials(response.data.historials);
+        setHistorials(response.data.historialComentarios);
         setLoading2(true);
       } catch (error) {
         console.error("Error actualizando la solicitud:", error);
@@ -236,12 +246,13 @@ function RequestTableAdministrador() {
     }
 
     // Send email notification after submitting the comment
- 
+
     try {
       const response = await axios.post(
-        process.env.REACT_APP_API_URL+ `email/EmailComentario/${encodeURIComponent(
-          showRequest.nomEmpleados.usuario.email
-        )}/`,
+        process.env.REACT_APP_API_URL +
+          `email/EmailComentario/${encodeURIComponent(
+            showRequest.nomEmpleados.usuario.email
+          )}/`,
         {},
         {
           headers: {
@@ -260,7 +271,7 @@ function RequestTableAdministrador() {
 
   const UpdateTableRequest = () => {
     axios
-      .get(process.env.REACT_APP_API_URL+ `Request/`)
+      .get(process.env.REACT_APP_API_URL + `Request/`)
       .then((response) => {
         setLoading(false);
 
@@ -269,7 +280,7 @@ function RequestTableAdministrador() {
             request.nomEmpleados.direccionesICEES.descripcion ===
             AreaAdministrativa
         );
-        const data = (response.data);
+        const data = response.data;
 
         const statusid = {
           1: "Activo",
@@ -278,39 +289,35 @@ function RequestTableAdministrador() {
           4: "Finalizado",
           5: "cancelado",
         };
-      
+
         const prioridad = {
           1: "Baja",
           2: "Media",
           3: "Alta",
           0: "Sin prioridad",
         };
-      
 
-        const mappedItems = data.map(item => ({
-          id: item.id,
+        const mappedItems = data.map((item) => ({
+          id: item.sS_SolicitudId,
           name: item.firmaEmpleado,
-          servicioSolicitado: item.servicio_Solicitado.descripcionServicio_Solicitado,
+          servicioSolicitado:
+            item.sS_Servicio_Solicitados.descripcionServicio_Solicitado,
+
           descripcion: item.descripcion,
           fechaSolicitada: item.fechaSolicitada,
-          status: statusid[item.status] || "Sin Estatus",// Handle unmapped values
+          status: statusid[item.status] || "Sin Estatus", // Handle unmapped values
           prioridad: prioridad[item.prioridad] || "Sin Prioridad",
         }));
 
-        setRequests(mappedItems);        
+        setRequests(mappedItems);
         setFilteredData(filteredRequest);
 
-
         const options = response.data.map((item) => ({
-           value: item.servicio_Solicitado,
-           label: item.servicio_Solicitado.descripcionServicio_Solicitado,
+          value: item.sS_Servicio_Solicitados,
+          label: item.sS_Servicio_Solicitados.descripcionServicio_Solicitado,
         }));
 
-        setRequestOptions([
-          { value: "", label:"toda solicitud"},
-              ...options
-        ]);
-
+        setRequestOptions([{ value: "", label: "toda solicitud" }, ...options]);
       })
       .catch((error) => {
         //console.log("error to get the request", error);
@@ -346,18 +353,26 @@ function RequestTableAdministrador() {
           SelectedStatus === "" || item.status === SelectedStatus;
         const priorityMatch =
           SelectPrioridad === "" || item.prioridad === SelectPrioridad;
-        const serviceMatch = selectedService === "" || item.servicioSolicitado === selectedService;
+        const serviceMatch =
+          selectedService === "" || item.servicioSolicitado === selectedService;
 
-      
         const searchTermMatch =
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.servicioSolicitado.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.prioridad.toLowerCase().includes(searchTerm.toLowerCase());
+          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.servicioSolicitado
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.prioridad.toLowerCase().includes(searchTerm.toLowerCase());
 
         // Return true only if all conditions match
-        return dateMatch && statusMatch && priorityMatch && searchTermMatch && serviceMatch;
+        return (
+          dateMatch &&
+          statusMatch &&
+          priorityMatch &&
+          searchTermMatch &&
+          serviceMatch
+        );
       });
 
       setFilteredData(filtered);
@@ -381,16 +396,14 @@ function RequestTableAdministrador() {
       [name]: value,
     }));
   };
- 
-  const [prioridad,setPrioridad] =useState(0);
+
+  const [prioridad, setPrioridad] = useState(0);
 
   const handleChange2 = (prioridad) => {
-
     setPrioridad(prioridad);
-   
   };
 
- /* const statusid = {
+  /* const statusid = {
     1: "Activo",
     2: "Inactivo",
     3: "Revertido",
@@ -464,8 +477,8 @@ function RequestTableAdministrador() {
             </thead>
 
             <tbody>
-              {filteredData.map((request) => (
-                <tr key={request.id}>
+              {filteredData.map((request, index) => (
+                <tr key={index}>
                   <td>{request.name}</td>
                   <td>{request.servicioSolicitado}</td>
                   <td
@@ -490,31 +503,27 @@ function RequestTableAdministrador() {
                   </td>
                   <td>
                     {" "}
-
-     
                     <Button
-                        variant=""
-                        style={{
-                          color: "white",
-                          width: "100px",
-                          backgroundColor:
-                            request.status === "Activo"
-                              ? "#217ABF"
-                              : request.status === "Inactivo"
-                              ? "#DC7F37"
-                              : request.status === "Revertido"
-                              ? "#999999"
-                              : request.status === "Finalizado"
-                              ? "#237469"
-                               : request.status === "cancelado"
-                              ? "#DC7F37"
-                              : "",
-                        }}
-                      >
-
-
-                  {request.status}
-                  </Button>
+                      variant=""
+                      style={{
+                        color: "white",
+                        width: "100px",
+                        backgroundColor:
+                          request.status === "Activo"
+                            ? "#217ABF"
+                            : request.status === "Inactivo"
+                            ? "#DC7F37"
+                            : request.status === "Revertido"
+                            ? "#999999"
+                            : request.status === "Finalizado"
+                            ? "#237469"
+                            : request.status === "cancelado"
+                            ? "#DC7F37"
+                            : "",
+                      }}
+                    >
+                      {request.status}
+                    </Button>
                   </td>
                   <td>
                     <Button
@@ -534,18 +543,13 @@ function RequestTableAdministrador() {
                             : "", // Default (empty) if not "Alta" or "Media"
                       }}
                     >
-                  {request.prioridad}
-                  </Button>
+                      {request.prioridad}
+                    </Button>
                   </td>
                   <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                     <Button
                       variant=""
-                      onClick={() =>
-                        handleShow(
-                          request.id,
-                          request.name
-                        )
-                      }
+                      onClick={() => handleShow(request.id, request.name)}
                       style={{
                         backgroundColor: "#C5126D",
                         margin: "0 auto",
@@ -566,10 +570,7 @@ function RequestTableAdministrador() {
       {loading2 && (
         <Modal show={show} onHide={handleClose} animation={false} size="xl">
           <Modal.Header closeButton>
-            <Modal.Title>
-              Solicitud del usuario:{" "}
-              {firmaEmpleado}
-            </Modal.Title>
+            <Modal.Title>Solicitud del usuario: {firmaEmpleado}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {loading2 && <FormSolicitudTable showRequest={showRequest} />}
@@ -638,8 +639,7 @@ function RequestTableAdministrador() {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            Agregar comentarios a la solicitud de :{" "}
-            {firmaEmpleado}
+            Agregar comentarios a la solicitud de : {firmaEmpleado}
           </Modal.Title>
         </Modal.Header>
 
@@ -648,17 +648,16 @@ function RequestTableAdministrador() {
 
           <br />
           <br />
-          
-            <Form.Label>AGREGA LOS COMENTARIOS AQUI</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              name="comentarios"
-              placeholder="agrega los comentarios aqui"
-              onChange={handleChange}
-              required
-            />
-          
+
+          <Form.Label>AGREGA LOS COMENTARIOS AQUI</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            name="comentarios"
+            placeholder="agrega los comentarios aqui"
+            onChange={handleChange}
+            required
+          />
 
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose2}>

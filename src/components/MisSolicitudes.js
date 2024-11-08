@@ -136,7 +136,7 @@ function MisSolicitudes() {
                     <Button
                     variant=""
                       onClick={() => {
-                        handleShow2(Reques.id);
+                        handleShow2(Reques.sS_SolicitudId);
                         setShowModalHistoryComments(true);
                       }}
                       style={{ backgroundColor: "#C5126D" }}
