@@ -7,47 +7,61 @@ function HistorialStatus({ RequestID, show, onHide }) {
   const [HistorialPrioridad, setHistorialPrioridad] = useState([]);
 
 
-  console.log("RequestID:", RequestID);
-
   useEffect(() => {
     if (RequestID) {
       axios
-        .get(`${process.env.REACT_APP_API_URL}HistorialStatus/${RequestID}`)
+        .get(`${process.env.REACT_APP_API_URL}HistorialStatus/statusYprioridad/${RequestID}`)
         .then((response) => {
+
+          const statusid = {
+            1: "Activo",
+            2: "Inactivo",
+            3: "Revertido",
+            4: "Finalizado",
+            5: "Cancelado",
+          };
+  
+          const prioridad = {
+            1: "Baja",
+            2: "Media",
+            3: "Alta",
+            0: "Sin prioridad",
+          };
+
           // Confirm the response data is an array before setting it
-          if (Array.isArray(response.data)) {
-            setHistorialsStatus(response.data);
-            console.log("hola",response.data);
+          if (Array.isArray(response.data.status)) {
+              const StatusFormat = response.data.status.map((item)=> ({
+                   id: item.sS_HistorialStatusId ,
+                   quien: item.quien,
+                   status: statusid[item.status],
+                   fechaStatus: item.fechaSatus,
+
+              }));
+                
+        
+            setHistorialsStatus(StatusFormat);
           } else {
             console.error("Unexpected response format:", response.data);
             setHistorialsStatus([]); // Reset to an empty array on unexpected format
           }
-        })
+
+         // Format priority data
+         if (Array.isArray(response.data.prioridad)) {
+          const PrioridadFormat = response.data.prioridad.map((item) => ({
+            id: item.sS_HistorialPrioridadId,
+            quien: item.quien,
+            prioridad: prioridad[item.prioridad],
+            fechaPrioridad: item.fechaPrioridad,
+          }));
+          setHistorialPrioridad(PrioridadFormat);
+        } else {
+          console.error("Unexpected response format:", response.data);
+          setHistorialPrioridad([]);
+        }
+      })
         .catch((error) => {
           console.error("Error fetching historials:", error);
           setHistorialsStatus([]); // Reset to empty array on error
-        });
-    }
-  }, [RequestID]);
-
-
-  useEffect(() => {
-    if (RequestID) {
-      axios
-        .get(`${process.env.REACT_APP_API_URL}HistorialPrioridad/${RequestID}`)
-        .then((response) => {
-          // Confirm the response data is an array before setting it
-          if (Array.isArray(response.data)) {
-            setHistorialPrioridad(response.data);
-            console.log("hola",response.data);
-          } else {
-            console.error("Unexpected response format:", response.data);
-            setHistorialPrioridad([]); // Reset to an empty array on unexpected format
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching historials:", error);
-          setHistorialPrioridad([]); // Reset to empty array on error
         });
     }
   }, [RequestID]);
@@ -59,28 +73,51 @@ function HistorialStatus({ RequestID, show, onHide }) {
       </Modal.Header>
       <Modal.Body>
         <Table>
-          <thead> 
+          <thead>
             <tr>
-              <th>Estatus</th>
+              <th style={{width:"150px"}}>Estatus</th>
               <th>Quien</th>
-              <th>Fecha</th>
+              <th style={{width:"150px"}}>Fecha </th>
             </tr>
           </thead>
           <tbody>
-            {historialStatus && historialStatus.length > 0 ? (
-              historialStatus.map((item) => (
-                <tr key={item.sS_HistorialStatusId}>
-                  <td>{item.status ?? "No status available"}</td>
+            {historialStatus.length > 0 ? (
+              historialStatus.map((item, index) => (
+                <tr key={index}>
+                  <td>
+                    <Button
+                      variant=""
+                      style={{
+                        color: "white",
+                        width: "120px",
+                        backgroundColor:
+                          item.status === "Activo"
+                            ? "#217ABF"
+                            : item.status === "Cancelado"
+                            ? "#DC7F37"
+                            : item.status === "Inactivo"
+                            ? "#999999"
+                            : item.status === "Finalizado"
+                            ? "#237469"
+                            : item.status === "Revertido"
+                            ? "#DC7F37"
+                            : "",
+                      }}
+                    >
+                      {item.status}
+                    </Button>
+                  </td>
                   <td>{item.quien ?? "No data"}</td>
                   <td>
-                    {item.fechaSatus
-                      ? new Date(item.fechaSatus).toLocaleDateString('es-ES', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      }):"no disponible"}
+                    {item.fechaStatus
+                      ? new Date(item.fechaStatus).toLocaleDateString("es-ES", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "No disponible"}
                   </td>
                 </tr>
               ))
@@ -95,28 +132,52 @@ function HistorialStatus({ RequestID, show, onHide }) {
         </Table>
 
         <Table>
-          <thead> 
+          <thead>
             <tr>
-              <th>Prioridad</th>
+              <th style={{width:"150px"}}>Prioridad</th>
               <th>Quien</th>
-              <th>Fecha</th>
+              <th style={{width:"150px"}}>Fecha </th>
             </tr>
           </thead>
           <tbody>
-            {HistorialPrioridad && HistorialPrioridad.length > 0 ? (
-              HistorialPrioridad.map((item) => (
-                <tr key={item.sS_HistorialPrioridadId}>
-                  <td>{item.prioridad ?? "No status available"}</td>
+            {HistorialPrioridad.length > 0 ? (
+              HistorialPrioridad.map((item, index) => (
+                <tr key={index}>
+                  <td style={{ width: "100px" }}>
+                    <Button
+                      variant=""
+                      style={{
+                        color: "white",
+                        width: "120px",
+                        backgroundColor:
+                          item.prioridad === "Alta"
+                            ? "#C5126D"
+                            : item.prioridad === "Media"
+                            ? "#DC7F37"
+                            : item.prioridad === "Baja"
+                            ? "#217ABF"
+                            : item.prioridad === "Sin prioridad"
+                            ? "#999999"
+                            : "",
+                      }}
+                    >
+                      {item.prioridad}
+                    </Button>
+                  </td>
                   <td>{item.quien ?? "No data"}</td>
                   <td>
                     {item.fechaPrioridad
-                      ? new Date(item.fechaPrioridad).toLocaleDateString('es-ES', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      }):"no disponible"}
+                      ? new Date(item.fechaPrioridad).toLocaleDateString(
+                          "es-ES",
+                          {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )
+                      : "No disponible"}
                   </td>
                 </tr>
               ))
@@ -130,11 +191,6 @@ function HistorialStatus({ RequestID, show, onHide }) {
           </tbody>
         </Table>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
-          Close
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 }

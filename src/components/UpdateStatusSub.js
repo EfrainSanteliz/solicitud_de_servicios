@@ -25,6 +25,8 @@ function UpdateStatus({
     const data = {
      status:newStatus,
      ultimoStatus:UserRole,
+     revisadoSub:true,
+
     };
 
     const data2 = {

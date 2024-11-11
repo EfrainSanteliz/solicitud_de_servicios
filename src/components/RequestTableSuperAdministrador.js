@@ -744,8 +744,7 @@ function RequestTableSuperAdministrador() {
                   backgroundColor: "#DC7F37",
                   color: "white",
                 }}
-                onChange={handleChange}
-                onClick={(e) => {
+                onChange={(e) => {
                   handleUpdatePrioridad(e.target.value);
                 }}
                 name="prioridad"
