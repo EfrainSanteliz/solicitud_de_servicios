@@ -3,8 +3,7 @@ import axios from "axios";
 import { Spinner, Alert, Table, Button, Modal, Form } from "react-bootstrap";
 import FormSolicitudTable from "./FormSolicitudTable";
 import HistoryComments from "./HistoryComments";
-import { toast } from "react-toastify";
-import { DataTime, DateTime } from "luxon";
+import {  DateTime } from "luxon";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SearchBar from "./SearchBar";
@@ -14,7 +13,8 @@ import {
   showSueccesAlertAutorizar,
   showErrorAlerAutorizar,
 } from "./AlertService";
-import UpdateForm from "./UpdateForm";
+import { EstablescaPrioridad } from "./AlertService";
+import { FormularioYaFirmado } from "./AlertService";
 
 function RequestTableAdministrador() {
   const [requests, setRequests] = useState([]);
@@ -104,9 +104,9 @@ function RequestTableAdministrador() {
 
     try {
       if (showRequest.firmaJefeDepartamento === FirmaJefeDepartamento) {
-        toast.error("Formulario ya firmado");
+        FormularioYaFirmado();
       } else if (prioridad === 0) {
-        toast.error("Elija un nivel de prioridad antes de firmar");
+        EstablescaPrioridad();
       } else {
         showLoadingAlertAutorizar();
 
@@ -285,7 +285,7 @@ function RequestTableAdministrador() {
         const statusid = {
           1: "Activo",
           2: "Inactivo",
-          3: "Revertido",
+          3: "Devolucion",
           4: "Finalizado",
           5: "cancelado",
         };
@@ -513,7 +513,7 @@ function RequestTableAdministrador() {
                             ? "#217ABF"
                             : request.status === "Inactivo"
                             ? "#DC7F37"
-                            : request.status === "Revertido"
+                            : request.status === "Devolucion"
                             ? "#999999"
                             : request.status === "Finalizado"
                             ? "#237469"

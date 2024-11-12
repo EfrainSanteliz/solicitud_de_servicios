@@ -164,7 +164,7 @@ function UpdateForm() {
       try {
         for (let row of modifiedData) {
           const response = await axios.put(
-            process.env.REACT_APP_API_URL+`Solicitud_de_servicio/${row.solicitud_de_servicio_id}`,
+            process.env.REACT_APP_API_URL+`Solicitud_de_servicio/${row.sS_Solicitud_de_servicio_id}`,
             row
           );
         }
@@ -204,7 +204,7 @@ function UpdateForm() {
       try {
         for (let row of modifiedData2) {
           const response = await axios.put(
-            process.env.REACT_APP_API_URL+`ServicioSolicitado/${row.sS_servicio_solicidato_Id}`,
+            process.env.REACT_APP_API_URL+`ServicioSolicitado/${row.sS_Servicio_solicitado_Id}`,
             row
           );
         }

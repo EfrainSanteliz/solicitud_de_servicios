@@ -73,7 +73,7 @@ function MisSolicitudes() {
   const statusid = {
     1: "Activo",
     2: "Inactivo",
-    3: "Revertido",
+    3: "Devolucion",
     4: "Finalizado",
     5: "cancelado",
   };

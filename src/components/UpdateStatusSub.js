@@ -32,7 +32,7 @@ function UpdateStatus({
     const data2 = {
       status:newStatus,
       quien:nombre,
-      fechaSatus:fechaSatus,
+      fechaStatus:fechaSatus,
       SS_SolicitudId:showRequest.sS_SolicitudId,
      };
 
@@ -87,7 +87,7 @@ function UpdateStatus({
         <option value="">status</option>
         <option value="1">Activo</option>
         <option value="2">Inactivo</option>
-        <option value="3">Revertido</option>
+        <option value="3">Devolucion</option>
         <option value="4">Finalizado</option>
         <option value="5">Cancelado</option>
 

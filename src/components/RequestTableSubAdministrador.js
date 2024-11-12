@@ -66,7 +66,7 @@ function RequestTable() {
       );
 
       setShowRequest(response.data);
-      setHistorials(response.data.historials);
+      setHistorials(response.data.historialComentarios);
 
       setLoading2(true);
     } catch (error) {
@@ -203,9 +203,9 @@ function RequestTable() {
         const statusid = {
           1: "Activo",
           2: "Inactivo",
-          3: "Revertido",
+          3: "Devolucion",
           4: "Finalizado",
-          5: "cancelado",
+          5: "Cancelado",
         };
 
         const prioridad = {
@@ -337,7 +337,6 @@ function RequestTable() {
     setShowModal(true);
   };
 
-
   return (
     <div>
       {/*<UpdateForm></UpdateForm>*/}
@@ -396,8 +395,11 @@ function RequestTable() {
 
                 <th style={{ width: "160px" }}>Prioridad</th>
                 <th style={{ width: "150px" }}>Departamento</th>
-                <th style={{ width: "150px", textAlign: "center" }}>
+                <th style={{ width: "100px", textAlign: "center" }}>
                   Acciones
+                </th>
+                <th style={{ width: "100px", textAlign: "center" }}>
+                  Historial
                 </th>
               </tr>
             </thead>
@@ -446,29 +448,27 @@ function RequestTable() {
                     </td>
 
                     <td>
-                      
-                        <Button
-                          variant=""
-                          style={{
-                            color: "white",
-                            width: "100px",
-                            backgroundColor:
-                              request.status === "Activo"
-                                ? "#217ABF"
-                                : request.status === "Cancelado"
-                                ? "#DC7F37"
-                                : request.status === "Inactivo"
-                                ? "#999999"
-                                : request.status === "Finalizado"
-                                ? "#237469"
-                                : request.status === "Revertido"
-                                ? "#DC7F37"
-                                : "",
-                          }}
-                        >
-                          {request.status}
-                        </Button>
-                      
+                      <Button
+                        variant=""
+                        style={{
+                          color: "white",
+                          width: "100px",
+                          backgroundColor:
+                            request.status === "Activo"
+                              ? "#217ABF"
+                              : request.status === "Cancelado"
+                              ? "#DC7F37"
+                              : request.status === "Inactivo"
+                              ? "#999999"
+                              : request.status === "Finalizado"
+                              ? "#237469"
+                              : request.status === "Devolucion"
+                              ? "#DC7F37"
+                              : "",
+                        }}
+                      >
+                        {request.status}
+                      </Button>
                     </td>
 
                     <td>
@@ -528,8 +528,18 @@ function RequestTable() {
                           icon={faEye}
                           style={{ color: "white" }}
                         />
-                      </Button>{' '}
-
+                      </Button>{" "}
+                      {showModal && (
+                        <HistorialStatus
+                          RequestID={requestId}
+                          show={showModal}
+                          onHide={() => setShowModal(false)}
+                        />
+                      )}
+                    </td>
+                    <td
+                      style={{ textAlign: "center", verticalAlign: "middle" }}
+                    >
                       <Button
                         variant=""
                         onClick={() => handleShowModal(request.id)}
@@ -542,14 +552,6 @@ function RequestTable() {
                           style={{ color: "white" }}
                         />
                       </Button>
-
-                      {showModal && (
-                        <HistorialStatus
-                          RequestID={requestId}
-                          show={showModal}
-                          onHide={() => setShowModal(false)}
-                        />
-                      )}
                     </td>
                   </tr>
                 )

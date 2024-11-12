@@ -263,9 +263,9 @@ function RequestTableSuperAdministrador() {
         const statusid = {
           1: "Activo",
           2: "Inactivo",
-          3: "Revertido",
+          3: "Devolucion",
           4: "Finalizado",
-          5: "cancelado",
+          5: "Cancelado",
         };
 
         const prioridad = {
@@ -519,8 +519,11 @@ function RequestTableSuperAdministrador() {
 
                   <th style={{ width: "160px" }}>Prioridad</th>
                   <th style={{ width: "150px" }}>Departamento</th>
-                  <th style={{ width: "150px", textAlign: "center" }}>
+                  <th style={{ width: "100px", textAlign: "center" }}>
                     Acciones
+                  </th>
+                  <th style={{width: "100px",textAlign:"center"}} >
+                    Historial
                   </th>
                 </tr>
               </thead>
@@ -596,7 +599,7 @@ function RequestTableSuperAdministrador() {
                               ? "#999999"
                               : request.status === "Finalizado"
                               ? "#237469"
-                              : request.status === "Revertido"
+                              : request.status === "Devolucion"
                               ? "#DC7F37"
                               : "",
                         }}
@@ -666,7 +669,12 @@ function RequestTableSuperAdministrador() {
                         />
                       </Button> {" "}
 
-                      <Button
+                     
+                    </td>
+
+                    <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+
+                    <Button
                         variant=""
                         onClick={() => handleShowModal(request.id)}
                         style={{
@@ -686,6 +694,8 @@ function RequestTableSuperAdministrador() {
                           onHide={() => setShowModal(false)}
                         />
                       )}
+
+                      
                     </td>
                    
                   </tr>
@@ -750,7 +760,7 @@ function RequestTableSuperAdministrador() {
                 name="prioridad"
                 defaultValue={showRequest.prioridad}
               >
-                <option value="0">Sin Asignar</option>
+                <option value="0">Sin Prioridad</option>
                 <option value="1">Baja</option>
                 <option value="2">Media</option>
                 <option value="3">Alta</option>

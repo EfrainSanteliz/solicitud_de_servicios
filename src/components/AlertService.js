@@ -75,3 +75,23 @@ export const SendtFormFailed = () => {
       });
 
 };
+
+export const FormularioYaFirmado = () => {
+
+  MySwal.fire({
+      title: "Error!",
+      text: "Formulario Ya Firmado.",
+      icon: "error",
+      confirmButtonText: "ok",
+    });
+
+};
+
+export const EstablescaPrioridad = () => {
+  MySwal.fire({
+    title: "Error!",
+    text: "Establesca un nivel de prioridad antes de firmar.",
+    icon: "error",
+    confirmButtonText: "ok",
+  });
+};

@@ -6,21 +6,21 @@ function HistorialStatus({ RequestID, show, onHide }) {
   const [historialStatus, setHistorialsStatus] = useState([]);
   const [HistorialPrioridad, setHistorialPrioridad] = useState([]);
 
-
   useEffect(() => {
     if (RequestID) {
       axios
-        .get(`${process.env.REACT_APP_API_URL}HistorialStatus/statusYprioridad/${RequestID}`)
+        .get(
+          `${process.env.REACT_APP_API_URL}HistorialStatus/statusYprioridad/${RequestID}`
+        )
         .then((response) => {
-
           const statusid = {
             1: "Activo",
             2: "Inactivo",
-            3: "Revertido",
+            3: "Devolucion",
             4: "Finalizado",
             5: "Cancelado",
           };
-  
+
           const prioridad = {
             1: "Baja",
             2: "Media",
@@ -30,35 +30,33 @@ function HistorialStatus({ RequestID, show, onHide }) {
 
           // Confirm the response data is an array before setting it
           if (Array.isArray(response.data.status)) {
-              const StatusFormat = response.data.status.map((item)=> ({
-                   id: item.sS_HistorialStatusId ,
-                   quien: item.quien,
-                   status: statusid[item.status],
-                   fechaStatus: item.fechaSatus,
+            const StatusFormat = response.data.status.map((item) => ({
+              id: item.sS_HistorialStatusId,
+              quien: item.quien,
+              status: statusid[item.status],
+              fechaStatus: item.fechaStatus,
+            }));
 
-              }));
-                
-        
             setHistorialsStatus(StatusFormat);
           } else {
             console.error("Unexpected response format:", response.data);
             setHistorialsStatus([]); // Reset to an empty array on unexpected format
           }
 
-         // Format priority data
-         if (Array.isArray(response.data.prioridad)) {
-          const PrioridadFormat = response.data.prioridad.map((item) => ({
-            id: item.sS_HistorialPrioridadId,
-            quien: item.quien,
-            prioridad: prioridad[item.prioridad],
-            fechaPrioridad: item.fechaPrioridad,
-          }));
-          setHistorialPrioridad(PrioridadFormat);
-        } else {
-          console.error("Unexpected response format:", response.data);
-          setHistorialPrioridad([]);
-        }
-      })
+          // Format priority data
+          if (Array.isArray(response.data.prioridad)) {
+            const PrioridadFormat = response.data.prioridad.map((item) => ({
+              id: item.sS_HistorialPrioridadId,
+              quien: item.quien,
+              prioridad: prioridad[item.prioridad],
+              fechaPrioridad: item.fechaPrioridad,
+            }));
+            setHistorialPrioridad(PrioridadFormat);
+          } else {
+            console.error("Unexpected response format:", response.data);
+            setHistorialPrioridad([]);
+          }
+        })
         .catch((error) => {
           console.error("Error fetching historials:", error);
           setHistorialsStatus([]); // Reset to empty array on error
@@ -67,17 +65,18 @@ function HistorialStatus({ RequestID, show, onHide }) {
   }, [RequestID]);
 
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} onHide={onHide} animation={false} size="lg" backdrop={false}>
+
       <Modal.Header closeButton>
-        <Modal.Title>Historial Estatus y Prioridad</Modal.Title>
+        <Modal.Title>Historial Estatus y Prioridad. Solicitud ID: {RequestID}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Table>
           <thead>
             <tr>
-              <th style={{width:"150px"}}>Estatus</th>
-              <th>Quien</th>
-              <th style={{width:"150px"}}>Fecha </th>
+              <th style={{ width: "150px" }}>Estatus</th>
+              <th >Quien</th>
+              <th style={{ width: "150px" }}>Fecha </th>
             </tr>
           </thead>
           <tbody>
@@ -99,7 +98,7 @@ function HistorialStatus({ RequestID, show, onHide }) {
                             ? "#999999"
                             : item.status === "Finalizado"
                             ? "#237469"
-                            : item.status === "Revertido"
+                            : item.status === "Devolucion"
                             ? "#DC7F37"
                             : "",
                       }}
@@ -134,9 +133,9 @@ function HistorialStatus({ RequestID, show, onHide }) {
         <Table>
           <thead>
             <tr>
-              <th style={{width:"150px"}}>Prioridad</th>
-              <th>Quien</th>
-              <th style={{width:"150px"}}>Fecha </th>
+              <th style={{ width: "150px" }}>Prioridad</th>
+              <th >Quien</th>
+              <th style={{ width: "150px" }}>Fecha </th>
             </tr>
           </thead>
           <tbody>
@@ -190,6 +189,8 @@ function HistorialStatus({ RequestID, show, onHide }) {
             )}
           </tbody>
         </Table>
+
+        <Modal.Footer></Modal.Footer>
       </Modal.Body>
     </Modal>
   );
