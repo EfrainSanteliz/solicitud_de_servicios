@@ -3,7 +3,7 @@ import axios from "axios";
 import { Spinner, Alert, Table, Button, Modal, Form } from "react-bootstrap";
 import FormSolicitudTable from "./FormSolicitudTable";
 import HistoryComments from "./HistoryComments";
-import {  DateTime } from "luxon";
+import { DateTime } from "luxon";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SearchBar from "./SearchBar";
@@ -22,9 +22,6 @@ function RequestTableAdministrador() {
   const [loading, setLoading] = useState(true);
   const [loading2, setLoading2] = useState(false);
   const [error, setError] = useState(null);
-  const [nomEmpNombre, setNomEmpNombre] = useState("");
-  const [nomEmpPaterno, setNomEmpPaterno] = useState("");
-  const [nomEmpMaterno, setNomEmpMaterno] = useState("");
   const [REQUESTID, SETREQUESTID] = useState("");
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [Historials, setHistorials] = useState([]);
@@ -96,77 +93,84 @@ function RequestTableAdministrador() {
     status: "Activo",
   });
 
+  const Firmar = async (e) => {
+    const data = new FormData();
+
+    showLoadingAlertAutorizar();
+
+    data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
+   // console.log("prioridad" , showRequest.prioridad);
+    if(showRequest.prioridad === 0 ) {
+
+      data.append("prioridad", prioridad);
+    }
+
+    const response = await axios.put(
+      process.env.REACT_APP_API_URL + `Request/${REQUESTID}`,
+      data,
+      {
+        headers: {
+          "content-type": "application/json",
+        },
+      }
+    );
+
+    const fechaPrioridad = DateTime.now();
+
+    const data2 = {
+      quien: FirmaJefeDepartamento,
+      prioridad: prioridad,
+      fechaPrioridad: fechaPrioridad,
+      sS_SolicitudId: REQUESTID,
+    };
+
+    try {
+      const response = await axios.post(
+        process.env.REACT_APP_API_URL + `HistorialPrioridad/`,
+        data2,
+        {
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
+    } catch (error) {}
+
+    UpdateTableRequest();
+    setPrioridad(0);
+
+    const email = showRequest?.nomEmpleados?.usuario?.email;
+    if (!email) {
+      throw new Error("Email is not available for the user.");
+    }
+
+    const response2 = await axios.post(
+      process.env.REACT_APP_API_URL +
+        `email/FirmaAdministradorEmail/${encodeURIComponent(email)}/`,
+      {},
+      {
+        headers: {
+          "content-type": "application/json",
+        },
+      }
+    );
+    showSueccesAlertAutorizar();
+    showRequest2(REQUESTID);
+  };
+
   const handleAutorizar = async (e) => {
     // const { prioridad } = formData;
     e.preventDefault();
 
-    const data = new FormData();
-
     try {
       if (showRequest.firmaJefeDepartamento === FirmaJefeDepartamento) {
         FormularioYaFirmado();
+      } else if (showRequest.prioridad !== 0) {
+        Firmar(e);
       } else if (prioridad === 0) {
         EstablescaPrioridad();
       } else {
-        showLoadingAlertAutorizar();
-
-        data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
-        data.append("prioridad", prioridad);
-
-        const response = await axios.put(
-          process.env.REACT_APP_API_URL + `Request/${REQUESTID}`,
-          data,
-          {
-            headers: {
-              "content-type": "application/json",
-            },
-          }
-        );
-
-        const fechaPrioridad = DateTime.now();
-
-
-        const data2 = {
-          quien:FirmaJefeDepartamento,
-          prioridad:prioridad,
-          fechaPrioridad:fechaPrioridad,
-          sS_SolicitudId:REQUESTID,
-        };
-
-        try {
-          const response = await axios.post(
-            process.env.REACT_APP_API_URL + `HistorialPrioridad/`,
-            data2,
-            {
-              headers: {
-                "content-type": "application/json",
-              },
-            }
-          );
-        } catch (error) {}
-
-        
-
-        UpdateTableRequest();
-        setPrioridad(0);
-
-        const email = showRequest?.nomEmpleados?.usuario?.email;
-        if (!email) {
-          throw new Error("Email is not available for the user.");
-        }
-
-        const response2 = await axios.post(
-          process.env.REACT_APP_API_URL +
-            `email/FirmaAdministradorEmail/${encodeURIComponent(email)}/`,
-          {},
-          {
-            headers: {
-              "content-type": "application/json",
-            },
-          }
-        );
-        showSueccesAlertAutorizar();
-        showRequest2(REQUESTID);
+        Firmar(e);
       }
     } catch (error) {
       //console.error("Error updating the Request:", error);
@@ -584,7 +588,6 @@ function RequestTableAdministrador() {
                 {" "}
                 Close{" "}
               </Button>
-
               <Button
                 variant=""
                 onClick={(e) => {
@@ -594,7 +597,6 @@ function RequestTableAdministrador() {
               >
                 Comentar
               </Button>
-
               <Button
                 variant="success"
                 onClick={handleAutorizar}
@@ -603,28 +605,29 @@ function RequestTableAdministrador() {
                 {" "}
                 Autorizar{" "}
               </Button>
-
-              <Form.Select
-                aria-label="Default select example"
-                style={{
-                  width: "120px",
-                  backgroundColor: "#DC7F37",
-                  color: "white",
-                }}
-                onChange={(e) => handleChange2(e.target.value)}
-                name="prioridad"
-                disabled={
-                  showRequest.prioridad === 1 ||
-                  showRequest.prioridad === 2 ||
-                  showRequest.prioridad === 3
-                } // Disable if prioridad is 1, 2, or 3
-                defaultValue={showRequest.prioridad}
-              >
-                <option value="0">Sin Prioridad</option>
-                <option value="1">Baja</option>
-                <option value="2">Media</option>
-                <option value="3">Alta</option>
-              </Form.Select>
+              {showRequest.prioridad === 0 && (
+                <Form.Select
+                  aria-label="Default select example"
+                  style={{
+                    width: "120px",
+                    backgroundColor: "#DC7F37",
+                    color: "white",
+                  }}
+                  onChange={(e) => handleChange2(e.target.value)}
+                  name="prioridad"
+                  /*disabled={
+                    showRequest.prioridad === 1 ||
+                    showRequest.prioridad === 2 ||
+                    showRequest.prioridad === 3
+                  } */// Disable if prioridad is 1, 2, or 3
+                  defaultValue={showRequest.prioridad}
+                >
+                  <option value="0">Sin Prioridad</option>
+                  <option value="1">Baja</option>
+                  <option value="2">Media</option>
+                  <option value="3">Alta</option>
+                </Form.Select>
+              )}
 
               <DownloadPdfAsp showRequest={showRequest}> </DownloadPdfAsp>
             </Modal.Footer>

@@ -8,7 +8,6 @@ function FormTable({ options2, list, loagding }) {
   //const [options2, setOptions2] = useState([]);
 
   const [selectedService, setSelectedService] = useState("");
-  const [message, setMessage] = useState("");
 
   // Obtener la fecha en formato año-mes-día y hora-minuto en GMT-7
 
@@ -33,9 +32,7 @@ function FormTable({ options2, list, loagding }) {
     setSelectedService(event.target.id);
   };
 
-  const [FirstResponse, setFirstResponse] = useState([]);
-  const [SecondResponse, setSecondResponse] = useState([]);
-  const [ThirdResponse, setThirdResponse] = useState([]);
+  
   //const [list,setList] = useState([]);
 
   const [error, setError] = useState(null);
@@ -74,44 +71,8 @@ function FormTable({ options2, list, loagding }) {
           ) : (
             <p></p>
           )}
-          {/*<div className="mb-3">
-              <Form.Check
-                inline
-               // label={FirstResponse.descripcionServicio_Solicitado}
-                name="servicioSolicitado" // Ensure this matches the state key
-                type="radio"
-               // value={FirstResponse.servicio_solicidato_Id}
           
-                id="inline-radio-1"
-                onChange={(e) => {
-                  handleRadioChange(e);
-                }}
-              />
-              <Form.Check
-                inline
-                //label={SecondResponse.descripcionServicio_Solicitado}
-                name="servicioSolicitado" // Ensure this matches the state key
-                type="radio"
-               // value={SecondResponse.servicio_solicidato_Id}
-                //checked={formData.servicioSolicitado === "Sistema Tecnologico"}
-                id="inline-radio-2"
-                onChange={(e) => {
-                  handleRadioChange(e);
-                }}
-              />
-              <Form.Check
-                inline
-              //  label={ThirdResponse.descripcionServicio_Solicitado}
-                name="servicioSolicitado" // Ensure this matches the state key
-                type="radio"
-                //value={ThirdResponse.servicio_solicidato_Id}
-                //checked={formData.servicioSolicitado === "Proyecto Nuevo"}
-                id="inline-radio-3"
-                onChange={(e) => {
-                  handleRadioChange(e);
-                }}
-              />
-            </div>*/}
+             
           <br></br>
           <Form.Label>Solicitud de servicio a realizar</Form.Label>
           {selectedService === "inline-radio-2" && (
