@@ -407,20 +407,7 @@ function RequestTableAdministrador() {
     setPrioridad(prioridad);
   };
 
-  /* const statusid = {
-    1: "Activo",
-    2: "Inactivo",
-    3: "Revertido",
-    4: "Finalizado",
-    5: "cancelado",
-  };
-
-  const prioridad = {
-    1: "Baja",
-    2: "Media",
-    3: "Alta",
  
-  };*/
 
   return (
     <div className="container mt-4">

@@ -55,7 +55,7 @@ function Login() {
 
 
 
-      localStorage.setItem("AreaAdministrativa", response.data.user.nomEmpleados.direccionesICEES.descripcion);
+      localStorage.setItem("AreaAdministrativa", response.data.user.nomEmpleados.DireccionesDescripcion);
 
   
 
