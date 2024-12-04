@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar2 from "./components/Navbar2";
 import ProtectedRoute from "./components/ProtectedRoute";
+import StoreUser from "./components/StoreUser";
 import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
 import WelcomeSubAdministrador from "./components/WelcomeSubAdministrador";
 function App() {
@@ -37,6 +38,11 @@ function App() {
             <Route
               path="/WelcomeSuperAdministrador"
               element={<ProtectedRoute requiredRole= {4}><WelcomeSuperAdministrador /></ProtectedRoute>}
+            />
+
+            <Route
+              path="/StoreUser"
+              element={<ProtectedRoute requiredRole= {4}><StoreUser /></ProtectedRoute>}
             />
 
           

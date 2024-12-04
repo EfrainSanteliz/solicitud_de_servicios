@@ -33,7 +33,7 @@ function UpdateForm() {
   const [Loaging2, setLoading2] = useState(true);
   const [Loaging3, setLoading3] = useState(true);
 
-  const [newRow, setNewRow] = useState({ descripcion: "", habilitado: "" });
+  const [newRow, setNewRow] = useState({ descripcionSolicitud_De_Servicio: "", habilitado: "" });
   const [newRow2, setNewRow2] = useState({
     descripcionServicio_Solicitado: "",
     habilitadoServicio_Solicitado: "",
@@ -172,7 +172,7 @@ function UpdateForm() {
       }
   
       // Add new row if there is data
-      if (newRow.descripcion !== "") {
+      if (newRow.descripcionSolicitud_De_Servicio !== "") {
         const formattedNewRow = {
           ...newRow,
           habilitado: newRow.habilitado === "true", // Convert habilitado to boolean
@@ -184,7 +184,7 @@ function UpdateForm() {
             formattedNewRow
           );
           setData((prevData) => [...prevData, response.data]);
-          setNewRow({ habilitado: "", descripcion: "" });
+          setNewRow({ habilitado: "", descripcionSolicitud_De_Servicio: "" });
         } catch (error) {
           console.error("Error adding new row:", error);
         }
@@ -256,7 +256,7 @@ function UpdateForm() {
           item.habilitado === true
             ? {
                 value: item.sS_Solicitud_de_servicio_id,
-                label: `${item.descripcion}`,
+                label: `${item.descripcionSolicitud_De_Servicio}`,
               }
             : null
         )
@@ -515,11 +515,11 @@ function UpdateForm() {
                                   type="text"
                                   style={{fontSize:"19px"}}
 
-                                  defaultValue={row.descripcion}
+                                  defaultValue={row.descripcionSolicitud_De_Servicio}
                                   onChange={(e) =>
                                     handleEdit(
                                       index,
-                                      "descripcion",
+                                      "descripcionSolicitud_De_Servicio",
                                       e.target.value
                                     )
                                   }
@@ -584,10 +584,10 @@ function UpdateForm() {
                               <Form.Control
                                 type="text"
                                 placeholder=""
-                                value={newRow.descripcion}
+                                value={newRow.descripcionSolicitud_De_Servicio}
                                 onChange={(e) =>
                                   handleNewRowChange(
-                                    "descripcion",
+                                    "descripcionSolicitud_De_Servicio",
                                     e.target.value
                                   )
                                 }

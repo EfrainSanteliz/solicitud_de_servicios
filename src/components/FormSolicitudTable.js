@@ -4,12 +4,9 @@ import Form from "react-bootstrap/Form";
 import "./styles.css";
 import axios from "axios";
 function FormSolicitudTable({ showRequest }) {
-  const fullyName =
-    showRequest.nomEmpleados.nomEmpNombre +
-    " " +
-    showRequest.nomEmpleados.nomEmpPaterno +
-    " " +
-    showRequest.nomEmpleados.nomEmpMaterno;
+  const fullyName = showRequest.firmaEmpleado;
+  console.log("nombre empleado:",fullyName);
+   
 
   const [imageURL, setImageURL] = useState([]);
 
@@ -18,10 +15,10 @@ function FormSolicitudTable({ showRequest }) {
 
 
   useEffect(() => {
-    if (showRequest.file) {
-      setImageURL(apiUrl2+`${showRequest.file}`);
+    if (showRequest.archivo) {
+      setImageURL(apiUrl2+`/${showRequest.archivo}`);
     }
-  }, [showRequest.file,apiUrl2]);
+  }, [showRequest.archivo,apiUrl2]);
 
 
 
@@ -102,16 +99,16 @@ function FormSolicitudTable({ showRequest }) {
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
             <Form.Label>Solicitud de servicio a realizar</Form.Label>
-            {showRequest.sS_Solicitud_de_servicios && (
+            {showRequest.descripcionSolicitud_De_Servicio && (
               <>
                 <Form.Control
                   as="select"
                   name="SolicitudDeServicioARealizar"
-                  value={showRequest.sS_Solicitud_de_servicios?.descripcion || ""}
+                  value={showRequest.descripcionSolicitud_De_Servicio}
                   disabled
                 >
                   <option>
-                    {showRequest.sS_Solicitud_de_servicios?.descripcion}
+                    {showRequest.descripcionSolicitud_De_Servicio}
                   </option>
                 </Form.Control>
               </>
@@ -140,7 +137,7 @@ function FormSolicitudTable({ showRequest }) {
               type="text"
               name="AreaAdministrativaRequirente"
               value={
-                showRequest.nomEmpleados.direccionesICEES.descripcion
+                showRequest.direccionesDescripcion
               }
               disabled
             />
@@ -177,7 +174,7 @@ function FormSolicitudTable({ showRequest }) {
             value={showRequest.descripcion}
             disabled
           />
-          {showRequest.file && (
+          {showRequest.archivo && (
             <div className="mt-3">
               <img
                 src={imageURL}

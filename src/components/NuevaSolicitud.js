@@ -101,7 +101,7 @@ function TextControlsExample() {
             item.habilitado === true
               ? {
                   value: item.sS_Solicitud_de_servicio_id,
-                  label: `${item.descripcion}`,
+                  label: `${item.descripcionSolicitud_De_Servicio}`,
                   key: item.sS_Solicitud_de_servicio_id, // Adding key property
 
                 }
@@ -215,7 +215,7 @@ function TextControlsExample() {
     data.append("servicioSolicitado", servicioSolicitado);
     data.append("fechaSolicitada", fechaSolicitada);
     data.append("descripcion", Descripcion);
-    data.append("status", Status);
+    data.append("estatus", Status);
     data.append("firmaEmpleado", FirmaEmpleado);
     data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
     data.append("firmaJefe", FirmaJefe);
@@ -227,8 +227,9 @@ function TextControlsExample() {
 
     // Add file only if it exists
     if (file) {
-      data.append("file", file); // Append the file to the form data
+      data.append("archivo", file); // Append the file to the form data
     }
+    console.log("archivo",file);
     if (ConActivosFijosId) {
       data.append("conActivosFijosId", ConActivosFijosId);
     }

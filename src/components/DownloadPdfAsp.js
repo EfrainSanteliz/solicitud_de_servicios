@@ -8,8 +8,6 @@ function DownloadPdfAsp({ showRequest }) {
     
     const [isLoading, setIsLoading] = useState(false);
 
-
-
     const handleDownloadPdf = async () => {
         setIsLoading(true);
         try {

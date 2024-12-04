@@ -65,7 +65,7 @@ function RequestTable() {
         process.env.REACT_APP_API_URL + `Request/${requestID}`
       );
 
-      setShowRequest(response.data);
+      setShowRequest(response.data.request);
       setHistorials(response.data.historialComentarios);
 
       setLoading2(true);
@@ -155,7 +155,7 @@ function RequestTable() {
         const response = await axios.get(
           process.env.REACT_APP_API_URL + `Request/${REQUESTID}`
         );
-        setShowRequest(response.data);
+        setShowRequest(response.data.request);
         setHistorials(response.data.historialComentarios);
         setLoading2(true);
       } catch (error) {
@@ -169,7 +169,7 @@ function RequestTable() {
       const response = await axios.post(
         process.env.REACT_APP_API_URL +
           `email/send-test-emailSub/${encodeURIComponent(
-            showRequest.nomEmpleados.usuario.email
+            showRequest.email
           )}`,
         {}, // Empty body
         {
@@ -198,7 +198,7 @@ function RequestTable() {
       .then((response) => {
         setLoading(false);
 
-        const data = response.data;
+        const data = response.data.request;
 
         const statusid = {
           1: "Activo",
@@ -223,23 +223,22 @@ function RequestTable() {
         const mappedItems = data.map((item) => ({
           id: item.sS_SolicitudId,
           name: item.firmaEmpleado,
-          servicioSolicitado:
-            item.sS_Servicio_Solicitados.descripcionServicio_Solicitado,
+          servicioSolicitado:item.descripcionServicio_Solicitado,
           descripcion: item.descripcion,
           fechaSolicitada: item.fechaSolicitada,
           revisadoSub: item.revisadoSub,
-          status: statusid[item.status] || "Sin Estatus", // Handle unmapped values
+          status: statusid[item.estatus] || "Sin Estatus", // Handle unmapped values
           prioridad: prioridad[item.prioridad] || "Sin Prioridad",
-          departamento: item.nomEmpleados.direccionesICEES.descripcion,
+          departamento: item.direccionesDescripcion,
           ultimoStatus: ultimoStatus[item.ultimoStatus] || "",
         }));
 
         setRequests(mappedItems);
-        setFilteredData(response.data);
+        setFilteredData(data);
 
-        const options = response.data.map((item) => ({
+        const options = data.map((item) => ({
           value: item.sS_Servicio_Solicitados,
-          label: item.sS_Servicio_Solicitados.descripcionServicio_Solicitado,
+          label: item.descripcionServicio_Solicitado,
         }));
 
         setRequestOptions([{ value: "", label: "Toda solicitud" }, ...options]);

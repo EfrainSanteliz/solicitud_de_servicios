@@ -16,6 +16,8 @@ import {
 } from "./AlertService";
 import UpdateForm from "./UpdateForm";
 import HistorialStatus from "./HistorialStatusPrioridad";
+import StoreUser from "./StoreUser";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function RequestTableSuperAdministrador() {
   const [requests, setRequests] = useState([]);
@@ -45,7 +47,7 @@ function RequestTableSuperAdministrador() {
     " " +
     localStorage.getItem("nomEmpMaterno");
   const UserRole = localStorage.getItem("UserRole");
-
+  console.log("firmaJefe", FirmaJefeDepartamento);
   const [show, setShow] = useState(false);
 
   const handleClose = () => {
@@ -64,7 +66,7 @@ function RequestTableSuperAdministrador() {
       );
 
       console.log("The show request get successfully");
-      setShowRequest(response.data);
+      setShowRequest(response.data.request);
       setHistorials(response.data.historialComentarios);
       setLoading2(true);
     } catch (error) {
@@ -127,7 +129,7 @@ function RequestTableSuperAdministrador() {
         }
       ); //
 
-      const email = showRequest?.nomEmpleados?.usuario?.email;
+      const email = showRequest?.email;
       if (!email) {
         throw new Error("Email is not available for the user.");
       }
@@ -218,7 +220,7 @@ function RequestTableSuperAdministrador() {
         const response = await axios.get(
           process.env.REACT_APP_API_URL + `Request/${REQUESTID}`
         );
-        setShowRequest(response.data);
+        setShowRequest(response.data.request);
         setHistorials(response.data.historialComentarios);
         setLoading2(true);
       } catch (error) {
@@ -233,9 +235,7 @@ function RequestTableSuperAdministrador() {
     try {
       const response = await axios.post(
         process.env.REACT_APP_API_URL +
-          `email/EmailComentario/${encodeURIComponent(
-            showRequest.nomEmpleados.usuario.email
-          )}/`,
+          `email/EmailComentario/${encodeURIComponent(showRequest.email)}/`,
         {},
         {
           headers: {
@@ -260,6 +260,8 @@ function RequestTableSuperAdministrador() {
 
         const data = response.data;
 
+        console.log("hola", data);
+
         const statusid = {
           1: "Activo",
           2: "Inactivo",
@@ -280,23 +282,22 @@ function RequestTableSuperAdministrador() {
           4: "SuperAdministrador",
         };
 
-        const mappedItems = data.map((item) => ({
+        const mappedItems = data.request.map((item) => ({
           id: item.sS_SolicitudId,
           name: item.firmaEmpleado,
-          servicioSolicitado:
-            item.sS_Servicio_Solicitados.descripcionServicio_Solicitado,
-          descripcion: item.descripcion,
+          servicioSolicitado: item.descripcionServicio_Solicitado,
+          descripcion: item.descripcion || "No description",
           fechaSolicitada: item.fechaSolicitada,
-          revisadoSub: item.revisadoSub,
-          status: statusid[item.status] || "Sin Estatus", // Handle unmapped values
+          revisadoSub: item.revisadoSub ? "Yes" : "No",
+          status: statusid[item.estatus] || "Sin Estatus",
           prioridad: prioridad[item.prioridad] || "Sin Prioridad",
-          departamento: item.nomEmpleados.direccionesICEES.descripcion,
+          departamento: item.direccionesDescripcion,
           ultimoStatus: ultimoStatus[item.ultimoStatus] || "",
         }));
 
         setRequests(mappedItems);
 
-        setFilteredData(response.data);
+        setFilteredData(response.data.request);
       })
       .catch((error) => {
         setError("El servidor no puede obtener las solicitudes");
@@ -407,15 +408,13 @@ function RequestTableSuperAdministrador() {
       UpdateTableRequest();
     } catch (error) {}
 
-
     const fechaPrioridad = DateTime.now();
 
-
     const data2 = {
-      quien:FirmaJefeDepartamento,
-      prioridad:prioridad,
-      fechaPrioridad:fechaPrioridad,
-      sS_SolicitudId:REQUESTID,
+      quien: FirmaJefeDepartamento,
+      prioridad: prioridad,
+      fechaPrioridad: fechaPrioridad,
+      sS_SolicitudId: REQUESTID,
     };
 
     try {
@@ -458,9 +457,22 @@ function RequestTableSuperAdministrador() {
     setShowModal(true);
   };
 
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate("/StoreUser");
+  };
+
   return (
     <div>
-      <UpdateForm></UpdateForm>
+      <div style={{ display: "flex" }}>
+        <div style={{marginRight:"2%"}}>
+          
+          <UpdateForm></UpdateForm>
+        </div>
+
+        <Button onClick={() => handleNavigate()}> Agregar Usuarios </Button>
+      </div>
 
       {loading && (
         <Spinner animation="border" role="status">
@@ -522,7 +534,7 @@ function RequestTableSuperAdministrador() {
                   <th style={{ width: "100px", textAlign: "center" }}>
                     Acciones
                   </th>
-                  <th style={{width: "100px",textAlign:"center"}} >
+                  <th style={{ width: "100px", textAlign: "center" }}>
                     Historial
                   </th>
                 </tr>
@@ -667,14 +679,13 @@ function RequestTableSuperAdministrador() {
                           icon={faEye}
                           style={{ color: "white" }}
                         />
-                      </Button> {" "}
-
-                     
+                      </Button>{" "}
                     </td>
 
-                    <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-
-                    <Button
+                    <td
+                      style={{ textAlign: "center", verticalAlign: "middle" }}
+                    >
+                      <Button
                         variant=""
                         onClick={() => handleShowModal(request.id)}
                         style={{
@@ -694,10 +705,7 @@ function RequestTableSuperAdministrador() {
                           onHide={() => setShowModal(false)}
                         />
                       )}
-
-                      
                     </td>
-                   
                   </tr>
                 ))}
               </tbody>
@@ -708,10 +716,7 @@ function RequestTableSuperAdministrador() {
       {loading2 && (
         <Modal show={show} onHide={handleClose} animation={false} size="xl">
           <Modal.Header closeButton>
-            <Modal.Title>
-              Solicitud del usuario:{" "}
-              {nomEmpNombre + " " + nomEmpPaterno + " " + nomEmpMaterno}
-            </Modal.Title>
+            <Modal.Title>Solicitud del usuario: {firmaEmpleado}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {loading2 && <FormSolicitudTable showRequest={showRequest} />}

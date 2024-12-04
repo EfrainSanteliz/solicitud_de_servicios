@@ -65,7 +65,7 @@ function RequestTableAdministrador() {
         process.env.REACT_APP_API_URL + `Request/${requestID}`
       );
 
-      setShowRequest(response.data);
+      setShowRequest(response.data.request);
       setHistorials(response.data.historialComentarios);
       setLoading2(true);
     } catch (error) {
@@ -139,7 +139,7 @@ function RequestTableAdministrador() {
     UpdateTableRequest();
     setPrioridad(0);
 
-    const email = showRequest?.nomEmpleados?.usuario?.email;
+    const email = showRequest?.email;
     if (!email) {
       throw new Error("Email is not available for the user.");
     }
@@ -255,7 +255,7 @@ function RequestTableAdministrador() {
       const response = await axios.post(
         process.env.REACT_APP_API_URL +
           `email/EmailComentario/${encodeURIComponent(
-            showRequest.nomEmpleados.usuario.email
+            showRequest.email
           )}/`,
         {},
         {
@@ -279,12 +279,14 @@ function RequestTableAdministrador() {
       .then((response) => {
         setLoading(false);
 
-        const filteredRequest = response.data.filter(
+        const data = response.data.request;
+
+        const filteredRequest = data.filter(
           (request) =>
-            request.nomEmpleados.direccionesICEES.descripcion ===
+            request.direccionesDescripcion ===
             AreaAdministrativa
         );
-        const data = response.data;
+        
 
         const statusid = {
           1: "Activo",
@@ -304,21 +306,20 @@ function RequestTableAdministrador() {
         const mappedItems = data.map((item) => ({
           id: item.sS_SolicitudId,
           name: item.firmaEmpleado,
-          servicioSolicitado:
-            item.sS_Servicio_Solicitados.descripcionServicio_Solicitado,
+          servicioSolicitado:item.descripcionServicio_Solicitado,
 
           descripcion: item.descripcion,
           fechaSolicitada: item.fechaSolicitada,
-          status: statusid[item.status] || "Sin Estatus", // Handle unmapped values
+          status: statusid[item.estatus] || "Sin Estatus", // Handle unmapped values
           prioridad: prioridad[item.prioridad] || "Sin Prioridad",
         }));
 
         setRequests(mappedItems);
         setFilteredData(filteredRequest);
 
-        const options = response.data.map((item) => ({
+        const options = data.map((item) => ({
           value: item.sS_Servicio_Solicitados,
-          label: item.sS_Servicio_Solicitados.descripcionServicio_Solicitado,
+          label: item.descripcionServicio_Solicitado,
         }));
 
         setRequestOptions([{ value: "", label: "toda solicitud" }, ...options]);

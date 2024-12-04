@@ -23,7 +23,7 @@ function UpdateStatus({
 
 
     const data = {
-     status:newStatus,
+     estatus:newStatus,
      ultimoStatus:UserRole,
     };
 
@@ -45,7 +45,7 @@ function UpdateStatus({
         }
       );
       UpdateTableRequest();
-      showRequest2(showRequest.sS_SolicitudId);
+     // showRequest2(showRequest.sS_SolicitudId);
 
     } catch (error) {
     }
@@ -61,7 +61,7 @@ function UpdateStatus({
         }
       );
       UpdateTableRequest();
-      showRequest2(showRequest.sS_SolicitudId);
+     // showRequest2(showRequest.sS_SolicitudId);
 
     } catch (error) {
     }

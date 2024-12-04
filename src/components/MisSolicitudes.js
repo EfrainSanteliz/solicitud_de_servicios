@@ -32,7 +32,7 @@ function MisSolicitudes() {
   const listRequest = async () => {
     try {
       const response = await axios.get(
-        process.env.REACT_APP_API_URL+ `Request/byNomEmpleadoId/${userId}`
+        process.env.REACT_APP_API_URL+ `Request/listbyNomEmpleadoIdWelcome/${userId}`
       );
       setRequests(response.data);
       setLoadingRequest(true);
@@ -52,7 +52,7 @@ function MisSolicitudes() {
         withCredentials: true,
       })
       .then((response) => {
-        setShowRequests(response.data);
+        setShowRequests(response.data.request);
         setLoading(true);
       })
       .catch((error) => {
@@ -119,7 +119,7 @@ function MisSolicitudes() {
                       year: "numeric"
                     })}
                   </td>
-                  <td>{statusid[Reques.status] || "Unknown"}</td>
+                  <td>{statusid[Reques.estatus] || "Unknown"}</td>
                   <td style={{ textAlign: "center" }}>
                     <Button
                       variant=""

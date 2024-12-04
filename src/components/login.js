@@ -39,14 +39,14 @@ function Login() {
     .then((response) => {
       alert("Login successful!");
   
-      localStorage.setItem("userid", response.data.user.nomEmpleados.empleadoID);
-      localStorage.setItem("nomEmpNombre",response.data.user.nomEmpleados.nomEmpNombre);
-      localStorage.setItem("nomEmpPaterno",response.data.user.nomEmpleados.nomEmpPaterno);
-      localStorage.setItem("nomEmpMaterno",response.data.user.nomEmpleados.nomEmpMaterno);
+      localStorage.setItem("userid", response.data.user.empleadoID);
+      localStorage.setItem("nomEmpNombre",response.data.user.nomEmpNombre);
+      localStorage.setItem("nomEmpPaterno",response.data.user.nomEmpPaterno);
+      localStorage.setItem("nomEmpMaterno",response.data.user.nomEmpMaterno);
       localStorage.setItem("UserRole",response.data.user.userRole);
 
 
-      localStorage.setItem("name_secondname",response.data.user.nomEmpleados.nomEmpNombre+" "+response.data.user.nomEmpleados.nomEmpPaterno+" "+response.data.user.nomEmpleados.nomEmpMaterno);
+      localStorage.setItem("name_secondname",response.data.user.nomEmpNombre+" "+response.data.user.nomEmpPaterno+" "+response.data.user.nomEmpMaterno);
 
       
 
@@ -55,7 +55,7 @@ function Login() {
 
 
 
-      localStorage.setItem("AreaAdministrativa", response.data.user.nomEmpleados.DireccionesDescripcion);
+      localStorage.setItem("AreaAdministrativa", response.data.user.direccionesDescripcion);
 
   
 
