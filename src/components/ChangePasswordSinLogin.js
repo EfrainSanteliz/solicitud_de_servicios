@@ -166,7 +166,7 @@ function ChangePassword() {
   };
 
   return (
-    <div style={{ padding: "2%" }}>
+    <div style={{ padding: "2%", fontSize:"18px"}}>
       <Form onSubmit={(e) => handleSubmit(e)}>
         <Form.Label>Escribe tu correo institucional </Form.Label>
         <br />
