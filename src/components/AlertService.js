@@ -87,6 +87,33 @@ export const FormularioYaFirmado = () => {
 
 };
 
+export const longitudPasswordError = () => {
+  MySwal.fire({
+    title: "Error!",
+    text: "La contraseña tiene que ser mayor o igual a 8 digitos.",
+    icon: "error",
+    confirmButtonText: "ok",
+  });
+};
+
+export const PasswordIsNotTheSame = () => {
+  MySwal.fire({
+    title: "Error!",
+    text: "Las contraseñas no coinciden.",
+    icon: "error",
+    confirmButtonText: "ok",
+  });
+};
+
+export const codeOfVerificationIsNotTheSame = () => {
+  MySwal.fire({
+    title: "Error!",
+    text: "El código de verificacion no coincide.",
+    icon: "error",
+    confirmButtonText: "ok",
+  });
+};
+
 export const EstablescaPrioridad = () => {
   MySwal.fire({
     title: "Error!",
@@ -95,3 +122,13 @@ export const EstablescaPrioridad = () => {
     confirmButtonText: "ok",
   });
 };
+
+export const PasswordErrorPattern = () => {
+  MySwal.fire({
+    title:"Error!",
+    text: "La contraseña debe tener al menos 2 números y 2 letras",
+    icon: "error",
+    confirmButtonText:"ok",
+
+  })
+}

@@ -14,7 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import StoreUser from "./components/StoreUser";
 import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
 import WelcomeSubAdministrador from "./components/WelcomeSubAdministrador";
-import ChangePassword from "./components/ChangePassword";
+import ChangePasswordSinLogin from "./components/ChangePasswordSinLogin";
 function App() {
   //
   return (
@@ -48,7 +48,7 @@ function App() {
 
               <Route
               path="/ChangePassword"
-              element={<ChangePassword />}
+              element={<ChangePasswordSinLogin />}
             />
 
           

@@ -4,7 +4,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { removeToken } from './JwtHelper';
 import { useNavigate } from 'react-router-dom';
-
+import ChangePassword from './ChangePassword';
 function Navbar2() {
   const navigate = useNavigate();
 
@@ -46,7 +46,8 @@ function Navbar2() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link onClick={handleLogout}>Salir</Nav.Link>  {/* Logout link */}
+            <Nav.Link onClick={handleLogout} style={{fontSize:"16px",color:"white"}}>Salir</Nav.Link>  {/* Logout link */}
+            <ChangePassword></ChangePassword>
           </Nav>
         </Navbar.Collapse>
       </Container>
