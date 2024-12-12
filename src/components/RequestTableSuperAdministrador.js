@@ -128,6 +128,8 @@ function RequestTableSuperAdministrador() {
           },
         }
       ); //
+      UpdateTableRequest();
+
 
       const email = showRequest?.email;
       if (!email) {
@@ -288,11 +290,13 @@ function RequestTableSuperAdministrador() {
           servicioSolicitado: item.descripcionServicio_Solicitado,
           descripcion: item.descripcion || "No description",
           fechaSolicitada: item.fechaSolicitada,
-          revisadoSub: item.revisadoSub ? "Yes" : "No",
+          revisadoSub: item.revisadoSub,
           status: statusid[item.estatus] || "Sin Estatus",
           prioridad: prioridad[item.prioridad] || "Sin Prioridad",
           departamento: item.direccionesDescripcion,
+          firmaJefeDepartamento: item.firmaJefeDepartamento,
           ultimoStatus: ultimoStatus[item.ultimoStatus] || "",
+          firmaJefe: item.firmaJefe
         }));
 
         setRequests(mappedItems);
@@ -466,8 +470,7 @@ function RequestTableSuperAdministrador() {
   return (
     <div>
       <div style={{ display: "flex" }}>
-        <div style={{marginRight:"2%"}}>
-          
+        <div style={{ marginRight: "2%" }}>
           <UpdateForm></UpdateForm>
         </div>
 
@@ -530,6 +533,8 @@ function RequestTableSuperAdministrador() {
                   <th style={{ width: "200px" }}>Ultimo Estatus</th>
 
                   <th style={{ width: "160px" }}>Prioridad</th>
+                  <th style={{ width: "120px" }}>Firma Administrador</th>
+                  <th style={{ width: "120px" }}>Firma Super Administrador</th>
                   <th style={{ width: "150px" }}>Departamento</th>
                   <th style={{ width: "100px", textAlign: "center" }}>
                     Acciones
@@ -660,6 +665,36 @@ function RequestTableSuperAdministrador() {
                       >
                         {request.prioridad}
                       </Button>
+                    </td>
+                    <td style={{ width: "70px",textAlign: "center", verticalAlign: "middle"  }}>
+                      {request.firmaJefeDepartamento && (
+                        <Button
+                          variant=""
+                          style={{
+                            color: "white",
+                            width: "40px",
+                            backgroundColor: "#217ABF",
+                            fontSize:"18px"
+                          }}
+                        >
+                          si
+                        </Button>
+                      )}
+                    </td>
+                    <td style={{ width: "70px" ,textAlign: "center", verticalAlign: "middle" }}>
+                      {request.firmaJefe && (
+                        <Button
+                          variant=""
+                          style={{
+                            color: "white",
+                            width: "40px",
+                            backgroundColor: "#2F9B8C",
+                            fontSize:"18px"
+                          }}
+                        >
+                          si
+                        </Button>
+                      )}
                     </td>
 
                     <td>{request.departamento}</td>

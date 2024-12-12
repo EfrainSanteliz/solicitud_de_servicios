@@ -113,12 +113,8 @@ function Login() {
           <Form onSubmit={handleLogin}>
             <Form.Group controlId="formBasicEmail">
               <Form.Label style={{ fontSize: "20px" }}>Email</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+              <Form.Control type="email" placeholder="Enter email" value={email}
+                onChange={(e) => setEmail(e.target.value)} required
               />
               <Form.Text className="text-muted">
                 Please use your registered email to log in.
@@ -128,11 +124,8 @@ function Login() {
             <Form.Group controlId="formBasicPassword" className="mt-3">
               <Form.Label style={{ fontSize: "20px" }}>Password</Form.Label>
               <Form.Control
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                type="password" placeholder="Password" value={password}
+                onChange={(e) => setPassword(e.target.value)} required
               />
             </Form.Group>
 
@@ -150,9 +143,7 @@ function Login() {
             )}
 
             <Button
-              variant=""
-              style={{ backgroundColor: "#C5126D", color: "white " }}
-              type="submit"
+              variant="" style={{ backgroundColor: "#C5126D", color: "white " }} type="submit"
               className="mt-4 w-100"
               disabled={loading}
             >

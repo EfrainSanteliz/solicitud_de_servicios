@@ -312,6 +312,8 @@ function RequestTableAdministrador() {
           fechaSolicitada: item.fechaSolicitada,
           status: statusid[item.estatus] || "Sin Estatus", // Handle unmapped values
           prioridad: prioridad[item.prioridad] || "Sin Prioridad",
+          firmaJefeDepartamento: item.firmaJefeDepartamento,
+          firmaJefe: item.firmaJefe
         }));
 
         setRequests(mappedItems);
@@ -462,6 +464,8 @@ function RequestTableAdministrador() {
                 <th style={{ width: "100px" }}>Fecha</th>
                 <th style={{ width: "120px" }}>Estatus</th>
                 <th style={{ width: "130px" }}>Prioridad</th>
+                <th style={{ width: "130px" }}>Firma Jefe Departamento</th>
+                <th style={{ width: "130px" }}>Firma Jefe Sistemas</th>
                 <th style={{ width: "100px", textAlign: "center" }}>
                   Acciones
                 </th>
@@ -538,7 +542,38 @@ function RequestTableAdministrador() {
                       {request.prioridad}
                     </Button>
                   </td>
-                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+          
+                  <td style={{ width: "70px",textAlign: "center", verticalAlign: "middle"  }}>
+                      {request.firmaJefeDepartamento && (
+                        <Button
+                          variant=""
+                          style={{
+                            color: "white",
+                            width: "40px",
+                            backgroundColor: "#217ABF",
+                            fontSize:"18px"
+                          }}
+                        >
+                          si
+                        </Button>
+                      )}
+                    </td>
+                    <td style={{ width: "70px" ,textAlign: "center", verticalAlign: "middle" }}>
+                      {request.firmaJefe && (
+                        <Button
+                          variant=""
+                          style={{
+                            color: "white",
+                            width: "40px",
+                            backgroundColor: "#2F9B8C",
+                            fontSize:"18px"
+                          }}
+                        >
+                          si
+                        </Button>
+                      )}
+                    </td>
+                    <td style={{ textAlign: "center", verticalAlign: "middle" }}>
                     <Button
                       variant=""
                       onClick={() => handleShow(request.id, request.name)}

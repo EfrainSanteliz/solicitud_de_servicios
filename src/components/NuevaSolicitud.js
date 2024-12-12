@@ -36,9 +36,9 @@ function TextControlsExample() {
   const [formData, setFormData] = useState({
     servicioSolicitado: "0",
     Descripcion: "",
-    FirmaEmpleado: "0",
-    FirmaJefeDepartamento: "0",
-    FirmaJefe: "0",
+    FirmaEmpleado: "",
+    FirmaJefeDepartamento: "",
+    FirmaJefe: "",
     Prioridad: 0,
   });
 
@@ -78,7 +78,7 @@ function TextControlsExample() {
       .get(process.env.REACT_APP_API_URL+ `ConActivosFijos/`)
       .then((response) => {
 
-        const formattedOptions = response.data.map((item) => ({
+        const formattedOptions = response.data.activosFijos.map((item) => ({
           value: item.activoFijoID,
           label: `${item.afClave} - ${item.afNombre} - ${item.afDescripcion}`,
           key: item.activoFijoID, // Adding key property
@@ -349,49 +349,7 @@ function TextControlsExample() {
             <p></p>
           )}
           </div>
-
-
-          {/* <div className="mb-3">
-            <Form.Check
-              inline
-              label={FirstResponse.descripcionServicio_Solicitado}
-              name="servicioSolicitado" // Ensure this matches the state key
-              type="radio"
-              value={FirstResponse.servicio_solicidato_Id}
-        
-              id="inline-radio-1"
-              onChange={(e) => {
-                handleChange(e);
-                handleRadioChange(e);
-              }}
-            />
-            <Form.Check
-              inline
-              label={SecondResponse.descripcionServicio_Solicitado}
-              name="servicioSolicitado" // Ensure this matches the state key
-              type="radio"
-              value={SecondResponse.servicio_solicidato_Id}
-              //checked={formData.servicioSolicitado === "Sistema Tecnologico"}
-              id="inline-radio-2"
-              onChange={(e) => {
-                handleChange(e);
-                handleRadioChange(e);
-              }}
-            />
-            <Form.Check
-              inline
-              label={ThirdResponse.descripcionServicio_Solicitado}
-              name="servicioSolicitado" // Ensure this matches the state key
-              type="radio"
-              value={ThirdResponse.servicio_solicidato_Id}
-              //checked={formData.servicioSolicitado === "Proyecto Nuevo"}
-              id="inline-radio-3"
-              onChange={(e) => {
-                handleChange(e);
-                handleRadioChange(e);
-              }}
-            />
-          </div> */}{" "}
+          {" "}
           <br></br>
           <Form.Label>Solicitud de servicio a realizar</Form.Label>
           {selectedService === "inline-radio-2" && (

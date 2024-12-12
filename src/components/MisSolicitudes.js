@@ -90,7 +90,10 @@ function MisSolicitudes() {
                 <th style={{ width: "170px" }}>Servicio Solicitado</th>
                 <th style={{ width: "200px", overflow: "hidden" }}>Descripcion</th>
                 <th style={{ width: "100px" }}>Fecha</th>
-                <th style={{ width: "80px" }}>Estatus</th>
+                <th style={{ width: "120px" }}>Estatus</th>
+                <th style={{ width: "120px", textAlign: "center" }}>Firma Jefe de Departamento</th>
+                <th style={{ width: "120px", textAlign: "center" }}>Firma Jefe de sistemas</th>
+
                 <th style={{ width: "80px", textAlign: "center" }}>Acciones</th>
                 <th style={{ width: "80px", textAlign: "center" }}>Historial</th>
               </tr>
@@ -119,7 +122,61 @@ function MisSolicitudes() {
                       year: "numeric"
                     })}
                   </td>
-                  <td>{statusid[Reques.estatus] || "Unknown"}</td>
+                  {/*<td>{statusid[Reques.estatus] || "Unknown"}</td>*/}
+
+                  <td>
+                      <Button
+                        variant=""
+                        style={{
+                          color: "white",
+                          width: "100px",
+                          backgroundColor:
+                          statusid[Reques.estatus]  === "Activo"
+                              ? "#217ABF"
+                              : statusid[Reques.estatus]  === "Cancelado"
+                              ? "#DC7F37"
+                              : statusid[Reques.estatus] === "Inactivo"
+                              ? "#999999"
+                              : statusid[Reques.estatus]  === "Finalizado"
+                              ? "#237469"
+                              : statusid[Reques.estatus]  === "Devolucion"
+                              ? "#DC7F37"
+                              : "",
+                        }}
+                      >
+                        {statusid[Reques.estatus]}
+                      </Button>
+                    </td>
+                  <td style={{ width: "70px",textAlign: "center", verticalAlign: "middle"  }}>
+                      {Reques.firmaJefeDepartamento && (
+                        <Button
+                          variant=""
+                          style={{
+                            color: "white",
+                            width: "40px",
+                            backgroundColor: "#217ABF",
+                            fontSize:"18px"
+                          }}
+                        >
+                          si
+                        </Button>
+                      )}
+                    </td>
+                    <td style={{ width: "70px" ,textAlign: "center", verticalAlign: "middle" }}>
+                      {Reques.firmaJefe && (
+                        <Button
+                          variant=""
+                          style={{
+                            color: "white",
+                            width: "40px",
+                            backgroundColor: "#2F9B8C",
+                            fontSize:"18px"
+                          }}
+                        >
+                          si
+                        </Button>
+                      )}
+                    </td>
                   <td style={{ textAlign: "center" }}>
                     <Button
                       variant=""
@@ -132,6 +189,8 @@ function MisSolicitudes() {
                       <FontAwesomeIcon icon={faEye} style={{ color: "white" }} />
                     </Button>
                   </td>
+               
+
                   <td style={{ textAlign: "center" }}>
                     <Button
                     variant=""

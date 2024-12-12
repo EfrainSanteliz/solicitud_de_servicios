@@ -43,6 +43,8 @@ function ChangePassword() {
           process.env.REACT_APP_API_URL + `User/changeByEmailCode/${email}`
         );
         setCodigoVerificacion(response.data);
+        console.log("codigo: ",response.data);
+
       } catch (error) {}
       setTimer(30);
     }

@@ -168,9 +168,7 @@ function RequestTable() {
     try {
       const response = await axios.post(
         process.env.REACT_APP_API_URL +
-          `email/send-test-emailSub/${encodeURIComponent(
-            showRequest.email
-          )}`,
+          `email/send-test-emailSub/${encodeURIComponent(showRequest.email)}`,
         {}, // Empty body
         {
           headers: {
@@ -223,7 +221,7 @@ function RequestTable() {
         const mappedItems = data.map((item) => ({
           id: item.sS_SolicitudId,
           name: item.firmaEmpleado,
-          servicioSolicitado:item.descripcionServicio_Solicitado,
+          servicioSolicitado: item.descripcionServicio_Solicitado,
           descripcion: item.descripcion,
           fechaSolicitada: item.fechaSolicitada,
           revisadoSub: item.revisadoSub,
@@ -231,6 +229,8 @@ function RequestTable() {
           prioridad: prioridad[item.prioridad] || "Sin Prioridad",
           departamento: item.direccionesDescripcion,
           ultimoStatus: ultimoStatus[item.ultimoStatus] || "",
+          firmaJefeDepartamento: item.firmaJefeDepartamento,
+          firmaJefe: item.firmaJefe,
         }));
 
         setRequests(mappedItems);
@@ -393,6 +393,8 @@ function RequestTable() {
                 <th style={{ width: "200px" }}>Ultimo Estatus</th>
 
                 <th style={{ width: "160px" }}>Prioridad</th>
+                <th style={{ width: "200px" }}>Firma Admi</th>
+
                 <th style={{ width: "150px" }}>Departamento</th>
                 <th style={{ width: "100px", textAlign: "center" }}>
                   Acciones
@@ -510,6 +512,37 @@ function RequestTable() {
                       >
                         {request.prioridad}
                       </Button>
+                    </td>
+
+                    <td style={{ width: "70px",textAlign: "center", verticalAlign: "middle"  }}>
+                      {request.firmaJefeDepartamento && (
+                        <Button
+                          variant=""
+                          style={{
+                            color: "white",
+                            width: "40px",
+                            backgroundColor: "#217ABF",
+                            fontSize:"18px"
+                          }}
+                        >
+                          si
+                        </Button>
+                      )}
+                    </td>
+                    <td style={{ width: "70px" ,textAlign: "center", verticalAlign: "middle" }}>
+                      {request.firmaJefe && (
+                        <Button
+                          variant=""
+                          style={{
+                            color: "white",
+                            width: "40px",
+                            backgroundColor: "#2F9B8C",
+                            fontSize:"18px"
+                          }}
+                        >
+                          si
+                        </Button>
+                      )}
                     </td>
 
                     <td>{request.departamento}</td>
