@@ -20,8 +20,6 @@ function App() {
   return (
     <> 
       <Router>
-        <Navbar2 />
-        <ToastContainer />
 
         <Routes>
             <Route path="/" element={<Login />} />
@@ -53,6 +51,8 @@ function App() {
 
           
         </Routes>
+        <Navbar2 />
+
       </Router>
     </>
   );
