@@ -17,12 +17,14 @@ import "./styles.css";
 import { FaCamera } from "react-icons/fa"; // Import camera icon
 import { DeviceContext } from "./DeviceContext";
 import "./Styleradio.css";
+import { UserContext } from "./UserContext";
 
 function TextControlsExample() {
   const deviceType = useContext(DeviceContext);
   const [options, setOptions] = useState([]);
   const [options2, setOptions2] = useState([]);
   const Navigate = useNavigate();
+  const {empleadoID} = useContext(UserContext);
 
   const [selectedService, setSelectedService] = useState("");
   const [message, setMessage] = useState("");
@@ -31,7 +33,6 @@ function TextControlsExample() {
     useState("");
 
   const location = useLocation();
-  const usuarioId = location.state?.userId || localStorage.getItem("userid");
 
   const [formData, setFormData] = useState({
     servicioSolicitado: "0",
@@ -219,7 +220,7 @@ function TextControlsExample() {
     data.append("firmaEmpleado", FirmaEmpleado);
     data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
     data.append("firmaJefe", FirmaJefe);
-    data.append("empleadoID", usuarioId);
+    data.append("empleadoID", empleadoID);
     data.append("prioridad", Prioridad);
     data.append("sS_Servicio_solicitado_Id", servicioSolicitado);
     data.append("revisadoSub", "");

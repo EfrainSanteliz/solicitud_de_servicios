@@ -15,11 +15,16 @@ import StoreUser from "./components/StoreUser";
 import 'font-awesome/css/font-awesome.min.css'; // Import Font Awesome CSS
 import WelcomeSubAdministrador from "./components/WelcomeSubAdministrador";
 import ChangePasswordSinLogin from "./components/ChangePasswordSinLogin";
+import { UserProvider } from "./components/UserContext";
+
 function App() {
   //
   return (
     <> 
+    <UserProvider>
       <Router>
+        <Navbar2 />
+        <ToastContainer />
 
         <Routes>
             <Route path="/" element={<Login />} />
@@ -51,9 +56,8 @@ function App() {
 
           
         </Routes>
-        <Navbar2 />
-
       </Router>
+      </UserProvider>
     </>
   );
 }

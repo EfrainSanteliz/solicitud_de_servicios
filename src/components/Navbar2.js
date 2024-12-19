@@ -1,12 +1,14 @@
-import React from 'react';
+import { useContext } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { removeToken } from './JwtHelper';
 import { useNavigate } from 'react-router-dom';
 import ChangePassword from './ChangePassword';
+import { UserContext } from './UserContext';
 function Navbar2() {
   const navigate = useNavigate();
+  const {userRole} = useContext(UserContext);
 
   // Handle logout action
   const handleLogout = () => {
@@ -16,7 +18,6 @@ function Navbar2() {
 
   // Role-based navigation
   const handleWelcome = () => {
-    const role = localStorage.getItem("UserRole");
     const rolePaths = {
       "1": "/welcome",
       "2": "/welcomeAdministrador",
@@ -24,8 +25,8 @@ function Navbar2() {
       "4": "/welcomeSuperAdministrador"
     };
 
-    if (rolePaths[role]) {
-      navigate(rolePaths[role]);
+    if (rolePaths[userRole]) {
+      navigate(rolePaths[userRole]);
     }
   };
 

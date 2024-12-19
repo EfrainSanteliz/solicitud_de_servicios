@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { setToken } from "./JwtHelper";
@@ -6,6 +6,8 @@ import { Button } from "react-bootstrap";
 import { Form, Container, Row, Col, Alert } from "react-bootstrap";
 import jwt_decode from "jwt-decode";
 import ReCAPTCHA from "react-google-recaptcha";
+import { UserContext } from "./UserContext";
+
 
 const RECAPTCHA_SITE_KEY = "6Ld83pcqAAAAAB-bXzjW6-Vodl1IOpLCh_my7JCp";
 
@@ -19,6 +21,7 @@ function Login() {
   const [captchaToken, setCaptchaToken] = useState(null);
   const [submitStatus, setSubmitStatus] = useState("");
   const [Contador, setContador] = useState(0);
+  const { setUserRoleFromServer } = useContext(UserContext);
 
   const onRecaptchaChange = (token) => {
     setCaptchaToken(token);
@@ -53,6 +56,18 @@ function Login() {
       .post(process.env.REACT_APP_API_URL + "User/login/", loginData)
       .then((response) => {
 
+        const { userRole } = response.data.user;
+        const { empleadoID } = response.data.user;
+        const { nomEmpNombre } = response.data.user;
+        const { nomEmpPaterno } = response.data.user;
+        const { nomEmpMaterno } = response.data.user;
+        const { email } = response.data.user;
+        const { direccionesDescripcion } = response.data.user;
+
+
+
+        setUserRoleFromServer(userRole,empleadoID,nomEmpNombre,nomEmpPaterno,nomEmpMaterno,email);
+
         localStorage.setItem("userid", response.data.user.empleadoID);
         localStorage.setItem("nomEmpNombre", response.data.user.nomEmpNombre);
         localStorage.setItem("nomEmpPaterno", response.data.user.nomEmpPaterno);
@@ -60,6 +75,7 @@ function Login() {
         localStorage.setItem("UserRole", response.data.user.userRole);
         localStorage.setItem("email",response.data.user.email);
 
+     
         localStorage.setItem(
           "name_secondname",
           response.data.user.nomEmpNombre +

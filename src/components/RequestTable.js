@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect ,useContext} from "react";
 import axios from "axios";
 import {
   table,
@@ -25,6 +25,7 @@ import {
   showSueccesAlertAutorizar,
   showErrorAlerAutorizar,
 } from "./AlertService";
+import { UserContext } from "./UserContext";
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
@@ -40,15 +41,17 @@ function RequestTable() {
   const [Historials, setHistorials] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const {fullName} = useContext(UserContext);
+  const {direccionesDescripcion} = useContext(direccionesDescripcion);
 
-  const FirmaJefeDepartamento =
-    localStorage.getItem("nomEmpNombre") +
-    " " +
-    localStorage.getItem("nomEmpPaterno") +
-    " " +
-    localStorage.getItem("nomEmpMaterno");
-  const FirmaJefe = FirmaJefeDepartamento;
-  const UserRole = localStorage.getItem("UserRole");
+ // const FirmaJefeDepartamento =
+  //  localStorage.getItem("nomEmpNombre") +
+//" " +
+//localStorage.getItem("nomEmpPaterno") +
+  //  " " +
+   // localStorage.getItem("nomEmpMaterno");
+ // const FirmaJefe = FirmaJefeDepartamento;
+  //const UserRole = localStorage.getItem("UserRole");
 
   const [show, setShow] = useState(false);
 
@@ -161,13 +164,13 @@ function RequestTable() {
         showLoadingAlertAutorizar();
 
         if (prioridad === 0) {
-          data.append("firmaJefe", FirmaJefeDepartamento);
+          data.append("firmaJefe", fullName);
           data.append("prioridad", showRequest.prioridad);
 
           //console.log("firmaJefe", FirmaJefeDepartamento);
           // console.log("prioridad", showRequest.prioridad);
         } else {
-          data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
+          data.append("firmaJefeDepartamento", fullName);
           data.append("prioridad", prioridad);
 
           //console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
@@ -207,7 +210,7 @@ function RequestTable() {
     } finally {
     }
   };
-  const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
+ // const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
   const handleSubmitComentarios = async (e) => {
     e.preventDefault();
 
@@ -246,7 +249,7 @@ function RequestTable() {
     const data = {
       fecha: currentFecha,
       comentarios: comentarios.trim(),
-      remitente: AreaAdministrativa,
+      remitente: direccionesDescripcion,
       RequestID: REQUESTID,
     };
 
@@ -313,7 +316,7 @@ function RequestTable() {
           const filteredRequest = response.data.filter(
             (request) =>
               request.nomEmpleados.direccionesICEES.descripcion ===
-              AreaAdministrativa
+            direccionesDescripcion
           );
           setRequests(filteredRequest);
           setFilteredData(filteredRequest);

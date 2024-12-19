@@ -6,6 +6,7 @@ import {
   longitudPasswordError,
   PasswordIsNotTheSame,
   codeOfVerificationIsNotTheSame,
+  Error,
 } from "./AlertService";
 import { use } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -106,14 +107,17 @@ function ChangePassword() {
         if (codigo == codigoVerificacion) {
           try {
             const response = await axios.put(
-              process.env.REACT_APP_API_URL + `User/changeByEmail/${email}`,
+              process.env.REACT_APP_API_URL + `User/changeByEmail/${email}/${codigo}`,
               Data
             );
             const response2 = await axios.put(
               process.env.REACT_APP_API_URL + `User/dropEmailCode/${email}`
             );
             navigate("/");
-          } catch (error) {}
+          } catch (error) {
+            Error();
+
+          }
         } else {
           codeOfVerificationIsNotTheSame();
         }

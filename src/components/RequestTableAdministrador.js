@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext } from "react";
 import axios from "axios";
 import { Spinner, Alert, Table, Button, Modal, Form } from "react-bootstrap";
 import FormSolicitudTable from "./FormSolicitudTable";
@@ -15,6 +15,7 @@ import {
 } from "./AlertService";
 import { EstablescaPrioridad } from "./AlertService";
 import { FormularioYaFirmado } from "./AlertService";
+import { UserContext } from "./UserContext";
 
 function RequestTableAdministrador() {
   const [requests, setRequests] = useState([]);
@@ -33,16 +34,18 @@ function RequestTableAdministrador() {
   const [RangeComparationDate, setRangeComparationDate] = useState("");
   const [requestOptions, setRequestOptions] = useState("");
   const [selectedService, setSelectedServicio] = useState("");
+  const {fullName} = useContext(UserContext);
+  const {direccionesDescripcion} = useContext(UserContext);
 
-  const FirmaJefeDepartamento =
-    localStorage.getItem("nomEmpNombre") +
-    " " +
-    localStorage.getItem("nomEmpPaterno") +
-    " " +
-    localStorage.getItem("nomEmpMaterno");
+ // const FirmaJefeDepartamento =
+  //  localStorage.getItem("nomEmpNombre") +
+   // " " +
+  //  localStorage.getItem("nomEmpPaterno") +
+   // " " +
+    //localStorage.getItem("nomEmpMaterno");
 
-  const FirmaJefe = FirmaJefeDepartamento;
-  const UserRole = localStorage.getItem("UserRole");
+  //const FirmaJefe = FirmaJefeDepartamento;
+  //const UserRole = localStorage.getItem("UserRole");
 
   const [show, setShow] = useState(false);
 
@@ -98,7 +101,7 @@ function RequestTableAdministrador() {
 
     showLoadingAlertAutorizar();
 
-    data.append("firmaJefeDepartamento", FirmaJefeDepartamento);
+    data.append("firmaJefeDepartamento", fullName);
    // console.log("prioridad" , showRequest.prioridad);
     if(showRequest.prioridad === 0 ) {
 
@@ -163,7 +166,7 @@ function RequestTableAdministrador() {
     e.preventDefault();
 
     try {
-      if (showRequest.firmaJefeDepartamento === FirmaJefeDepartamento) {
+      if (showRequest.firmaJefeDepartamento === fullName) {
         FormularioYaFirmado();
       } else if (showRequest.prioridad !== 0) {
         Firmar(e);
@@ -179,7 +182,7 @@ function RequestTableAdministrador() {
     }
   };
 
-  const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
+ // const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
   const handleSubmitComentarios = async (e) => {
     e.preventDefault();
 
@@ -218,7 +221,7 @@ function RequestTableAdministrador() {
     const data = {
       fecha: currentFecha,
       comentarios: comentarios.trim(),
-      remitente: AreaAdministrativa,
+      remitente: direccionesDescripcion,
       SS_SolicitudId: REQUESTID,
     };
 
@@ -284,7 +287,7 @@ function RequestTableAdministrador() {
         const filteredRequest = data.filter(
           (request) =>
             request.direccionesDescripcion ===
-            AreaAdministrativa
+          direccionesDescripcion
         );
         
 

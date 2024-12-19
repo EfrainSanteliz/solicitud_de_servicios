@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useState,useContext } from "react";
 import { Button, Form, Modal, Nav } from "react-bootstrap";
 import axios from "axios";
 import { PasswordIsNotTheSame } from "./AlertService";
 import { longitudPasswordError } from "./AlertService";
 import { PasswordErrorPattern } from "./AlertService";
+import { UserContext} from "./UserContext";
+
 function ChangePassword() {
   const [modal, setModal] = useState(false);
   const [passwordErrorLongitud, setPasswordErrorLongitud] = useState(false);
   const [passwordErrorPattern,setPasswordErrorPattern] = useState(false);
 
-  const email = localStorage.getItem("email");
+  const { email } = useContext(UserContext);
 
   const [formData, setFormData] = useState({
     password: "",

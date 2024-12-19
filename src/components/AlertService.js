@@ -132,3 +132,13 @@ export const PasswordErrorPattern = () => {
 
   })
 }
+
+export const Error = () => {
+  MySwal.fire({
+    title:"Error!",
+    text: "Correo no valido",
+    icon: "error",
+    confirmButtonText:"ok",
+
+  })
+}

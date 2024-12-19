@@ -1,4 +1,3 @@
-import React from "react";
 import axios from "axios";
 import { Table, Button, Modal } from "react-bootstrap";
 import { useState, useEffect } from "react";
@@ -9,6 +8,8 @@ import "./styles.css";
 import HistoryComments from "./HistoryComments";
 import jsPDF from "jspdf";
 import DownloadPdfAsp from "./DownloadPdfAsp";
+import { useContext } from "react";
+import { UserContext } from "./UserContext";
 
 function MisSolicitudes() {
   const [Request, setRequests] = useState([]);
@@ -23,16 +24,17 @@ function MisSolicitudes() {
   const [option, setOption] = useState(false);
   const [Historials, setHistorials] = useState([]);
 
-  const userId = localStorage.getItem("userid");
+  const {empleadoID} = useContext(UserContext);
+  const { email } = useContext(UserContext);
 
   useEffect(() => {
     listRequest();
-  }, [userId]);
+  }, [empleadoID]);
 
   const listRequest = async () => {
     try {
       const response = await axios.get(
-        process.env.REACT_APP_API_URL+ `Request/listbyNomEmpleadoIdWelcome/${userId}`
+        process.env.REACT_APP_API_URL+ `Request/listbyNomEmpleadoIdWelcome/${empleadoID}`
       );
       setRequests(response.data);
       setLoadingRequest(true);

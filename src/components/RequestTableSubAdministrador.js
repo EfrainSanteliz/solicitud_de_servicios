@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext } from "react";
 import axios from "axios";
 import { Spinner, Alert, Table, Button, Modal, Form } from "react-bootstrap";
 import FormSolicitudTable from "./FormSolicitudTable";
@@ -42,7 +42,7 @@ function RequestTable() {
   const [selectedService, setSelectedServicio] = useState("");
   const [requestOptions, setRequestOptions] = useState([]);
 
-  const quien = localStorage.getItem("name_secondname");
+  //const quien = localStorage.getItem("name_secondname");
 
   const [show, setShow] = useState(false);
 
