@@ -51,7 +51,7 @@ function ChangePassword() {
 
     try {
       const response = await axios.put(
-        process.env.REACT_APP_API_URL + `User/changeByEmail/${email}`,
+        process.env.REACT_APP_API_URL + `User/changeByEmailSinLogin/${email}`,
         Data
       );
       console.log("Password changed successfully:", response.data);
@@ -108,7 +108,7 @@ function ChangePassword() {
                 type="password"
                 name="password"
                 placeholder="Nueva contraseña"
-                value={formData.password}
+                /*value={formData.password}*/
                 onChange={(e) => handleValidation(e)}
                 required
               />
@@ -120,7 +120,7 @@ function ChangePassword() {
                 type="password"
                 name="password2"
                 placeholder="Repetir contraseña"
-                value={formData.password2}
+                /*value={formData.password2}*/
                 onChange={(e) => handleValidation(e)}
                 required
               />

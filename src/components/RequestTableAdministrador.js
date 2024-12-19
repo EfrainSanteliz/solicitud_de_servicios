@@ -121,7 +121,7 @@ function RequestTableAdministrador() {
     const fechaPrioridad = DateTime.now();
 
     const data2 = {
-      quien: FirmaJefeDepartamento,
+      quien: fullName,
       prioridad: prioridad,
       fechaPrioridad: fechaPrioridad,
       sS_SolicitudId: REQUESTID,

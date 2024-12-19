@@ -21,7 +21,7 @@ function Welcome () {
 return (
     <div>
 <div className='container mt-5'>
-    <h1 className='text-center'>Solicitud De Servicios <strong>{userRole}f{}</strong></h1>    
+    <h1 className='text-center'>Solicitud De Servicios </h1>    
    
     <div className= 'd-flex justify-content-center mt-5'>
         

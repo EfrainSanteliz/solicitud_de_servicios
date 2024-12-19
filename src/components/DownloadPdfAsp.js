@@ -22,7 +22,7 @@ function DownloadPdfAsp({ showRequest }) {
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'solicitud_'+ fullName + '.pdf';
+                a.download = 'solicitud_' +" "+ showRequest.firmaEmpleado + '.pdf';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);

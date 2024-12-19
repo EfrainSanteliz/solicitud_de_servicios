@@ -1,11 +1,15 @@
-import { useState,useEffect } from "react";
+import { useState,useEffect,useContext } from "react";
 import { jwtDecode } from "jwt-decode"; // Update import statement
+import { UserContext } from "./UserContext";
 
 export function useAuth() {
   const [auth, setAuth] = useState({ isAuthenticated: false, userRole: null });
   const [loading,setLoading] = useState(true);
+  const {token} = useContext(UserContext);
+
   useEffect(() => {
-    const token = localStorage.getItem("jwtToken2");
+    //const token = localStorage.getItem("jwtToken2");
+
 
     if (token) {
       try {

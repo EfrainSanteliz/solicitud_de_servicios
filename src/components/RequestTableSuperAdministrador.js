@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect ,useContext} from "react";
 import axios from "axios";
 import { Spinner, Alert, Table, Button, Modal, Form } from "react-bootstrap";
 import FormSolicitudTable from "./FormSolicitudTable";
@@ -18,6 +18,7 @@ import UpdateForm from "./UpdateForm";
 import HistorialStatus from "./HistorialStatusPrioridad";
 import StoreUser from "./StoreUser";
 import { Navigate, useNavigate } from "react-router-dom";
+import { UserContext } from "./UserContext";
 
 function RequestTableSuperAdministrador() {
   const [requests, setRequests] = useState([]);
@@ -39,15 +40,18 @@ function RequestTableSuperAdministrador() {
   const [SelectPrioridad, setSelectPrioridad] = useState("");
   const [DateSystem, setDateSystem] = useState("");
   const [RangeComparationDate, setRangeComparationDate] = useState("");
+  const {fullName} = useContext(UserContext);
+  const {direccionesDescripcion} = useContext(UserContext);
+  
 
-  const FirmaJefeDepartamento =
-    localStorage.getItem("nomEmpNombre") +
-    " " +
-    localStorage.getItem("nomEmpPaterno") +
-    " " +
-    localStorage.getItem("nomEmpMaterno");
-  const UserRole = localStorage.getItem("UserRole");
-  console.log("firmaJefe", FirmaJefeDepartamento);
+ // const FirmaJefeDepartamento =
+   // localStorage.getItem("nomEmpNombre") +
+   // " " +
+  //  localStorage.getItem("nomEmpPaterno") +
+   // " " +
+   // localStorage.getItem("nomEmpMaterno");
+  //const UserRole = localStorage.getItem("UserRole");
+ // console.log("firmaJefe", FirmaJefeDepartamento);
   const [show, setShow] = useState(false);
 
   const handleClose = () => {
@@ -106,13 +110,13 @@ function RequestTableSuperAdministrador() {
       showLoadingAlertAutorizar();
 
       if (prioridad === 0) {
-        data.append("firmaJefe", FirmaJefeDepartamento);
+        data.append("firmaJefe", fullName);
         data.append("prioridad", showRequest.prioridad);
 
         //console.log("firmaJefe", FirmaJefeDepartamento);
         // console.log("prioridad", showRequest.prioridad);
       } else {
-        data.append("firmaJefe", FirmaJefeDepartamento);
+        data.append("firmaJefe", fullName);
         data.append("prioridad", prioridad);
 
         //console.log("firmaJefeDepartamento", FirmaJefeDepartamento);
@@ -162,7 +166,7 @@ function RequestTableSuperAdministrador() {
     }
   };
 
-  const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
+ // const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
   const handleSubmitComentarios = async (e) => {
     e.preventDefault();
 
@@ -201,7 +205,7 @@ function RequestTableSuperAdministrador() {
     const data = {
       fecha: currentFecha,
       comentarios: comentarios.trim(),
-      remitente: AreaAdministrativa,
+      remitente: direccionesDescripcion,
       SS_SolicitudId: REQUESTID,
     };
 
@@ -415,7 +419,7 @@ function RequestTableSuperAdministrador() {
     const fechaPrioridad = DateTime.now();
 
     const data2 = {
-      quien: FirmaJefeDepartamento,
+      quien: fullName,
       prioridad: prioridad,
       fechaPrioridad: fechaPrioridad,
       sS_SolicitudId: REQUESTID,

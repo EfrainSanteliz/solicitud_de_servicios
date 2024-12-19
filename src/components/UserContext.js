@@ -12,9 +12,10 @@ export const UserProvider = ({children}) => {
     const [email,setEmail ] = useState(null);
     const [fullName,setFullName] = useState(null);
     const [direccionesDescripcion,setDireccionesDescripcion] = useState(null);
+    const [token, setToken] = useState(null);
 
 
-    const setUserRoleFromServer = (role,empleadoID,nomEmpNombre,nomEmpPaterno,nomEmpMaterno,email,direccionesDescripcion) => {
+    const setUserRoleFromServer = (role,empleadoID,nomEmpNombre,nomEmpPaterno,nomEmpMaterno,email,direccionesDescripcion,token) => {
         setUserRole(role);
         setUserid(empleadoID);
         setNomEmpNombre(nomEmpNombre);
@@ -23,12 +24,18 @@ export const UserProvider = ({children}) => {
         setEmail(email);
         setFullName(nomEmpNombre+" "+nomEmpPaterno+" "+nomEmpMaterno);
         setDireccionesDescripcion(direccionesDescripcion);
- 
+        setToken(token);
+    };
 
-    }
+    const setRemoveToke = () => {
+
+      setToken(null);
+
+    };
+
 
   return (
-   <UserContext.Provider value={{userRole,empleadoID,nomEmpNombre,nomEmpPaterno,nomEmpMaterno,email,fullName,direccionesDescripcion,setUserRoleFromServer}}>
+   <UserContext.Provider value={{userRole,empleadoID,nomEmpNombre,nomEmpPaterno,nomEmpMaterno,email,fullName,direccionesDescripcion,token,setUserRoleFromServer,setRemoveToke}}>
     {children}
    </UserContext.Provider>
 

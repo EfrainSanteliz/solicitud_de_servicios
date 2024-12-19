@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import { Button, Form } from "react-bootstrap";
 import Select from "react-select";
 import axios from "axios";
 import { DateTime } from "luxon";
+import { UserContext } from "./UserContext";
+
 
 const SearchBar = ({
   setSearchTerm,
@@ -25,7 +27,8 @@ const SearchBar = ({
   const [selectedPrioridadOption, setSelectPrioridadOption] = useState("");
   const [DateRangeSelected, setDateRangeSelected] = useState("");
   const [requestOptions, setRequestOptions] = useState([]);
-  const UserRole = localStorage.getItem("UserRole");
+  const {userRole} = useContext(UserContext);
+  //const UserRole = localStorage.getItem("UserRole");
 
   useEffect(() => {
     const fechOptions = async () => {
@@ -111,7 +114,7 @@ const SearchBar = ({
   };
 
   const handleDeleteFilters = () => {
-    if (UserRole === "4" || UserRole === "3") {
+    if (userRole === "4" || userRole === "3") {
       setselectedDepartamento("");
       setSelectedOption("Todo Departamento");
       setSelectedServicio("");
@@ -148,7 +151,7 @@ const SearchBar = ({
           Filtros
         </div>
         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          {(UserRole === "4" || UserRole === "3") && (
+          {(userRole === "4" || userRole === "3") && (
             <Select
               options={options}
               placeholder={selectOptions}

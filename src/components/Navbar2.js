@@ -2,17 +2,24 @@ import { useContext } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { removeToken } from './JwtHelper';
+//import { removeToken } from './JwtHelper';
 import { useNavigate } from 'react-router-dom';
 import ChangePassword from './ChangePassword';
 import { UserContext } from './UserContext';
+import { getToken } from './JwtHelper';
+
 function Navbar2() {
   const navigate = useNavigate();
   const {userRole} = useContext(UserContext);
+  const {setRemoveToke} = useContext(UserContext);
+  const {token} = useContext(UserContext);
+  
 
   // Handle logout action
   const handleLogout = () => {
-    removeToken(); // Clear token
+   // removeToken(); // Clear token
+    const { token } = "";
+    setRemoveToke(token);
     navigate("/"); // Redirect to home
   };
 
@@ -48,8 +55,8 @@ function Navbar2() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link onClick={handleLogout} style={{fontSize:"16px",color:"white"}}>Salir</Nav.Link>  {/* Logout link */}
-            <ChangePassword></ChangePassword>
-          </Nav>
+            {token && <ChangePassword />}
+            </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>

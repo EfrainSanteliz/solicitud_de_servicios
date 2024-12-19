@@ -1,4 +1,4 @@
-import { useState,useContext } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { setToken } from "./JwtHelper";
@@ -7,7 +7,6 @@ import { Form, Container, Row, Col, Alert } from "react-bootstrap";
 import jwt_decode from "jwt-decode";
 import ReCAPTCHA from "react-google-recaptcha";
 import { UserContext } from "./UserContext";
-
 
 const RECAPTCHA_SITE_KEY = "6Ld83pcqAAAAAB-bXzjW6-Vodl1IOpLCh_my7JCp";
 
@@ -36,7 +35,7 @@ function Login() {
         return;
       }
     }
-  
+
     setLoading(true); // Set loading state
 
     const loginData = {
@@ -55,7 +54,6 @@ function Login() {
     axios
       .post(process.env.REACT_APP_API_URL + "User/login/", loginData)
       .then((response) => {
-
         const { userRole } = response.data.user;
         const { empleadoID } = response.data.user;
         const { nomEmpNombre } = response.data.user;
@@ -63,12 +61,20 @@ function Login() {
         const { nomEmpMaterno } = response.data.user;
         const { email } = response.data.user;
         const { direccionesDescripcion } = response.data.user;
+        const { token } = response.data;
 
+        setUserRoleFromServer(
+          userRole,
+          empleadoID,
+          nomEmpNombre,
+          nomEmpPaterno,
+          nomEmpMaterno,
+          email,
+          direccionesDescripcion,
+          token
+        );
 
-
-        setUserRoleFromServer(userRole,empleadoID,nomEmpNombre,nomEmpPaterno,nomEmpMaterno,email);
-
-        localStorage.setItem("userid", response.data.user.empleadoID);
+        /*  localStorage.setItem("userid", response.data.user.empleadoID);
         localStorage.setItem("nomEmpNombre", response.data.user.nomEmpNombre);
         localStorage.setItem("nomEmpPaterno", response.data.user.nomEmpPaterno);
         localStorage.setItem("nomEmpMaterno", response.data.user.nomEmpMaterno);
@@ -92,6 +98,8 @@ function Login() {
           "AreaAdministrativa",
           response.data.user.direccionesDescripcion
         );
+        */
+       //setToken("jwtToken", response.data.token);
 
         setLoading(false);
 
@@ -129,8 +137,12 @@ function Login() {
           <Form onSubmit={handleLogin}>
             <Form.Group controlId="formBasicEmail">
               <Form.Label style={{ fontSize: "20px" }}>Email</Form.Label>
-              <Form.Control type="email" placeholder="Enter email" value={email}
-                onChange={(e) => setEmail(e.target.value)} required
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
               <Form.Text className="text-muted">
                 Please use your registered email to log in.
@@ -140,8 +152,11 @@ function Login() {
             <Form.Group controlId="formBasicPassword" className="mt-3">
               <Form.Label style={{ fontSize: "20px" }}>Password</Form.Label>
               <Form.Control
-                type="password" placeholder="Password" value={password}
-                onChange={(e) => setPassword(e.target.value)} required
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </Form.Group>
 
@@ -159,7 +174,9 @@ function Login() {
             )}
 
             <Button
-              variant="" style={{ backgroundColor: "#C5126D", color: "white " }} type="submit"
+              variant=""
+              style={{ backgroundColor: "#C5126D", color: "white " }}
+              type="submit"
               className="mt-4 w-100"
               disabled={loading}
             >

@@ -244,9 +244,11 @@ function ChangePassword() {
           type="submit"
           variant="primary"
           onClick={(e) => handleSubmit(e)}
+          disabled={!captchaToken}
+
         >
           Confirmar
-        </Button>
+        </Button >
         {submitStatus && <p>{submitStatus}</p>}
       </Form>
     </div>

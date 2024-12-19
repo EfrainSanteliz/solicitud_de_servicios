@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState ,useContext} from "react";
 import axios from "axios";
 import { waitFor } from "@testing-library/react";
 import { Form } from "react-bootstrap";
 import { DateTime } from "luxon";
-
+import { UserContext } from "./UserContext";
 
 function UpdateStatus({
   handleChange,
@@ -13,23 +13,27 @@ function UpdateStatus({
   showRequest2,
 }) {
 
+  
+  const {userRole} = useContext(UserContext);
+  const {fullName} = useContext(UserContext);
+
   const handleUpdateStatus = async (newStatus) => {
     const { status } = formData;
-    
-    const UserRole = localStorage.getItem("UserRole");
-    const nombre = localStorage.getItem("name_secondname");
+
+    //const UserRole = localStorage.getItem("UserRole");
+    //const nombre = localStorage.getItem("name_secondname");
 
     const fechaSatus = DateTime.now();
 
 
     const data = {
      estatus:newStatus,
-     ultimoStatus:UserRole,
+     ultimoStatus:userRole,
     };
 
     const data2 = {
       status:newStatus,
-      quien:nombre,
+      quien:fullName,
       fechaStatus:fechaSatus,
       SS_SolicitudId:showRequest.sS_SolicitudId,
      };

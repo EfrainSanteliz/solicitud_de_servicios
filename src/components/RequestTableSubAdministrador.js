@@ -17,6 +17,7 @@ import {
 import UpdateForm from "./UpdateForm";
 import RevisadoSub from "./RevisadoSub";
 import HistorialStatus from "./HistorialStatusPrioridad";
+import { UserContext } from "./UserContext";
 
 function RequestTable() {
   const [requests, setRequests] = useState([]);
@@ -41,6 +42,7 @@ function RequestTable() {
   const [RangeComparationDate, setRangeComparationDate] = useState("");
   const [selectedService, setSelectedServicio] = useState("");
   const [requestOptions, setRequestOptions] = useState([]);
+  const {direccionesDescripcion} = useContext(UserContext);
 
   //const quien = localStorage.getItem("name_secondname");
 
@@ -95,9 +97,15 @@ function RequestTable() {
     revisadoSub: false,
   });
 
-  const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
+  //const AreaAdministrativa = localStorage.getItem("AreaAdministrativa");
   const handleSubmitComentarios = async (e) => {
     e.preventDefault();
+
+    const data2 = {
+      revisadoSub: true,
+    };
+
+    
 
     // Get the current date in GMT-7
     const getCurrentDateInGMT7 = () => {
@@ -134,7 +142,7 @@ function RequestTable() {
     const data = {
       fecha: currentFecha,
       comentarios: comentarios.trim(),
-      remitente: AreaAdministrativa,
+      remitente: direccionesDescripcion,
       SS_SolicitudId: REQUESTID,
     };
 
@@ -149,6 +157,21 @@ function RequestTable() {
           },
         }
       );
+
+      try {
+        const response = await axios.put(
+          process.env.REACT_APP_API_URL+ `Request/${showRequest.sS_SolicitudId}`,
+          data2,
+          {
+            headers: {
+              "content-type": "application/json",
+            },
+          }
+        );
+        UpdateTableRequest();
+        showRequest2(showRequest.sS_SolicitudId);
+      } catch (error) {
+      }
 
       // Refresh the request after successfully posting the comment
       try {
@@ -393,7 +416,9 @@ function RequestTable() {
                 <th style={{ width: "200px" }}>Ultimo Estatus</th>
 
                 <th style={{ width: "160px" }}>Prioridad</th>
-                <th style={{ width: "200px" }}>Firma Admi</th>
+                <th style={{ width: "100px" }}>Firma jefe de Area</th>
+                <th style={{ width: "100px" }}>Firma Joel</th>
+
 
                 <th style={{ width: "150px" }}>Departamento</th>
                 <th style={{ width: "100px", textAlign: "center" }}>
